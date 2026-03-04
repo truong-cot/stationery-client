@@ -1,0 +1,37 @@
+.container {
+	padding: 8px 16px;
+	border-radius: 16px;
+	border: 1px solid #fff;
+	background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.4) 100%);
+}
+
+.inputSearch {
+	height: 40px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: text;
+	transition: 0.3s;
+
+	input {
+		flex: 1;
+		outline: none;
+		border: none;
+		background-color: transparent;
+		font-weight: 500;
+		font-size: 16px;
+		padding: 8px;
+
+		&::placeholder {
+			color: #777e90;
+			opacity: 1;
+		}
+	}
+}
+
+.line {
+	width: 100%;
+	height: 1px;
+	background-color: #dde0e6;
+	margin-bottom: 8px;
+}

@@ -1,0 +1,26 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+
+  main {
+    flex: 1;
+    overflow: auto;
+    padding: 16px 24px;
+    background: linear-gradient(
+      171deg,
+      #abceef -3.42%,
+      #c1d4d2 29.5%,
+      #99ddb2 89.13%
+    );
+  }
+}
+
+@media (max-width: 1200px) {
+  .container {
+    main {
+      padding: 8px 12px;
+    }
+  }
+}

@@ -1,0 +1,33 @@
+.wrapper_form_postion {
+  height: 100vh;
+  background-color: #fff;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 20px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #eaedf2;
+}
+
+.title {
+  color: #2f3d50;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.nodes {
+  margin-top: 4px;
+}
+
+@media (max-width: 1200px) {
+  .top {
+    padding: 8px 16px;
+  }
+  .title {
+    font-size: 20px;
+  }
+}

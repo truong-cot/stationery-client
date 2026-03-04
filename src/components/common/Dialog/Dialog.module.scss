@@ -1,0 +1,62 @@
+.container {
+  position: relative;
+  width: 400px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+}
+
+.main_icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  color: #2a2e30;
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.note {
+  color: #2a2e30;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.form {
+  margin-top: 16px;
+}
+
+.groupBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.close {
+  cursor: pointer;
+  user-select: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  transition: 0.3s;
+
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 1200px) {
+  .container {
+    width: 100vw;
+    border-radius: 12px;
+  }
+}

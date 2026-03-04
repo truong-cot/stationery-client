@@ -1,0 +1,33 @@
+.container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #fff;
+	z-index: 21;
+
+	.logo {
+		max-width: 800px;
+		max-height: 420px;
+		width: 60vw;
+	}
+
+	&.close {
+		animation: kf_close linear 0.2s 2s forwards;
+	}
+}
+
+@keyframes kf_close {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+		visibility: hidden;
+	}
+}

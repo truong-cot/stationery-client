@@ -1,0 +1,93 @@
+$color-focus: #149343;
+$color-error: #e5493f;
+$color-done: #149343;
+$color-disable: #bdbec2;
+
+$bg-color: #fff;
+$bg-color-done: #fff;
+$bg-color-disable: #f2f2f2;
+
+$border-color: #cdd5df;
+$border-color-done: #149343;
+$border-color-disable: #e1e5ed;
+
+$color-placeholder: #b4b5bc;
+
+$font-size: 16px;
+$border-radius: 8px;
+
+.container {
+  height: fit-content;
+
+  & + .container {
+    margin-top: 16px;
+  }
+
+  &.focus {
+    .textarea {
+      border: 1px solid $color-focus !important;
+    }
+  }
+
+  &.error {
+    .textarea {
+      border: 1px solid $color-error;
+    }
+  }
+
+  &.readOnly {
+    .textarea {
+      background: $bg-color-disable;
+      border: 1px solid $border-color-disable;
+
+      &:hover {
+        background: $bg-color-disable !important;
+        border: 1px solid $border-color-disable !important;
+      }
+    }
+  }
+
+  &.done {
+    .textarea {
+      background: $bg-color-done;
+      border: 1px solid $border-color-done;
+    }
+  }
+}
+
+.label {
+  font-size: $font-size;
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.textarea {
+  cursor: text;
+  outline: none;
+  width: 100%;
+  min-height: 140px;
+  padding: 12px 16px;
+  resize: none;
+  font-size: $font-size;
+  font-weight: 500;
+  border-radius: $border-radius;
+  background: $bg-color;
+  border: 1px solid $border-color;
+  transition: 0.3s;
+
+  &::placeholder {
+    font-weight: 500;
+    color: $color-placeholder !important;
+  }
+
+  &:hover {
+    border: 1px solid $color-focus !important;
+  }
+}
+
+.errorText {
+  margin-top: 4px;
+  font-size: 12px;
+  color: $color-error !important;
+}

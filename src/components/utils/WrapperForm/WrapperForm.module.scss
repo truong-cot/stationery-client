@@ -1,0 +1,27 @@
+.wrapper_form {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 12px 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-left: 4px solid #06aed4;
+  padding: 0 16px;
+
+  & > h4 {
+    color: #202939;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.main_wrapper_form {
+  padding: 16px 20px 0 20px;
+
+  &.not_title {
+    padding: 0 20px;
+  }
+}

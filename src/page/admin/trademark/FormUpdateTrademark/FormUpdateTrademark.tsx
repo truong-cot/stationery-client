@@ -1,0 +1,119 @@
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useEffect, useState} from 'react';
+import Button from '~/components/common/Button';
+import Form, {ContextForm, Input, TextArea} from '~/components/common/Form';
+import Loading from '~/components/common/Loading';
+import FlexLayout from '~/components/layout/FlexLayout';
+import WrapperForm from '~/components/utils/WrapperForm';
+import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
+import {QUERY_KEY} from '~/constants/config/enum';
+import {httpRequest} from '~/funcs/httpRequest';
+import type {IDetailTrademark, PropsFormUpdateTrademark} from './interfaces';
+import trademarkServices from '~/services/trademark.service';
+
+interface IFormUpdateTrademark {
+	name: string;
+	description: string;
+}
+
+const initForm: IFormUpdateTrademark = {
+	name: '',
+	description: '',
+};
+
+function FormUpdateTrademark({_idTrademark, onClose}: PropsFormUpdateTrademark) {
+	const queryClient = useQueryClient();
+
+	const [form, setForm] = useState<IFormUpdateTrademark>(initForm);
+
+	const {data: trademark, isSuccess} = useQuery<IDetailTrademark>({
+		queryKey: [QUERY_KEY.detailTrademark, _idTrademark],
+		queryFn: () =>
+			httpRequest({
+				http: trademarkServices.detail({
+					_id: _idTrademark,
+				}),
+			}),
+		select(data) {
+			return data;
+		},
+		staleTime: 0,
+		enabled: !!_idTrademark,
+	});
+
+	useEffect(() => {
+		if (!!trademark && isSuccess) {
+			setForm({
+				name: trademark?.name || '',
+				description: trademark?.description || '',
+			});
+		}
+	}, [trademark, isSuccess]);
+
+	const funcUpdateTrademark = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageFailed: true,
+				showMessageSuccess: true,
+				msgSuccess: 'Chỉnh sửa thương hiệu thành công!',
+				http: trademarkServices.update({
+					_id: _idTrademark,
+					name: form.name,
+					description: form.description,
+				}),
+			}),
+		onSuccess: () => {
+			setForm(initForm);
+			onClose();
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListTrademark]});
+		},
+	});
+
+	const handleCreateTrademark = () => {
+		return funcUpdateTrademark.mutate();
+	};
+
+	return (
+		<Form form={form} setForm={setForm} onSubmit={handleCreateTrademark}>
+			<Loading loading={funcUpdateTrademark.isPending} />
+			<WrapperFormPostion
+				width={540}
+				title='Chỉnh sửa thương hiệu'
+				actions={
+					<FlexLayout row gap-8>
+						<Button p_8_24 rounded_8 white bold maxHeight onClick={onClose}>
+							Hủy bỏ
+						</Button>
+						<ContextForm.Consumer>
+							{({isDone}) => (
+								<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold maxHeight>
+									Cập nhật
+								</Button>
+							)}
+						</ContextForm.Consumer>
+					</FlexLayout>
+				}
+			>
+				<WrapperForm title='Thông tin tài thương hiệu'>
+					<FlexLayout column gap-16>
+						<Input
+							label={
+								<span>
+									Tên thương hiệu <span style={{color: 'red'}}>*</span>
+								</span>
+							}
+							placeholder='Nhập tên thương hiệu'
+							type='text'
+							name='name'
+							isRequired
+							isBlur
+						/>
+						<TextArea label='Mô tả' placeholder='Nhập ghi chú' name='description' />
+					</FlexLayout>
+				</WrapperForm>
+			</WrapperFormPostion>
+		</Form>
+	);
+}
+
+export default FormUpdateTrademark;

@@ -1,0 +1,86 @@
+.label {
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: 500;
+	margin-bottom: 8px;
+	display: block;
+}
+
+.main_upload {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.list_image {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.box_image {
+	position: relative;
+	width: 80px;
+	height: 80px;
+	border-radius: 6px;
+	border: 1px solid transparent;
+	user-select: none;
+
+	.image {
+		border-radius: 6px;
+	}
+
+	.delete {
+		cursor: pointer;
+		position: absolute;
+		top: -6px;
+		right: -6px;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background-color: #eceff3;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		transition: 0.3s;
+
+		&:active {
+			transform: scale(0.9);
+		}
+	}
+}
+
+.upload {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.input_upload {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 80px;
+	height: 80px;
+	border-radius: 6px;
+	border: 1px dashed #cdd5df;
+	cursor: pointer;
+	background: #fff;
+}
+
+.small {
+	width: 80px;
+	height: 80px;
+}
+
+.medium {
+	width: 150px;
+	height: 150px;
+}
+
+.large {
+	width: 350px;
+	height: 110px;
+}

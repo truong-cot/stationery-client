@@ -1,0 +1,21 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  & > h4 {
+    color: #23262f;
+    font-size: 24px;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 1200px) {
+  .header {
+    & > h4 {
+      font-size: 18px;
+    }
+  }
+}

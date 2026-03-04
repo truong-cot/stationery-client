@@ -1,0 +1,38 @@
+.input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  input {
+    width: 56px;
+    height: 72px;
+    text-align: center;
+    outline: none;
+    border: none;
+    background: #fff;
+    border: 2px solid #cdd5df;
+    border-radius: 12px;
+    color: #303b48;
+    font-size: 42px;
+    font-weight: 500;
+
+    &:focus {
+      border: 2px solid #149343;
+    }
+  }
+
+  input + input {
+    margin-left: 12px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .input {
+    input {
+      width: 42px;
+      height: 56px;
+      font-size: 32px;
+      border-radius: 8px;
+    }
+  }
+}
