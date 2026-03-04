@@ -1,0 +1,20 @@
+.content {
+	& > p {
+		margin-bottom: 8px;
+		font-size: 16px;
+		font-weight: 500;
+	}
+
+	&:global(img) {
+		max-width: 100%;
+		height: auto !important;
+		width: auto !important;
+	}
+}
+
+.content :global(img) {
+	resize: none;
+	max-width: 100% !important;
+	height: auto !important;
+	display: block;
+}

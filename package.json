@@ -19,6 +19,8 @@
 		"cookies-next": "^6.1.1",
 		"iconsax-react": "^0.0.8",
 		"iconsax-reactjs": "^0.0.8",
+		"jodit": "^4.9.10",
+		"jodit-react": "^4.0.25",
 		"lg-thumbnail": "^1.2.1",
 		"lg-zoom": "^1.3.0",
 		"lightgallery": "^2.9.0",
@@ -38,8 +40,8 @@
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
 		"@types/md5": "^2.3.6",
-		"@types/nprogress": "^0.2.3",
 		"@types/node": "^20",
+		"@types/nprogress": "^0.2.3",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"eslint": "^9",

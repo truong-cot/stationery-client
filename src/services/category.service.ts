@@ -34,6 +34,16 @@ const categoryServices = {
 	catalog: () => {
 		return axiosClient.get(`/category/catalog-category`);
 	},
+	getPageListTree: (payload: {
+		page: number;
+		pageSize: number;
+		keyword: string;
+		color_id: string;
+		size_id: string;
+		trademark_id: string;
+	}) => {
+		return axiosClient.post(`/category/page-list-tree-category`, payload);
+	},
 };
 
 export default categoryServices;

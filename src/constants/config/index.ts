@@ -1,4 +1,4 @@
-import {Element3, SecurityUser, Colorfilter, Size, TriangleLogo, Category2} from 'iconsax-reactjs';
+import {Element3, SecurityUser, Colorfilter, Size, TriangleLogo, Category2, Book1, Moneys} from 'iconsax-reactjs';
 
 export const KEY_STORE = 'stationery-client';
 
@@ -18,6 +18,10 @@ export const PATH = {
 	AdminSize: '/admin/size',
 	AdminTrademark: '/admin/trademark',
 	AdminCategory: '/admin/category',
+	AdminSetupPrice: '/admin/setup-price',
+	AdminProduct: '/admin/product',
+	AdminCreateProduct: '/admin/product/create',
+	AdminUpdateProduct: '/admin/product/update',
 };
 
 export interface IMenu {
@@ -67,5 +71,17 @@ export const menusAdmin: {
 		icon: Category2,
 		path: PATH.AdminCategory,
 		pathActive: PATH.AdminCategory,
+	},
+	{
+		title: 'Quản lý sản phẩm',
+		icon: Book1,
+		path: PATH.AdminProduct,
+		pathActive: PATH.AdminProduct,
+	},
+	{
+		title: 'Cấu hình khoảng giá',
+		icon: Moneys,
+		path: PATH.AdminSetupPrice,
+		pathActive: PATH.AdminSetupPrice,
 	},
 ];

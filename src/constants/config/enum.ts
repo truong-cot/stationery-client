@@ -19,4 +19,10 @@ export const QUERY_KEY = {
 	pageListCategory: 'page-list-category',
 	detailCategory: 'detail-category',
 	catalogCategory: 'catalog-category',
+
+	pageListSetupPrice: 'page-list-setup-price',
+	detailSetupPrice: 'detail-setup-price',
+
+	pageListProduct: 'page-list-product',
+	detailProduct: 'detail-product',
 };
