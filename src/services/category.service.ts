@@ -34,15 +34,8 @@ const categoryServices = {
 	catalog: () => {
 		return axiosClient.get(`/category/catalog-category`);
 	},
-	getPageListTree: (payload: {
-		page: number;
-		pageSize: number;
-		keyword: string;
-		color_id: string;
-		size_id: string;
-		trademark_id: string;
-	}) => {
-		return axiosClient.post(`/category/page-list-tree-category`, payload);
+	treeCategoryFull: () => {
+		return axiosClient.get(`/category/tree-category-full`);
 	},
 };
 

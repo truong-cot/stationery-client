@@ -255,8 +255,8 @@ function MainProduct({}: PropsMainProduct) {
 										render: (row, _) => <>{row?.trademark.name || '---'}</>,
 									},
 									{
-										title: 'Nổi bật',
-										render: (row, _) => <>{row?.is_featured ? 'Nổi bật' : '---'}</>,
+										title: 'SP nổi bật',
+										render: (row, _) => <>{row?.is_featured ? 'Có' : 'Không'}</>,
 									},
 									{
 										title: 'Hành động',

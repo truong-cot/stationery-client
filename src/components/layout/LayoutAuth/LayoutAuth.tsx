@@ -10,8 +10,8 @@ function LayoutAuth({children}: PropsLayoutAuth) {
 				<main className={styles.main}>
 					{children}
 					<div className={styles.copyright}>
-						<p>Bản quyền © 2025 - Đặng Bá Trường - 0339940200</p>
-						<p>Family Admin</p>
+						<p>Bản quyền © 2026 - Đặng Bá Trường - 0339940200</p>
+						<p>Stationery Admin</p>
 					</div>
 				</main>
 			</div>

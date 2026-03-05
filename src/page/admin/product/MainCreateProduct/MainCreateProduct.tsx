@@ -1,6 +1,6 @@
 'use client';
 
-import {Fragment, useState} from 'react';
+import {Fragment, useEffect, useState} from 'react';
 import styles from './MainCreateProduct.module.scss';
 import type {PropsMainCreateProduct} from './interfaces';
 import {IDataUploadFile} from '~/components/common/UploadSingleFile/interfaces';
@@ -11,7 +11,7 @@ import colorServices from '~/services/color.service';
 import sizeServices from '~/services/size.service';
 import trademarkServices from '~/services/trademark.service';
 import categoryServices from '~/services/category.service';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import productServices from '~/services/product.service';
 import {price} from '~/funcs/convertCoin';
 import {toastWarn} from '~/funcs/toast';
@@ -29,6 +29,7 @@ import GridColumn from '~/components/layout/GridColumn';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import EditerContent from '~/components/utils/EditerContent';
 import {Trash} from 'iconsax-react';
+import {getQueryParams} from '~/funcs/queryParams';
 
 interface IFormCreateProduct {
 	name: string;
@@ -40,7 +41,7 @@ interface IFormCreateProduct {
 	color_id: string;
 	size_id: string;
 	trademark_id: string;
-	is_featured: boolean;
+	is_featured: string;
 	specifications: {
 		name: string;
 		description: string;
@@ -57,16 +58,23 @@ const initForm: IFormCreateProduct = {
 	color_id: '',
 	size_id: '',
 	trademark_id: '',
-	is_featured: false,
+	is_featured: '1',
 	specifications: [{name: '', description: ''}],
 };
 
 function MainCreateProduct({}: PropsMainCreateProduct) {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+
+	const {_idCategory} = getQueryParams(searchParams);
 
 	const [form, setForm] = useState<IFormCreateProduct>(initForm);
 	const [images, setImages] = useState<IDataUploadFile[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (!!_idCategory) setForm((prev) => ({...prev, category_id: _idCategory as string}));
+	}, [_idCategory]);
 
 	const {data: colors = []} = useQuery<
 		{
@@ -139,7 +147,7 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 					color_id: form.color_id,
 					size_id: form.size_id,
 					trademark_id: form.trademark_id,
-					is_featured: form.is_featured,
+					is_featured: form.is_featured == '1' ? true : false,
 					specifications: form.specifications,
 					images: body.images,
 				}),
@@ -152,19 +160,18 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 
 	const handleCreateProduct = async () => {
 		if (!form.category_id) return toastWarn({msg: 'Chọn danh mục!'});
-		if (images.length === 0) {
-			return toastWarn({msg: 'Vui lòng chọn hình ảnh!'});
-		}
+		if (price(form.price) == 0) return toastWarn({msg: 'Nhập giá sản phẩm!'});
+		if (images.length === 0) return toastWarn({msg: 'Vui lòng chọn hình ảnh!'});
 
 		const files = images?.map((v) => v?.file);
 
-		const paths = await httpRequest({
+		const dataImages = await httpRequest({
 			setLoading,
 			http: uploadServices.uploadMultil(files),
 		});
 
 		return funcCreateProduct.mutate({
-			images: paths,
+			images: dataImages,
 		});
 	};
 
@@ -205,7 +212,7 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 						<FlexLayout column gap-12>
 							<WrapperForm title='Thông tin sản phẩm'>
 								<FlexLayout column gap-16>
-									<GridColumn col_3>
+									<GridColumn col_2>
 										<Input
 											label={
 												<span>
@@ -243,8 +250,29 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 											isMoney
 											isRequired
 										/>
-									</GridColumn>
-									<GridColumn col_2>
+										<div>
+											<Select
+												placeholder='Lựa chọn'
+												label={
+													<span>
+														Sản phẩm nổi bật <span style={{color: 'red'}}>* </span>
+													</span>
+												}
+												value={form.is_featured}
+												options={[
+													{_id: '1', name: 'Có'},
+													{_id: '0', name: 'Không'},
+												]}
+												onSelect={(data) =>
+													setForm((prev) => ({
+														...prev,
+														is_featured: data._id,
+													}))
+												}
+												getOptionLabel={(opt) => opt.name}
+												getOptionValue={(opt) => opt._id}
+											/>
+										</div>
 										<Select
 											placeholder='Lựa chọn'
 											label={
@@ -274,6 +302,7 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 											}
 											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt._id}
+											readOnly={!!_idCategory}
 										/>
 										<div>
 											<Select

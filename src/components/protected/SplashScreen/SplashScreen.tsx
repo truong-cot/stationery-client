@@ -12,7 +12,7 @@ import {httpRequest} from '~/funcs/httpRequest';
 import {storage} from '~/funcs/storage';
 import authServices from '~/services/auth.service';
 import {RootState} from '~/store';
-import {setAccessToken, setIsLoading, setRememberPassword, setStateLogin} from '~/store/auth.slice';
+import {IDataLoginStorage, setAccessToken, setDataLoginStorage, setIsLoading, setRememberPassword, setStateLogin} from '~/store/auth.slice';
 import {setInfoUser} from '~/store/user.slice';
 import loadingAnim from '../../../../public/anim/loading_screen.json';
 import styles from './SplashScreen.module.scss';
@@ -24,12 +24,13 @@ const Lottie = dynamic(() => import('react-lottie'), {
 export type TypeStorage = {
 	rememberPassword: boolean;
 	isLogin: boolean;
+	dataLoginStorage: IDataLoginStorage | null;
 };
 
 function SplashScreen() {
 	const dispatch = useDispatch();
 
-	const {rememberPassword, access_token, isLogin, isLoading} = useSelector((state: RootState) => state.auth);
+	const {rememberPassword, access_token, isLogin, isLoading, dataLoginStorage} = useSelector((state: RootState) => state.auth);
 
 	useEffect(() => {
 		(async () => {
@@ -41,6 +42,7 @@ function SplashScreen() {
 
 				if (cached?.isLogin) dispatch(setStateLogin(cached.isLogin));
 				if (cached?.rememberPassword) dispatch(setRememberPassword(cached.rememberPassword));
+				if (cached?.dataLoginStorage) dispatch(setDataLoginStorage(cached.dataLoginStorage));
 			} finally {
 				dispatch(setIsLoading(false));
 			}
@@ -58,11 +60,12 @@ function SplashScreen() {
 			const dataStorage: TypeStorage = {
 				isLogin: isLogin,
 				rememberPassword: rememberPassword,
+				dataLoginStorage: dataLoginStorage,
 			};
 
 			storage.set(KEY_STORE, dataStorage);
 		}
-	}, [isLoading, rememberPassword, access_token, isLogin]);
+	}, [isLoading, rememberPassword, access_token, isLogin, dataLoginStorage]);
 
 	const {data, isSuccess} = useQuery({
 		queryKey: [QUERY_KEY.getProfile, access_token],

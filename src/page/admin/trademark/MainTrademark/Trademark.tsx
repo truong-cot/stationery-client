@@ -119,6 +119,9 @@ function MainTrademark({}: PropsMainTrademark) {
 										set: {
 											_action: 'create',
 										},
+										options: {
+											scroll: false,
+										},
 									})
 								}
 							>
@@ -254,6 +257,9 @@ function MainTrademark({}: PropsMainTrademark) {
 				onClose={() =>
 					updateQueryParams(router, pathname, searchParams, {
 						delete: ['_action'],
+						options: {
+							scroll: false,
+						},
 					})
 				}
 			>
@@ -261,6 +267,9 @@ function MainTrademark({}: PropsMainTrademark) {
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_action'],
+							options: {
+								scroll: false,
+							},
 						})
 					}
 				/>
@@ -271,6 +280,9 @@ function MainTrademark({}: PropsMainTrademark) {
 				onClose={() =>
 					updateQueryParams(router, pathname, searchParams, {
 						delete: ['_idUpdate'],
+						options: {
+							scroll: false,
+						},
 					})
 				}
 			>
@@ -279,6 +291,9 @@ function MainTrademark({}: PropsMainTrademark) {
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_idUpdate'],
+							options: {
+								scroll: false,
+							},
 						})
 					}
 				/>

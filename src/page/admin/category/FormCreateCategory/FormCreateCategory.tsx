@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Button from '~/components/common/Button';
 import Form, {ContextForm, Input, Select, SelectMany, TextArea} from '~/components/common/Form';
 import Loading from '~/components/common/Loading';
@@ -32,10 +32,14 @@ const initForm: IFormCreateCategory = {
 	trademark_ids: [],
 };
 
-function FormCreateCategory({onClose}: PropsFormCreateCategory) {
+function FormCreateCategory({_idParent, onClose}: PropsFormCreateCategory) {
 	const queryClient = useQueryClient();
 
 	const [form, setForm] = useState<IFormCreateCategory>(initForm);
+
+	useEffect(() => {
+		if (!!_idParent) setForm((prev) => ({...prev, parent_id: _idParent}));
+	}, [_idParent]);
 
 	const {data: categorys = []} = useQuery<
 		{
@@ -108,6 +112,7 @@ function FormCreateCategory({onClose}: PropsFormCreateCategory) {
 			setForm(initForm);
 			onClose();
 			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListCategory]});
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.treeCategoryFull]});
 		},
 	});
 
@@ -169,6 +174,7 @@ function FormCreateCategory({onClose}: PropsFormCreateCategory) {
 							}
 							getOptionLabel={(opt) => opt.name}
 							getOptionValue={(opt) => opt._id}
+							readOnly={!!_idParent}
 						/>
 						<SelectMany
 							title='Màu sắc'

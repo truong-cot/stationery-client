@@ -106,6 +106,9 @@ function MainAccount({}: PropsMainAccount) {
 										set: {
 											_action: 'create',
 										},
+										options: {
+											scroll: false,
+										},
 									})
 								}
 							>
@@ -212,6 +215,9 @@ function MainAccount({}: PropsMainAccount) {
 				onClose={() =>
 					updateQueryParams(router, pathname, searchParams, {
 						delete: ['_action'],
+						options: {
+							scroll: false,
+						},
 					})
 				}
 			>
@@ -219,6 +225,9 @@ function MainAccount({}: PropsMainAccount) {
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_action'],
+							options: {
+								scroll: false,
+							},
 						})
 					}
 				/>
@@ -229,6 +238,9 @@ function MainAccount({}: PropsMainAccount) {
 				onClose={() =>
 					updateQueryParams(router, pathname, searchParams, {
 						delete: ['_idUpdate'],
+						options: {
+							scroll: false,
+						},
 					})
 				}
 			>
@@ -237,6 +249,9 @@ function MainAccount({}: PropsMainAccount) {
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_idUpdate'],
+							options: {
+								scroll: false,
+							},
 						})
 					}
 				/>
@@ -247,6 +262,9 @@ function MainAccount({}: PropsMainAccount) {
 				onClose={() =>
 					updateQueryParams(router, pathname, searchParams, {
 						delete: ['_idReset'],
+						options: {
+							scroll: false,
+						},
 					})
 				}
 			>
@@ -255,6 +273,9 @@ function MainAccount({}: PropsMainAccount) {
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_idReset'],
+							options: {
+								scroll: false,
+							},
 						})
 					}
 				/>

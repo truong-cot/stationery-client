@@ -6,7 +6,7 @@ import md5 from 'md5';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import Button from '~/components/common/Button';
 import Form, {ContextForm, Input} from '~/components/common/Form';
@@ -16,7 +16,7 @@ import icons from '~/constants/images/icons';
 import {httpRequest} from '~/funcs/httpRequest';
 import authServices from '~/services/auth.service';
 import {RootState} from '~/store';
-import {setAccessToken, setRememberPassword, setStateLogin} from '~/store/auth.slice';
+import {setAccessToken, setDataLoginStorage, setRememberPassword, setStateLogin} from '~/store/auth.slice';
 import styles from './MainLogin.module.scss';
 import {PropsMainLogin} from './interfaces';
 
@@ -24,7 +24,7 @@ function MainLogin({}: PropsMainLogin) {
 	const router = useRouter();
 	const dispatch = useDispatch();
 
-	const {rememberPassword} = useSelector((state: RootState) => state.auth);
+	const {rememberPassword, dataLoginStorage} = useSelector((state: RootState) => state.auth);
 
 	const [form, setForm] = useState<{
 		username: string;
@@ -33,6 +33,20 @@ function MainLogin({}: PropsMainLogin) {
 		username: '',
 		password: '',
 	});
+
+	useEffect(() => {
+		if (rememberPassword) {
+			setForm({
+				username: dataLoginStorage?.usernameStorage || '',
+				password: dataLoginStorage?.passwordStorage || '',
+			});
+		} else {
+			setForm({
+				username: '',
+				password: '',
+			});
+		}
+	}, []);
 
 	const funcLogin = useMutation({
 		mutationFn: () =>
@@ -53,6 +67,17 @@ function MainLogin({}: PropsMainLogin) {
 	});
 
 	const handleLogin = () => {
+		if (rememberPassword) {
+			dispatch(
+				setDataLoginStorage({
+					usernameStorage: form.username,
+					passwordStorage: form.password,
+				})
+			);
+		} else {
+			dispatch(setDataLoginStorage(null));
+		}
+
 		return funcLogin.mutate();
 	};
 
@@ -75,7 +100,6 @@ function MainLogin({}: PropsMainLogin) {
 						placeholder='Tài khoản'
 						type='text'
 						name='username'
-						onClean
 						isRequired
 						isBlur
 						showDone
@@ -90,7 +114,6 @@ function MainLogin({}: PropsMainLogin) {
 						placeholder='Mật khẩu'
 						type='password'
 						name='password'
-						onClean
 						isRequired
 						isBlur
 						showDone

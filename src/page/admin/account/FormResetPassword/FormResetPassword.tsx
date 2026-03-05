@@ -25,7 +25,7 @@ const initForm: IFormResetPasswordAccount = {
 function FormResetPassword({_idAccount, onClose}: PropsFormResetPassword) {
 	const [form, setForm] = useState<IFormResetPasswordAccount>(initForm);
 
-	const funcUpdateAccount = useMutation({
+	const funcResetPassword = useMutation({
 		mutationFn: () =>
 			httpRequest({
 				showMessageFailed: true,
@@ -42,16 +42,16 @@ function FormResetPassword({_idAccount, onClose}: PropsFormResetPassword) {
 		},
 	});
 
-	const handleCreateAccount = () => {
-		return funcUpdateAccount.mutate();
+	const handleResetPassword = () => {
+		return funcResetPassword.mutate();
 	};
 
 	return (
-		<Form form={form} setForm={setForm} onSubmit={handleCreateAccount}>
-			<Loading loading={funcUpdateAccount.isPending} />
+		<Form form={form} setForm={setForm} onSubmit={handleResetPassword}>
+			<Loading loading={funcResetPassword.isPending} />
 			<WrapperFormPostion
 				width={540}
-				title='Reset mật khẩu tài khoản'
+				title='Reset mật khẩu'
 				actions={
 					<FlexLayout row gap-8>
 						<Button p_8_24 rounded_8 white bold maxHeight onClick={onClose}>
@@ -67,7 +67,7 @@ function FormResetPassword({_idAccount, onClose}: PropsFormResetPassword) {
 					</FlexLayout>
 				}
 			>
-				<WrapperForm title='Thông tin tài khoản'>
+				<WrapperForm title='Thông tin mật khẩu'>
 					<FlexLayout column gap-16>
 						<Input
 							label={
@@ -78,7 +78,6 @@ function FormResetPassword({_idAccount, onClose}: PropsFormResetPassword) {
 							placeholder='Mật khẩu'
 							type='password'
 							name='password'
-							onClean
 							isRequired
 							isBlur
 							icon={<ShieldSecurity size='22' variant='Bold' />}
@@ -93,7 +92,6 @@ function FormResetPassword({_idAccount, onClose}: PropsFormResetPassword) {
 								placeholder='Xác nhận mật khẩu'
 								type='password'
 								name='rePassword'
-								onClean
 								isRequired
 								isBlur
 								valueConfirm={form.password}

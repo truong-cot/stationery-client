@@ -1,10 +1,15 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
+export interface IDataLoginStorage {
+	usernameStorage: string;
+	passwordStorage: string;
+}
 interface AuthState {
 	rememberPassword: boolean;
 	access_token: string;
 	isLogin: boolean;
 	isLoading: boolean;
+	dataLoginStorage: IDataLoginStorage | null;
 }
 
 const initialState: AuthState = {
@@ -12,6 +17,7 @@ const initialState: AuthState = {
 	access_token: '',
 	isLogin: false,
 	isLoading: true,
+	dataLoginStorage: null,
 };
 
 const authSlice = createSlice({
@@ -34,8 +40,11 @@ const authSlice = createSlice({
 			state.access_token = '';
 			state.isLogin = false;
 		},
+		setDataLoginStorage: (state, action: PayloadAction<IDataLoginStorage | null>) => {
+			state.dataLoginStorage = action?.payload;
+		},
 	},
 });
 
-export const {setRememberPassword, setAccessToken, setStateLogin, setIsLoading, logout} = authSlice.actions;
+export const {setRememberPassword, setAccessToken, setStateLogin, setIsLoading, logout, setDataLoginStorage} = authSlice.actions;
 export default authSlice.reducer;

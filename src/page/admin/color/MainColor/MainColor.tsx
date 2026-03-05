@@ -119,6 +119,9 @@ function MainColor({}: PropsMainColor) {
 										set: {
 											_action: 'create',
 										},
+										options: {
+											scroll: false,
+										},
 									})
 								}
 							>
@@ -264,6 +267,9 @@ function MainColor({}: PropsMainColor) {
 				onClose={() =>
 					updateQueryParams(router, pathname, searchParams, {
 						delete: ['_action'],
+						options: {
+							scroll: false,
+						},
 					})
 				}
 			>
@@ -271,6 +277,9 @@ function MainColor({}: PropsMainColor) {
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_action'],
+							options: {
+								scroll: false,
+							},
 						})
 					}
 				/>
@@ -281,6 +290,9 @@ function MainColor({}: PropsMainColor) {
 				onClose={() =>
 					updateQueryParams(router, pathname, searchParams, {
 						delete: ['_idUpdate'],
+						options: {
+							scroll: false,
+						},
 					})
 				}
 			>
@@ -289,6 +301,9 @@ function MainColor({}: PropsMainColor) {
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_idUpdate'],
+							options: {
+								scroll: false,
+							},
 						})
 					}
 				/>

@@ -1,0 +1,38 @@
+.node {
+	padding: 6px 8px;
+	border: 1px solid #cdd5df;
+	border-radius: 6px;
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+
+	& + & {
+		margin-top: 8px;
+	}
+}
+
+.info {
+	flex: 1;
+
+	.name {
+		font-weight: 600;
+		font-size: 14px;
+	}
+
+	.note {
+		font-weight: 500;
+		font-size: 12px;
+		color: #29313d;
+	}
+
+	.empty {
+		font-weight: 500;
+		font-size: 12px;
+		color: #000;
+	}
+}
+
+.expanded {
+	user-select: none;
+	cursor: pointer;
+}

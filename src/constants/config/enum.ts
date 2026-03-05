@@ -19,6 +19,7 @@ export const QUERY_KEY = {
 	pageListCategory: 'page-list-category',
 	detailCategory: 'detail-category',
 	catalogCategory: 'catalog-category',
+	treeCategoryFull: 'tree-category-full',
 
 	pageListSetupPrice: 'page-list-setup-price',
 	detailSetupPrice: 'detail-setup-price',

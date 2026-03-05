@@ -137,6 +137,7 @@ function FormUpdateCategory({_idCategory, onClose}: PropsFormUpdateCategory) {
 			setForm(initForm);
 			onClose();
 			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListCategory]});
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.treeCategoryFull]});
 		},
 	});
 

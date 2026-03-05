@@ -58,7 +58,7 @@ function FormUpdateAccount({_idAccount, onClose}: PropsFormUpdateAccount) {
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
-				msgSuccess: 'Chỉnh sửa khoản thành công!',
+				msgSuccess: 'Chỉnh sửa tài khoản thành công!',
 				http: accountServices.update({
 					_id: _idAccount,
 					name: form.name,
@@ -72,12 +72,12 @@ function FormUpdateAccount({_idAccount, onClose}: PropsFormUpdateAccount) {
 		},
 	});
 
-	const handleCreateAccount = () => {
+	const handleUpdateAccount = () => {
 		return funcUpdateAccount.mutate();
 	};
 
 	return (
-		<Form form={form} setForm={setForm} onSubmit={handleCreateAccount}>
+		<Form form={form} setForm={setForm} onSubmit={handleUpdateAccount}>
 			<Loading loading={funcUpdateAccount.isPending} />
 			<WrapperFormPostion
 				width={540}
@@ -108,7 +108,6 @@ function FormUpdateAccount({_idAccount, onClose}: PropsFormUpdateAccount) {
 							placeholder='Nhập họ và tên'
 							type='text'
 							name='name'
-							onClean
 							isRequired
 							isBlur
 						/>
@@ -122,7 +121,6 @@ function FormUpdateAccount({_idAccount, onClose}: PropsFormUpdateAccount) {
 								placeholder='Nhập tài khoản đăng nhập'
 								type='text'
 								name='username'
-								onClean
 								isRequired
 								isBlur
 								readOnly
