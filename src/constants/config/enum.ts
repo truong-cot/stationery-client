@@ -26,4 +26,7 @@ export const QUERY_KEY = {
 
 	pageListProduct: 'page-list-product',
 	detailProduct: 'detail-product',
+
+	clientCatalogCategory: 'client-catalog-category',
+	clientSearchProduct: 'client-search-product',
 };

@@ -9,6 +9,9 @@ export const COOKIE_KEY = {
 export const PATH = {
 	Any: '/any',
 	Home: '/',
+	Search: '/search',
+	Product: '/product',
+	About: '/about',
 
 	AuthLogin: '/login',
 

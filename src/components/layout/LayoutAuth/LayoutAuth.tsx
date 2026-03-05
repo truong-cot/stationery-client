@@ -11,7 +11,6 @@ function LayoutAuth({children}: PropsLayoutAuth) {
 					{children}
 					<div className={styles.copyright}>
 						<p>Bản quyền © 2026 - Đặng Bá Trường - 0339940200</p>
-						<p>Stationery Admin</p>
 					</div>
 				</main>
 			</div>
