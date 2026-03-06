@@ -28,5 +28,10 @@ export const QUERY_KEY = {
 	detailProduct: 'detail-product',
 
 	clientCatalogCategory: 'client-catalog-category',
+	clientCatalogColor: 'client-catalog-color',
+	clientCatalogSize: 'client-catalog-size',
+	clientCatalogTrademark: 'client-catalog-trademark',
+	clientCatalogSetupPrice: 'client-catalog-price',
 	clientSearchProduct: 'client-search-product',
+	clientTreeCategory: 'client-tree-category',
 };

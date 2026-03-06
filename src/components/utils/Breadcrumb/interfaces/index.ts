@@ -3,5 +3,6 @@ export interface PropsBreadcrumb {
 		title: string;
 		path: string;
 	}[];
+	isPadding?: boolean;
 	actions?: React.ReactNode;
 }

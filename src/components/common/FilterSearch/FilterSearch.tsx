@@ -28,7 +28,7 @@ function FilterSearch({name, value, listOption, onSelect, onClean}: PropsFilterS
 			visible={open}
 			onClickOutside={() => setOpen(false)}
 			placement='bottom'
-			render={(attrs: any) => (
+			render={() => (
 				<div className={styles.mainOption}>
 					<input
 						ref={inputSearchRef}

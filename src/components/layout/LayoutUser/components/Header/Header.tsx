@@ -20,7 +20,7 @@ function Header({}: PropsHeader) {
 					<div className={styles.search}>
 						<SearchProduct />
 					</div>
-					<Link href={PATH.Search} className={styles.icon_search}>
+					<Link href={PATH.Product} className={styles.icon_search}>
 						<IoSearch size={20} color='#202939' />
 					</Link>
 					<div className={styles.phone}>

@@ -1,0 +1,13 @@
+.selected {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+
+	& > p {
+		color: #141416;
+		font-size: 16px;
+		font-weight: 500;
+		margin-bottom: 4px;
+	}
+}

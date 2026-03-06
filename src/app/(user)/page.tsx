@@ -1,6 +1,6 @@
 import {Metadata} from 'next';
 import {Suspense} from 'react';
-import MainHome from '~/page/user/MainHome';
+import MainHome from '~/page/user/home/MainHome';
 
 export const metadata: Metadata = {
 	title: 'Trang chủ',

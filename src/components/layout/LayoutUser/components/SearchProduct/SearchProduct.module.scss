@@ -6,6 +6,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+
+	&.focus {
+		border: 1px solid #25c173;
+	}
 }
 
 .filter_search {
@@ -43,6 +47,7 @@
 .products {
 	width: 400px;
 	height: 540px;
+	background: #fff;
 	border: 1px solid #cdd5df;
 	border-radius: 8px;
 	padding: 8px 12px;

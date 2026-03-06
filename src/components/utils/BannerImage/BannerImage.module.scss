@@ -1,0 +1,10 @@
+.banner_image {
+	position: relative;
+	height: 320px;
+}
+
+@media (max-width: 1200px) {
+	.banner_image {
+		height: 180px;
+	}
+}

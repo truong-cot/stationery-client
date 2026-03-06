@@ -11,4 +11,11 @@
 	position: relative;
 	min-height: 90vh;
 	margin-top: var(--height-header);
+	padding-bottom: 32px;
+}
+
+@media (max-width: 1200px) {
+	.main {
+		padding-bottom: 20px;
+	}
 }

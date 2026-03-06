@@ -17,8 +17,12 @@ import {useDebounce} from '~/hooks/useDebounce';
 import clientServices from '~/services/client.service';
 import styles from './SearchProduct.module.scss';
 import type {ISearchProduct, PropsSearchProduct} from './interfaces';
+import clsx from 'clsx';
+import {useRouter} from 'next/navigation';
 
 function SearchProduct({}: PropsSearchProduct) {
+	const router = useRouter();
+
 	const [open, setOpen] = useState<boolean>(false);
 
 	const [keyword, setKeyword] = useState<string>('');
@@ -56,11 +60,20 @@ function SearchProduct({}: PropsSearchProduct) {
 
 		const query = params.toString();
 
-		return query ? `${PATH.Search}?${query}` : PATH.Search;
+		return query ? `${PATH.Product}?${query}` : PATH.Product;
 	}, [categoryId, debouncedKeyword]);
 
+	const onKeyEnterDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter') {
+			setCategoryId('');
+			setKeyword('');
+			setOpen(false);
+			router.push(renderUrlSearch);
+		}
+	};
+
 	return (
-		<div className={styles.search_product}>
+		<div className={clsx(styles.search_product, {[styles.focus]: open})}>
 			<div className={styles.filter_search}>
 				<FilterSearch
 					name='Danh mục'
@@ -139,13 +152,22 @@ function SearchProduct({}: PropsSearchProduct) {
 					className={styles.input}
 					placeholder='Tìm kiếm sản phẩm'
 					value={keyword}
+					autoFocus={open}
 					onChange={(e) => setKeyword(e.target.value)}
 					onBlur={() => setOpen(false)}
 					onFocus={() => setOpen(true)}
+					onKeyDown={onKeyEnterDown}
 				/>
 			</TippyHeadless>
 			<Tippy content='Tìm kiếm'>
-				<Link href={renderUrlSearch} className={styles.icon_search}>
+				<Link
+					href={renderUrlSearch}
+					className={styles.icon_search}
+					onClick={() => {
+						setCategoryId('');
+						setKeyword('');
+					}}
+				>
 					<IconSearch size={24} color='#00B7C4' variant='Bold' />
 				</Link>
 			</Tippy>

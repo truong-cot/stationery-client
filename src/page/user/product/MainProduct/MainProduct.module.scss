@@ -1,0 +1,33 @@
+.head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	margin: 12px 0;
+
+	.input_search {
+		min-width: 400px;
+	}
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: 300px 1fr;
+	gap: 24px;
+}
+
+@media (max-width: 1200px) {
+	.head {
+		display: block;
+		margin: 8px 0;
+
+		.breadcrumb {
+			display: none;
+		}
+
+		.input_search {
+			min-width: 100%;
+			flex: 1;
+		}
+	}
+}
