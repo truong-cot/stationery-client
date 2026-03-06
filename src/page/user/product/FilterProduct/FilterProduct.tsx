@@ -12,6 +12,7 @@ import {getQueryParams, updateQueryParams} from '~/funcs/queryParams';
 import clientServices from '~/services/client.service';
 import styles from './FilterProduct.module.scss';
 import type {INodeCategory, PropsFilterProduct} from './interfaces';
+import {IoClose} from 'react-icons/io5';
 
 function findPath(nodes: INodeCategory[], targetId: string, path: string[] = []): string[] | null {
 	for (const node of nodes) {
@@ -30,7 +31,7 @@ function findPath(nodes: INodeCategory[], targetId: string, path: string[] = [])
 	return null;
 }
 
-function FilterProduct({}: PropsFilterProduct) {
+function FilterProduct({onClose}: PropsFilterProduct) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -53,14 +54,20 @@ function FilterProduct({}: PropsFilterProduct) {
 	}, [nodes, _categoryId]);
 
 	return (
-		<div className={styles.filter_product}>
+		<div className={clsx(styles.filter_product, {[styles.mobile]: !!onClose})}>
+			{onClose && (
+				<div className={styles.close} onClick={onClose}>
+					<IoClose size={24} color='#8492A6' />
+				</div>
+			)}
+
 			<div className={styles.group}>
 				<div className={styles.head}>
 					<h4>Danh mục sản phẩm</h4>
 				</div>
 				{/* Cây danh mục */}
 				{nodes?.map((node) => (
-					<NodeCategory level={0} node={node} activePath={activePath} />
+					<NodeCategory key={node._id} level={0} node={node} activePath={activePath} onClose={onClose} />
 				))}
 			</div>
 
@@ -75,7 +82,8 @@ function FilterProduct({}: PropsFilterProduct) {
 						<div
 							key={p._id}
 							className={styles.filter_item}
-							onClick={() =>
+							onClick={() => {
+								onClose && onClose();
 								updateQueryParams(router, pathname, searchParams, {
 									...((_priceId as string) == p._id
 										? {
@@ -89,8 +97,8 @@ function FilterProduct({}: PropsFilterProduct) {
 									options: {
 										scroll: false,
 									},
-								})
-							}
+								});
+							}}
 						>
 							<input id={`setup-price-${p._id}`} type='checkbox' name='setup-price' checked={(_priceId as string) == p._id} />
 							<label htmlFor={`setup-price-${p._id}`}>{renderRangePrice({min: p.min, max: p.max})}</label>
@@ -112,7 +120,8 @@ function FilterProduct({}: PropsFilterProduct) {
 								key={c._id}
 								style={{background: c?.code}}
 								className={styles.color}
-								onClick={() =>
+								onClick={() => {
+									onClose && onClose();
 									updateQueryParams(router, pathname, searchParams, {
 										...((_colorId as string) == c._id
 											? {
@@ -126,8 +135,8 @@ function FilterProduct({}: PropsFilterProduct) {
 										options: {
 											scroll: false,
 										},
-									})
-								}
+									});
+								}}
 							></div>
 						))}
 					</FlexLayout>
@@ -145,7 +154,8 @@ function FilterProduct({}: PropsFilterProduct) {
 						<div
 							key={s._id}
 							className={styles.filter_item}
-							onClick={() =>
+							onClick={() => {
+								onClose && onClose();
 								updateQueryParams(router, pathname, searchParams, {
 									...((_sizeId as string) == s._id
 										? {
@@ -159,8 +169,8 @@ function FilterProduct({}: PropsFilterProduct) {
 									options: {
 										scroll: false,
 									},
-								})
-							}
+								});
+							}}
 						>
 							<input id={`size-${s._id}`} type='checkbox' name='size' checked={(_sizeId as string) == s._id} />
 							<label htmlFor={`size-${s._id}`}>{s.name}</label>
@@ -180,7 +190,8 @@ function FilterProduct({}: PropsFilterProduct) {
 						<div
 							key={t._id}
 							className={styles.filter_item}
-							onClick={() =>
+							onClick={() => {
+								onClose && onClose();
 								updateQueryParams(router, pathname, searchParams, {
 									...((_trademarkId as string) == t._id
 										? {
@@ -194,8 +205,8 @@ function FilterProduct({}: PropsFilterProduct) {
 									options: {
 										scroll: false,
 									},
-								})
-							}
+								});
+							}}
 						>
 							<input id={`trademark-${t._id}`} type='checkbox' name='trademark' checked={(_trademarkId as string) == t._id} />
 							<label htmlFor={`trademark-${t._id}`}>{t.name}</label>
@@ -209,7 +220,17 @@ function FilterProduct({}: PropsFilterProduct) {
 
 export default FilterProduct;
 
-function NodeCategory({level, node, activePath}: {level: number; node: INodeCategory; activePath: string[]}) {
+function NodeCategory({
+	level,
+	node,
+	activePath,
+	onClose,
+}: {
+	level: number;
+	node: INodeCategory;
+	activePath: string[];
+	onClose?: () => void;
+}) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -252,7 +273,8 @@ function NodeCategory({level, node, activePath}: {level: number; node: INodeCate
 				)}
 				<p
 					className={styles.node_name}
-					onClick={() =>
+					onClick={() => {
+						onClose && onClose();
 						updateQueryParams(router, pathname, searchParams, {
 							...((_categoryId as string) == node._id
 								? {
@@ -266,14 +288,17 @@ function NodeCategory({level, node, activePath}: {level: number; node: INodeCate
 							options: {
 								scroll: false,
 							},
-						})
-					}
+						});
+					}}
 				>
 					{node.name}
 				</p>
 			</div>
 
-			{open && node.children?.map((child) => <NodeCategory key={child._id} level={level + 1} node={child} activePath={activePath} />)}
+			{open &&
+				node.children?.map((child) => (
+					<NodeCategory key={child._id} level={level + 1} node={child} activePath={activePath} onClose={onClose} />
+				))}
 		</Fragment>
 	);
 }

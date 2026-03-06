@@ -34,4 +34,5 @@ export const QUERY_KEY = {
 	clientCatalogSetupPrice: 'client-catalog-price',
 	clientSearchProduct: 'client-search-product',
 	clientTreeCategory: 'client-tree-category',
+	clientPageListProduct: 'client-page-list-product',
 };

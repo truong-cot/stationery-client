@@ -87,3 +87,21 @@ export const menusAdmin: {
 		pathActive: PATH.AdminSetupPrice,
 	},
 ];
+
+export const optionSorts: {
+	value: string;
+	name: string;
+}[] = [
+	{
+		value: '1',
+		name: 'Mới nhất',
+	},
+	{
+		value: '2',
+		name: 'Giá thấp đến cao',
+	},
+	{
+		value: '3',
+		name: 'Giá cao đến thấp',
+	},
+];

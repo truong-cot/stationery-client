@@ -22,6 +22,19 @@ const clientServices = {
 	catalogTrademark: (payload: {category_id: string}) => {
 		return axiosClient.post(`/client/catalog-trademark`, payload);
 	},
+	pageListProduct: (payload: {
+		page: number;
+		pageSize: number;
+		keyword: string;
+		category_id: string;
+		color_id: string;
+		size_id: string;
+		trademark_id: string;
+		setup_price_id: string;
+		sort: string;
+	}) => {
+		return axiosClient.post(`/client/page-list-product`, payload);
+	},
 };
 
 export default clientServices;

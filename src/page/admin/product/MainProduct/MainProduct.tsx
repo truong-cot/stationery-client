@@ -120,8 +120,6 @@ function MainProduct({}: PropsMainProduct) {
 					size_id: sizeId,
 					category_id: categoryId,
 					trademark_id: trademarkId,
-					min: null,
-					max: null,
 				}),
 			}),
 		staleTime: 0,

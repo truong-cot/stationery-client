@@ -44,8 +44,6 @@ const productServices = {
 		page: number;
 		pageSize: number;
 		keyword: string;
-		min: number | null;
-		max: number | null;
 		category_id: string;
 		color_id: string;
 		size_id: string;

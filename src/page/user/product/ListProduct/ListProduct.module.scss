@@ -1,0 +1,11 @@
+.pagination {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 24px;
+}
+
+@media (max-width: 1200px) {
+	.pagination {
+		margin-top: 16px;
+	}
+}

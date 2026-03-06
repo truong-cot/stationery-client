@@ -1,19 +1,26 @@
+import {ArrowDown2} from 'iconsax-react';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {useContext, useState} from 'react';
+import FlexLayout from '~/components/layout/FlexLayout';
 import TagRefItem from '~/components/utils/TagRefItem';
+import {ContextProduct, IContextProduct} from '~/contexts/ContextProduct';
+import {renderRangePrice} from '~/funcs/convertCoin';
+import {getQueryParams, updateQueryParams} from '~/funcs/queryParams';
 import styles from './SortProduct.module.scss';
 import type {PropsSortProduct} from './interfaces';
-import FlexLayout from '~/components/layout/FlexLayout';
-import {useContext} from 'react';
-import {ContextProduct, IContextProduct} from '~/contexts/ContextProduct';
-import {getQueryParams, updateQueryParams} from '~/funcs/queryParams';
-import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {renderRangePrice} from '~/funcs/convertCoin';
+import clsx from 'clsx';
+import TippyHeadless from '@tippyjs/react/headless';
+import {optionSorts} from '~/constants/config';
+import {BiCheck} from 'react-icons/bi';
 
 function SortProduct({}: PropsSortProduct) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
-	const {_categoryId, _sizeId, _trademarkId, _priceId, _colorId} = getQueryParams(searchParams);
+	const [openSort, setOpenSort] = useState<boolean>(false);
+
+	const {_categoryId, _sizeId, _trademarkId, _priceId, _colorId, _sort} = getQueryParams(searchParams);
 
 	const {colors, sizes, trademarks, setupPrices, categorys} = useContext<IContextProduct>(ContextProduct);
 
@@ -97,7 +104,67 @@ function SortProduct({}: PropsSortProduct) {
 							}
 						/>
 					)}
+
+					{!!_sort && (
+						<TagRefItem
+							name={optionSorts?.find((v) => v.value == (_sort as string))?.name!}
+							onClean={() =>
+								updateQueryParams(router, pathname, searchParams, {
+									delete: ['_sort'],
+									options: {
+										scroll: false,
+									},
+								})
+							}
+						/>
+					)}
 				</FlexLayout>
+			</div>
+
+			<div className={styles.selected}>
+				<p>Sắp xếp:</p>
+				<TippyHeadless
+					maxWidth={'100%'}
+					interactive
+					visible={openSort}
+					onClickOutside={() => setOpenSort(false)}
+					placement='bottom'
+					render={() => (
+						<div className={styles.option_sort}>
+							{optionSorts?.map((v) => (
+								<div
+									key={v?.value}
+									className={clsx(styles.option, {
+										[styles.option_active]: (_sort as string) == v.value,
+									})}
+									onClick={() => {
+										setOpenSort(false);
+										updateQueryParams(router, pathname, searchParams, {
+											set: {_sort: v.value},
+											options: {
+												scroll: false,
+											},
+										});
+									}}
+								>
+									<p>{v?.name}</p>
+									{(_sort as string) == v.value && (
+										<div className={styles.icon_check}>
+											<BiCheck fontSize={18} color='#149343' fontWeight={600} />
+										</div>
+									)}
+								</div>
+							))}
+						</div>
+					)}
+				>
+					<div className={clsx(styles.sort, {[styles.active]: openSort})} onClick={() => setOpenSort(!openSort)}>
+						<p>{optionSorts?.find((s) => s.value == (_sort as string))?.name || 'Mặc định'}</p>
+						<div className={styles.arrow}>
+							<ArrowDown2 size='20' color='#697586' variant='Bold' />
+						</div>
+					</div>
+				</TippyHeadless>
 			</div>
 		</div>
 	);

@@ -1,3 +1,24 @@
+.filter_product {
+	position: relative;
+
+	&.mobile {
+		padding: 32px;
+	}
+
+	.close {
+		cursor: pointer;
+		user-select: none;
+		position: absolute;
+		top: 16px;
+		right: 16px;
+		transition: 0.3s;
+
+		&:active {
+			transform: scale(0.9);
+		}
+	}
+}
+
 .group {
 	& + & {
 		margin-top: 16px;

@@ -18,11 +18,17 @@ import ListProduct from '../ListProduct';
 import SortProduct from '../SortProduct';
 import styles from './MainProduct.module.scss';
 import type {PropsMainProduct} from './interfaces';
+import Image from 'next/image';
+import icons from '~/constants/images/icons';
+import {useState} from 'react';
+import clsx from 'clsx';
 
 function MainProduct({}: PropsMainProduct) {
 	const searchParams = useSearchParams();
 
 	const {_categoryId} = getQueryParams(searchParams);
+
+	const [openTabsMobile, setOpenTabsMobile] = useState<boolean>(false);
 
 	const {data: categorys = []} = useQuery<ICatalog[]>({
 		queryKey: [QUERY_KEY.clientCatalogCategory, _categoryId],
@@ -71,6 +77,9 @@ function MainProduct({}: PropsMainProduct) {
 			<BannerImage image={images.bannerProduct} />
 			<LayoutGrid>
 				<div className={styles.head}>
+					<div className={styles.menu_line} onClick={() => setOpenTabsMobile(true)}>
+						<Image alt='Menu line' src={icons.menuLine} width={20} height={20} />
+					</div>
 					<div className={styles.breadcrumb}>
 						<Breadcrumb
 							isPadding={false}
@@ -85,12 +94,18 @@ function MainProduct({}: PropsMainProduct) {
 					</div>
 				</div>
 
-				<div className={styles.grid}>
-					<FilterProduct />
+				<div className={styles.main}>
+					<div className={styles.filter_product}>
+						<FilterProduct />
+					</div>
 					<div>
 						<SortProduct />
 						<ListProduct />
 					</div>
+				</div>
+
+				<div className={clsx(styles.filter_product_mobile, {[styles.open]: openTabsMobile})}>
+					<FilterProduct onClose={() => setOpenTabsMobile(false)} />
 				</div>
 			</LayoutGrid>
 		</ContextProduct.Provider>
