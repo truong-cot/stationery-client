@@ -9,6 +9,9 @@ import 'lightgallery/css/lg-zoom.css';
 import 'lightgallery/css/lg-video.css';
 import 'lightgallery/css/lg-share.css';
 
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 import 'tippy.js/dist/tippy.css';
 
 import 'react-toastify/dist/ReactToastify.css';

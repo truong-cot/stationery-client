@@ -1,0 +1,41 @@
+.node_category {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	& + & {
+		margin-top: 4px;
+	}
+
+	.expanded {
+		user-select: none;
+		cursor: pointer;
+	}
+
+	.node_name {
+		cursor: pointer;
+		user-select: none;
+		font-weight: 600;
+		font-size: 18px;
+		color: #202939;
+		transition: 0.3s;
+
+		&:hover {
+			color: #17b26a;
+		}
+	}
+
+	&.active {
+		.node_name {
+			color: #17b26a;
+		}
+	}
+}
+
+@media (max-width: 1200px) {
+	.node_category {
+		.node_name {
+			font-size: 14px;
+		}
+	}
+}

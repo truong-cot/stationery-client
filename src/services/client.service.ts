@@ -13,6 +13,12 @@ const clientServices = {
 	treeCategory: () => {
 		return axiosClient.get(`/client/tree-category`);
 	},
+	productFeatured: () => {
+		return axiosClient.get(`/client/product-featured`);
+	},
+	productNew: () => {
+		return axiosClient.get(`/client/product-new`);
+	},
 	catalogColor: (payload: {category_id: string}) => {
 		return axiosClient.post(`/client/catalog-color`, payload);
 	},

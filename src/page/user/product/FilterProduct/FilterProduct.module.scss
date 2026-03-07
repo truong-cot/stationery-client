@@ -71,7 +71,7 @@
 		cursor: pointer;
 		user-select: none;
 		font-weight: 600;
-		font-size: 14px;
+		font-size: 16px;
 		color: #202939;
 	}
 }
@@ -103,7 +103,7 @@
 		cursor: pointer;
 		user-select: none;
 		font-weight: 600;
-		font-size: 14px;
+		font-size: 16px;
 		color: #202939;
 		transition: 0.3s;
 
@@ -115,6 +115,28 @@
 	&.active {
 		.node_name {
 			color: #17b26a;
+		}
+	}
+}
+
+@media (max-width: 1200px) {
+	.group {
+		& + & {
+			margin-top: 12px;
+		}
+	}
+
+	.filter_item {
+		gap: 6px;
+
+		label {
+			font-size: 14px;
+		}
+	}
+
+	.node_category {
+		.node_name {
+			font-size: 14px;
 		}
 	}
 }

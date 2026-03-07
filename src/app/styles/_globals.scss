@@ -148,3 +148,24 @@ input:-internal-autofill-selected {
 .jodit-container:not(.jodit_inline) .jodit-workplace {
 	border-radius: 0 0 8px 8px !important;
 }
+
+.slick-dots {
+	bottom: 4px !important;
+
+	li {
+		margin: 0 !important;
+		width: 20px !important;
+		height: 20px !important;
+	}
+}
+
+.slick-dots li.slick-active button:before {
+	opacity: 1 !important;
+	color: #25c173 !important;
+}
+
+.slick-dots li button:before {
+	opacity: 0.5 !important;
+	color: #000 !important;
+	font-size: 10px !important;
+}

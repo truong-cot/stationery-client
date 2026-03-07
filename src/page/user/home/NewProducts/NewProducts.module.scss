@@ -1,0 +1,29 @@
+.new_products {
+	margin-top: 24px;
+}
+
+.head {
+	width: fit-content;
+	position: relative;
+	border-bottom: 4px solid #25c173;
+	border-radius: 4px;
+	padding-bottom: 4px;
+	margin-bottom: 12px;
+
+	& > h4 {
+		font-size: 24px;
+		font-weight: 700;
+	}
+}
+
+@media (max-width: 1200px) {
+	.new_products {
+		margin-top: 12px;
+	}
+
+	.head {
+		& > h4 {
+			font-size: 20px;
+		}
+	}
+}
