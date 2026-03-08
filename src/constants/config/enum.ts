@@ -35,6 +35,7 @@ export const QUERY_KEY = {
 	clientSearchProduct: 'client-search-product',
 	clientTreeCategory: 'client-tree-category',
 	clientProductFeatured: 'client-product-featured',
+	clientProductSimilar: 'client-product-similar',
 	clientProductNew: 'client-product-new',
 	clientPageListProduct: 'client-page-list-product',
 };

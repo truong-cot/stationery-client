@@ -5,7 +5,7 @@ import {setInfoUser} from '~/store/user.slice';
 import {deleteCookie} from 'cookies-next/client';
 import {COOKIE_KEY} from '~/constants/config';
 
-enum RESPONSE_CODE {
+export enum RESPONSE_CODE {
 	ERROR,
 	SUCCESS,
 }

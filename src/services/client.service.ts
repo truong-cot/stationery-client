@@ -1,4 +1,8 @@
+import {cache} from 'react';
+import {ApiResponse} from '~/funcs/api-response';
+import {RESPONSE_CODE} from '~/funcs/httpRequest';
 import {axiosClient} from '~/libs/axios';
+import {IProductDetail} from '~/page/user/product/MainDetailProduct/interfaces';
 
 const clientServices = {
 	searchProduct: (payload: {keyword: string; category_id: string}) => {
@@ -41,6 +45,31 @@ const clientServices = {
 	}) => {
 		return axiosClient.post(`/client/page-list-product`, payload);
 	},
+	productSimilar: (payload: {product_id: string}) => {
+		return axiosClient.post(`/client/product-similar`, payload);
+	},
 };
 
 export default clientServices;
+
+export const getProductDetail = cache(async (_id: string): Promise<IProductDetail> => {
+	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/client/detail-product/${_id}`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		cache: 'no-store',
+	});
+
+	if (!res.ok) {
+		throw new Error('Gọi api thất bại!');
+	}
+
+	const data: ApiResponse<IProductDetail> = await res.json();
+
+	if (data.code != RESPONSE_CODE.SUCCESS) {
+		throw new Error(data.message || 'Gọi api thất bại!');
+	}
+
+	return data.data;
+});

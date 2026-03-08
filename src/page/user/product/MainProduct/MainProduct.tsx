@@ -13,9 +13,9 @@ import {ContextProduct, ICatalog, ICatalogSetupPrice} from '~/contexts/ContextPr
 import {httpRequest} from '~/funcs/httpRequest';
 import {getQueryParams} from '~/funcs/queryParams';
 import clientServices from '~/services/client.service';
-import FilterProduct from '../FilterProduct';
-import ListProduct from '../ListProduct';
-import SortProduct from '../SortProduct';
+import FilterProduct from './components/FilterProduct';
+import ListProduct from './components/ListProduct';
+import SortProduct from './components/SortProduct';
 import styles from './MainProduct.module.scss';
 import type {PropsMainProduct} from './interfaces';
 import Image from 'next/image';

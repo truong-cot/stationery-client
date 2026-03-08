@@ -39,6 +39,10 @@
 	:global(.slick-slide > div) {
 		height: 100%;
 	}
+
+	:global(.slick-list) {
+		border-radius: 4px;
+	}
 }
 
 .image {
@@ -48,6 +52,7 @@
 
 	img {
 		object-fit: cover;
+		border-radius: 4px;
 	}
 }
 

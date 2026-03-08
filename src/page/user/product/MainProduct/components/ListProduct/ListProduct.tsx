@@ -4,7 +4,7 @@ import type {IProductClient, PropsListProduct} from './interfaces';
 import {useSearchParams} from 'next/navigation';
 import {getQueryParams} from '~/funcs/queryParams';
 import GridColumn from '~/components/layout/GridColumn';
-import CardProduct from '../CardProduct';
+import CardProduct from '../../../CardProduct';
 import DataWrapper from '~/components/utils/DataWrapper';
 import {useQuery} from '@tanstack/react-query';
 import {QUERY_KEY} from '~/constants/config/enum';

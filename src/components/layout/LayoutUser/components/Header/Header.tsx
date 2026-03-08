@@ -15,7 +15,7 @@ function Header({}: PropsHeader) {
 			<LayoutGrid>
 				<div className={styles.main_header}>
 					<Link href={PATH.Home}>
-						<Image alt='Logo' src={icons.logo} width={160} />
+						<Image alt='Logo' src={icons.logo} width={180} />
 					</Link>
 					<div className={styles.search}>
 						<SearchProduct />

@@ -1,0 +1,107 @@
+.code {
+	color: #323b49;
+	font-size: 16px;
+	font-weight: 500;
+
+	span {
+		color: #e03;
+		font-size: 18px;
+		font-weight: 700;
+		margin-left: 4px;
+	}
+}
+
+.name {
+	color: #222;
+	font-size: 28px;
+	font-weight: 700;
+	margin-bottom: 6px;
+}
+
+.item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+
+	& + & {
+		margin-top: 4px;
+	}
+
+	.text {
+		color: #697586;
+		font-size: 16px;
+		font-weight: 400;
+
+		span {
+			color: #323b49;
+			font-weight: 600;
+			margin-left: 4px;
+		}
+	}
+}
+
+.description {
+	margin-top: 12px;
+	color: #23262f;
+	text-align: justify;
+	font-size: 16px;
+	font-weight: 500;
+}
+
+.price {
+	margin-top: 8px;
+	font-size: 28px;
+	font-weight: 700;
+	color: #e03;
+	text-decoration: underline;
+}
+
+.contact {
+	margin-top: 8px;
+	color: #353945;
+	font-size: 16px;
+	font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+	.code {
+		font-size: 14px;
+
+		span {
+			font-size: 16px;
+		}
+	}
+
+	.name {
+		color: #222;
+		font-size: 20px;
+		margin-bottom: 4px;
+	}
+
+	.item {
+		gap: 4px;
+
+		& + & {
+			margin-top: 2px;
+		}
+
+		.text {
+			font-size: 14px;
+		}
+	}
+
+	.description {
+		margin-top: 8px;
+		font-size: 14px;
+	}
+
+	.price {
+		margin-top: 4px;
+		font-size: 20px;
+	}
+
+	.contact {
+		margin-top: 4px;
+		font-size: 14px;
+	}
+}

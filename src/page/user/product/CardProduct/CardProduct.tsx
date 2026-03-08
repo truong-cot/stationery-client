@@ -4,6 +4,7 @@ import type {PropsCardProduct} from './interfaces';
 import Tippy from '@tippyjs/react';
 import Link from 'next/link';
 import {convertCoin} from '~/funcs/convertCoin';
+import {PATH} from '~/constants/config';
 
 function CardProduct({product}: PropsCardProduct) {
 	return (
@@ -18,7 +19,7 @@ function CardProduct({product}: PropsCardProduct) {
 			</div>
 			<div className={styles.info}>
 				<Tippy content={product?.name}>
-					<Link href={'#'} className={styles.name}>
+					<Link href={`${PATH.Product}/${product?._id}`} className={styles.name}>
 						{product?.name}
 					</Link>
 				</Tippy>

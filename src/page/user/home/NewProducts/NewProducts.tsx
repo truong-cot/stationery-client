@@ -4,7 +4,7 @@ import LayoutGrid from '~/components/layout/LayoutGrid';
 import styles from './NewProducts.module.scss';
 import type {PropsNewProducts} from './interfaces';
 import {useQuery} from '@tanstack/react-query';
-import {IProductClient} from '../../product/ListProduct/interfaces';
+import {IProductClient} from '../../product/MainProduct/components/ListProduct/interfaces';
 import {QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/funcs/httpRequest';
 import clientServices from '~/services/client.service';

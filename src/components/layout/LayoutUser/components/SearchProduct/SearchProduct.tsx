@@ -44,7 +44,7 @@ function SearchProduct({}: PropsSearchProduct) {
 	});
 
 	const {data: products = [], isLoading} = useQuery<ISearchProduct[]>({
-		queryKey: [QUERY_KEY.clientSearchProduct, debouncedKeyword, categoryId, open],
+		queryKey: [QUERY_KEY.clientSearchProduct, debouncedKeyword, categoryId],
 		queryFn: () =>
 			httpRequest({
 				http: clientServices.searchProduct({keyword: debouncedKeyword, category_id: categoryId}),
@@ -133,7 +133,11 @@ function SearchProduct({}: PropsSearchProduct) {
 												<div className={styles.info}>
 													<p>{product.code}</p>
 													<Tippy key={product._id} content={product.name}>
-														<Link href={`${PATH.Product}/${product._id}`} className={styles.name}>
+														<Link
+															href={`${PATH.Product}/${product._id}`}
+															className={styles.name}
+															onClick={() => setOpen(false)}
+														>
 															{product.name}
 														</Link>
 													</Tippy>
@@ -154,7 +158,6 @@ function SearchProduct({}: PropsSearchProduct) {
 					value={keyword}
 					autoFocus={open}
 					onChange={(e) => setKeyword(e.target.value)}
-					onBlur={() => setOpen(false)}
 					onFocus={() => setOpen(true)}
 					onKeyDown={onKeyEnterDown}
 				/>

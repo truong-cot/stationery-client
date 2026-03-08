@@ -4,7 +4,7 @@ import LayoutGrid from '~/components/layout/LayoutGrid';
 import styles from './CategoryHome.module.scss';
 import type {PropsCategoryHome} from './interfaces';
 import {useQuery} from '@tanstack/react-query';
-import {INodeCategory} from '../../product/FilterProduct/interfaces';
+import {INodeCategory} from '../../product/MainProduct/components/FilterProduct/interfaces';
 import {QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/funcs/httpRequest';
 import clientServices from '~/services/client.service';

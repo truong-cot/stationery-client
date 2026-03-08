@@ -1,4 +1,4 @@
-import {INodeCategory} from '~/page/user/product/FilterProduct/interfaces';
+import {INodeCategory} from '~/page/user/product/MainProduct/components/FilterProduct/interfaces';
 
 export interface PropsNodeCategoryHome {
 	level: number;

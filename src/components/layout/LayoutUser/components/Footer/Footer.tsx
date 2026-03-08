@@ -17,9 +17,9 @@ function Footer({}: PropsFooter) {
 			<section className={styles.section}>
 				<LayoutGrid>
 					<Link href={PATH.Home}>
-						<Image alt='Logo' src={icons.logo} width={160} style={{margin: '0 auto', marginBottom: '12px'}} />
+						<Image alt='Logo' src={icons.logo} width={200} style={{margin: '0 auto', marginBottom: '12px'}} />
 					</Link>
-					<h4 className={styles.title}>Website thương mại điện tử Văn phòng phẩm</h4>
+					<h4 className={styles.title}>Website thương mại điện tử Văn phòng phẩm Huyền Anh</h4>
 				</LayoutGrid>
 			</section>
 			<section className={styles.section}>
