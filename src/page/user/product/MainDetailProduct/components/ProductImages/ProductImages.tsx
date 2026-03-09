@@ -5,7 +5,6 @@ import {useMemo, useRef} from 'react';
 import styles from './ProductImages.module.scss';
 import type {PropsProductImages} from './interfaces';
 
-import lgHash from 'lightgallery/plugins/hash';
 import lgShare from 'lightgallery/plugins/share';
 import lgZoom from 'lightgallery/plugins/zoom';
 import LightGallery from 'lightgallery/react';
@@ -33,7 +32,7 @@ function ProductImages({images}: PropsProductImages) {
 		<LightGallery
 			dynamic
 			dynamicEl={lightGalleryItems}
-			plugins={[lgZoom, lgShare, lgHash]}
+			plugins={[lgZoom, lgShare]}
 			speed={500}
 			onInit={(detail: any) => {
 				refLightGallery.current = detail.instance;
