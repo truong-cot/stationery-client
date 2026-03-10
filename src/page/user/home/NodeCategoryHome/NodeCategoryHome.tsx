@@ -20,16 +20,16 @@ function NodeCategoryHome({node, level}: PropsNodeCategoryHome) {
 				{node.children.length > 0 ? (
 					<div className={styles.expanded} onClick={() => setOpen(!open)}>
 						{open ? (
-							<ArrowDown2 size='24' color='#697586' variant='Bold' />
+							<ArrowDown2 size='28' color='#697586' variant='Bold' />
 						) : (
-							<ArrowRight2 size='24' color='#697586' variant='Bold' />
+							<ArrowRight2 size='28' color='#697586' variant='Bold' />
 						)}
 					</div>
 				) : (
 					<div
 						style={{
-							width: '8px',
-							height: '8px',
+							width: '10px',
+							height: '10px',
 							borderRadius: '50%',
 							background: '#697586',
 						}}

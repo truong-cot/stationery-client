@@ -225,12 +225,12 @@ function MainProduct({}: PropsMainProduct) {
 										render: (_, index) => <>{index + 1}</>,
 									},
 									{
-										title: 'Mã sản phẩm',
-										render: (row, _) => <p style={{fontWeight: '600'}}>{row?.code}</p>,
-									},
-									{
 										title: 'Tên sản phẩm',
 										render: (row, _) => <p style={{fontWeight: '600'}}>{row?.name}</p>,
+									},
+									{
+										title: 'Kích thước đóng gói',
+										render: (row, _) => <p style={{fontWeight: '600'}}>{row?.pack_size}</p>,
 									},
 									{
 										title: 'Giá',

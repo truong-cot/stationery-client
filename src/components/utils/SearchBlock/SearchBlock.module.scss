@@ -35,3 +35,19 @@
 	background-color: #dde0e6;
 	margin-bottom: 8px;
 }
+
+@media (max-width: 1200px) {
+	.container {
+		padding: 4px 10px;
+		border-radius: 12px;
+	}
+
+	.inputSearch {
+		height: 36px;
+		gap: 6px;
+	}
+
+	.line {
+		margin-bottom: 4px;
+	}
+}

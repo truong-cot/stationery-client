@@ -1,7 +1,6 @@
 'use client';
 
 import {Fragment, useEffect, useState} from 'react';
-import styles from './MainCreateProduct.module.scss';
 import type {PropsMainCreateProduct} from './interfaces';
 import {IDataUploadFile} from '~/components/common/UploadSingleFile/interfaces';
 import {useMutation, useQuery} from '@tanstack/react-query';
@@ -34,32 +33,25 @@ import {getQueryParams} from '~/funcs/queryParams';
 interface IFormCreateProduct {
 	name: string;
 	price: string;
-	code: string;
+	pack_size: string;
 	short_description: string;
-	detail_description: string;
 	category_id: string;
 	color_id: string;
 	size_id: string;
 	trademark_id: string;
 	is_featured: string;
-	specifications: {
-		name: string;
-		description: string;
-	}[];
 }
 
 const initForm: IFormCreateProduct = {
 	name: '',
 	price: '0',
-	code: '',
+	pack_size: '',
 	short_description: '',
-	detail_description: '',
 	category_id: '',
 	color_id: '',
 	size_id: '',
 	trademark_id: '',
 	is_featured: '1',
-	specifications: [{name: '', description: ''}],
 };
 
 function MainCreateProduct({}: PropsMainCreateProduct) {
@@ -138,17 +130,15 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 				showMessageSuccess: true,
 				msgSuccess: 'Thêm sản phẩm thành công!',
 				http: productServices.create({
-					code: form.code,
+					pack_size: form.pack_size,
 					name: form.name,
 					price: price(form.price),
-					detail_description: form.detail_description,
 					short_description: form.short_description,
 					category_id: form.category_id,
 					color_id: form.color_id,
 					size_id: form.size_id,
 					trademark_id: form.trademark_id,
 					is_featured: form.is_featured == '1' ? true : false,
-					specifications: form.specifications,
 					images: body.images,
 				}),
 			}),
@@ -216,24 +206,23 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 										<Input
 											label={
 												<span>
-													Mã sản phẩm <span style={{color: 'red'}}>* </span>
+													Tên sản phẩm <span style={{color: 'red'}}>* </span>
 												</span>
 											}
-											placeholder='Nhập mã sản phẩm'
-											name='code'
+											placeholder='Nhập tên sản phẩm'
+											name='name'
 											type='text'
 											isRequired
-											isUppercase
 										/>
 										<div>
 											<Input
 												label={
 													<span>
-														Tên sản phẩm <span style={{color: 'red'}}>* </span>
+														Kích thước đóng gói <span style={{color: 'red'}}>* </span>
 													</span>
 												}
-												placeholder='Nhập tên sản phẩm'
-												name='name'
+												placeholder='Nhập kích thước đóng gói'
+												name='pack_size'
 												type='text'
 												isRequired
 											/>
@@ -370,21 +359,6 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 										</div>
 									</GridColumn>
 									<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
-								</FlexLayout>
-							</WrapperForm>
-
-							<WrapperForm title='Mô tả sản phẩm'>
-								<FlexLayout column gap-16>
-									<EditerContent
-										label='Mô tả chi tiết'
-										content={form.detail_description}
-										setContent={(c) =>
-											setForm((prev) => ({
-												...prev,
-												detail_description: typeof c === 'function' ? c(prev.detail_description) : c,
-											}))
-										}
-									/>
 									<div>
 										<UploadMultipleFile
 											label={
@@ -397,91 +371,6 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 										/>
 									</div>
 								</FlexLayout>
-							</WrapperForm>
-
-							<WrapperForm
-								title='Thông số kĩ thuật'
-								actions={
-									<Button
-										p_4_8
-										outline-green
-										maxContent
-										maxHeight
-										bold
-										onClick={() =>
-											setForm((prev) => ({
-												...prev,
-												specifications: [
-													...prev.specifications,
-													{
-														name: '',
-														description: '',
-													},
-												],
-											}))
-										}
-									>
-										+ Thêm thông số kỹ thuật
-									</Button>
-								}
-							>
-								{form?.specifications?.map((spec, index) => (
-									<div key={index} className={styles.grid}>
-										<Input
-											name=''
-											type='text'
-											label={index == 0 ? <span>Tên thông số</span> : null}
-											placeholder='Nhập tên thông số'
-											value={spec.name}
-											isShowValue={true}
-											onChangeValue={(value) => {
-												setForm((prev) => ({
-													...prev,
-													specifications: prev.specifications.map((item, i) =>
-														i === index ? {...item, name: value as string} : item
-													),
-												}));
-											}}
-										/>
-										<div>
-											<Input
-												name=''
-												type='text'
-												label={index == 0 ? <span>Mô tả thông số</span> : null}
-												placeholder='Nhập mô tả thông số'
-												value={spec.description}
-												isShowValue={true}
-												onChangeValue={(value) => {
-													setForm((prev) => ({
-														...prev,
-														specifications: prev.specifications.map((item, i) =>
-															i === index ? {...item, description: value as string} : item
-														),
-													}));
-												}}
-											/>
-										</div>
-										<div
-											className={styles.delete}
-											onClick={() =>
-												setForm((prev) => ({
-													...prev,
-													specifications:
-														prev.specifications.length > 1
-															? prev.specifications.filter((_, i) => i !== index)
-															: [
-																	{
-																		name: '',
-																		description: '',
-																	},
-																],
-												}))
-											}
-										>
-											<Trash color='#E54040' size={24} />
-										</div>
-									</div>
-								))}
 							</WrapperForm>
 						</FlexLayout>
 					</FlexItem>

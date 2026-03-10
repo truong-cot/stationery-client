@@ -56,37 +56,6 @@ function MainDetailProduct({product}: PropsMainDetailProduct) {
 
 			<section className={styles.section}>
 				<div className={styles.head_section}>
-					<h4>Mô tả chi tiết</h4>
-				</div>
-				{product?.detail_description ? (
-					<div dangerouslySetInnerHTML={{__html: product?.detail_description || ''}}></div>
-				) : (
-					<p className={styles.empty}>Đang cập nhật!</p>
-				)}
-			</section>
-
-			<section className={styles.section}>
-				<div className={styles.head_section}>
-					<h4>Thông số kĩ thuật</h4>
-				</div>
-				{product?.specifications?.length > 0 ? (
-					<>
-						{product?.specifications?.map((spec, idx) => (
-							<div key={idx} className={styles.specification}>
-								<div className={styles.dot}></div>
-								<p className={styles.name}>
-									{spec?.name}: <span>{spec?.description}</span>
-								</p>
-							</div>
-						))}
-					</>
-				) : (
-					<p className={styles.empty}>Đang cập nhật!</p>
-				)}
-			</section>
-
-			<section className={styles.section}>
-				<div className={styles.head_section}>
 					<h4>Sản phẩm tương tự</h4>
 				</div>
 				<DataWrapper

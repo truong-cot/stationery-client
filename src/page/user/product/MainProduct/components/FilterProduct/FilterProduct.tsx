@@ -57,7 +57,7 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 		<div className={clsx(styles.filter_product, {[styles.mobile]: !!onClose})}>
 			{onClose && (
 				<div className={styles.close} onClick={onClose}>
-					<IoClose size={24} color='#8492A6' />
+					<IoClose size={28} color='#8492A6' />
 				</div>
 			)}
 
@@ -256,16 +256,16 @@ function NodeCategory({
 				{node.children.length > 0 ? (
 					<div className={styles.expanded} onClick={() => setOpen(!open)}>
 						{open ? (
-							<ArrowDown2 size='20' color='#697586' variant='Bold' />
+							<ArrowDown2 size='24' color='#697586' variant='Bold' />
 						) : (
-							<ArrowRight2 size='20' color='#697586' variant='Bold' />
+							<ArrowRight2 size='24' color='#697586' variant='Bold' />
 						)}
 					</div>
 				) : (
 					<div
 						style={{
-							width: '8px',
-							height: '8px',
+							width: '10px',
+							height: '10px',
 							borderRadius: '50%',
 							background: '#697586',
 						}}

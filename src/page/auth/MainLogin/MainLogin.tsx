@@ -62,7 +62,7 @@ function MainLogin({}: PropsMainLogin) {
 		onSuccess: (data) => {
 			dispatch(setAccessToken(data.access_token));
 			dispatch(setStateLogin(true));
-			router.replace(PATH.AdminDashboard);
+			router.replace(PATH.AdminAccount);
 		},
 	});
 

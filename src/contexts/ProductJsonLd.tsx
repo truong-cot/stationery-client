@@ -8,7 +8,7 @@ export function ProductJsonLd({product}: {product: IProductDetail}) {
 		name: product.name,
 		image: product.images,
 		description: product.short_description,
-		sku: product.code,
+		sku: product.pack_size,
 		offers: {
 			'@type': 'Offer',
 			priceCurrency: 'VND',

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 
 import Tippy from '@tippyjs/react';
 import clsx from 'clsx';
@@ -8,7 +8,7 @@ import {Warning2} from 'iconsax-reactjs';
 import Image from 'next/image';
 import Link from 'next/link';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {IoLogOutOutline} from 'react-icons/io5';
+import {IoClose, IoLogOutOutline} from 'react-icons/io5';
 import {useDispatch, useSelector} from 'react-redux';
 import Dialog from '~/components/common/Dialog';
 import PositionContainer from '~/components/common/PositionContainer';
@@ -16,38 +16,30 @@ import {COOKIE_KEY, menusAdmin, PATH} from '~/constants/config';
 import icons from '~/constants/images/icons';
 import images from '~/constants/images/images';
 import {getQueryParams, updateQueryParams} from '~/funcs/queryParams';
-import useWindowWidth from '~/hooks/useWindowWidth';
 import {RootState} from '~/store';
 import {logout} from '~/store/auth.slice';
 import {setInfoUser} from '~/store/user.slice';
 import FormChangePassword from '../../../../../page/auth/FormChangePassword';
+import FormUpdateInfoProfile from '../FormUpdateInfoProfile';
 import {PropsNavbar} from './interfaces';
 import styles from './Navbar.module.scss';
-import FormUpdateInfoProfile from '../FormUpdateInfoProfile';
 
-function Navbar({}: PropsNavbar) {
+function Navbar({onClose}: PropsNavbar) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
 	const dispatch = useDispatch();
 
-	const width = useWindowWidth({debounceMs: 150});
-
 	const {_layout} = getQueryParams(searchParams);
 
 	const {infoUser} = useSelector((state: RootState) => state.user);
 
-	const [small, setSmall] = useState<boolean>(false);
 	const [openLogout, setOpenLogout] = useState<boolean>(false);
 
 	const checkActivePath = (pathActive: string) => {
 		return pathname === pathActive || pathname.startsWith(pathActive + '/');
 	};
-
-	useEffect(() => {
-		if (width <= 1200) setSmall(true);
-	}, [width]);
 
 	const handleLogout = () => {
 		deleteCookie(COOKIE_KEY.ACCESS_TOKEN);
@@ -58,24 +50,28 @@ function Navbar({}: PropsNavbar) {
 	};
 
 	return (
-		<div className={clsx(styles.container, {[styles.small]: small})}>
+		<div className={clsx(styles.container, {[styles.mobile]: !!onClose})}>
+			{onClose && (
+				<div className={styles.close} onClick={onClose}>
+					<IoClose size={28} color='#8492A6' />
+				</div>
+			)}
+
 			<div className={styles.head}>
-				<Link href={PATH.AdminDashboard} className={styles.logo}>
+				<Link href={PATH.AdminAccount} className={styles.logo} onClick={() => onClose && onClose()}>
 					<Image alt='Logo' src={icons.logo_small} width={48} height={48} />
 				</Link>
-				<div className={styles.menu_line} onClick={() => setSmall(!small)}>
-					<Image alt='Menu line' src={icons.menuLine} width={24} height={24} />
-				</div>
 			</div>
 
 			<div className={styles.menus}>
 				{menusAdmin.map((tab, y) => (
-					<Tippy key={y} content={tab.title} disabled={!small}>
+					<Tippy key={y} content={tab.title}>
 						<Link
 							href={tab.path}
 							className={clsx(styles.tab, {
 								[styles.active]: checkActivePath(tab.pathActive),
 							})}
+							onClick={() => onClose && onClose()}
 						>
 							<tab.icon size={22} className={styles.icon} />
 							<p>{tab.title}</p>
@@ -89,7 +85,8 @@ function Navbar({}: PropsNavbar) {
 				<Tippy content='Đổi mật khẩu'>
 					<div
 						className={styles.action}
-						onClick={() =>
+						onClick={() => {
+							onClose && onClose();
 							updateQueryParams(router, pathname, searchParams, {
 								set: {
 									_layout: 'change-password',
@@ -97,8 +94,8 @@ function Navbar({}: PropsNavbar) {
 								options: {
 									scroll: false,
 								},
-							})
-						}
+							});
+						}}
 					>
 						<LockSlash size={22} className={styles.action_icon} color='#202939' />
 					</div>
@@ -106,15 +103,16 @@ function Navbar({}: PropsNavbar) {
 				<div
 					className={styles.action_line}
 					style={{
-						width: small ? '20px' : '1px',
-						height: small ? '1px' : '16px',
+						width: '1px',
+						height: '16px',
 						background: '#f4f5f6',
 					}}
 				></div>
 				<Tippy content='Thông tin cá nhân'>
 					<div
 						className={styles.action}
-						onClick={() =>
+						onClick={() => {
+							onClose && onClose();
 							updateQueryParams(router, pathname, searchParams, {
 								set: {
 									_layout: 'info-profile',
@@ -122,21 +120,27 @@ function Navbar({}: PropsNavbar) {
 								options: {
 									scroll: false,
 								},
-							})
-						}
+							});
+						}}
 					>
 						<UserEdit size={22} className={styles.action_icon} color='#202939' />
 					</div>
 				</Tippy>
 			</div>
 			<Tippy content='Đăng xuất'>
-				<div className={styles.profile} onClick={() => setOpenLogout(true)}>
+				<div
+					className={styles.profile}
+					onClick={() => {
+						onClose && onClose();
+						setOpenLogout(true);
+					}}
+				>
 					<div className={styles.info}>
 						<Image
 							alt='Avatar'
 							src={images.avatar}
-							width={small ? 32 : 40}
-							height={small ? 32 : 40}
+							width={40}
+							height={40}
 							style={{borderRadius: '50%', border: '1px solid #20C874'}}
 						/>
 						<div className={styles.name}>

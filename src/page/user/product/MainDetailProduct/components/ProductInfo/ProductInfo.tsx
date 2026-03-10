@@ -1,15 +1,22 @@
+'use client';
+
 import {Category2, Colorfilter, Size, TriangleLogo} from 'iconsax-react';
 import styles from './ProductInfo.module.scss';
 import type {PropsProductInfo} from './interfaces';
 import {convertCoin} from '~/funcs/convertCoin';
+import {useSelector} from 'react-redux';
+import {RootState} from '~/store';
+import {formatPhoneVN} from '~/funcs/optionConvert';
 
 function ProductInfo({product}: PropsProductInfo) {
+	const {contact} = useSelector((state: RootState) => state.user);
+
 	return (
 		<div className={styles.main}>
-			<p className={styles.code}>
-				Mã sản phẩm: <span>#{product?.code}</span>
-			</p>
 			<h4 className={styles.name}>{product?.name}</h4>
+			<p className={styles.code}>
+				Kích thước đóng gói: <span>{product?.pack_size}</span>
+			</p>
 			<div className={styles.item}>
 				<Category2 size={18} color='#25c173' variant='Bold' />
 				<p className={styles.text}>
@@ -40,7 +47,7 @@ function ProductInfo({product}: PropsProductInfo) {
 			<h4 className={styles.price}>Giá: {convertCoin(product?.price)}đ</h4>
 
 			<p className={styles.contact}>
-				Gọi ngay <b>033.492.8394</b> để có được tư vấn tốt nhất!
+				Gọi ngay <b>{formatPhoneVN(contact?.phone) || 'Đang cập nhật!'}</b> để có được tư vấn tốt nhất!
 			</p>
 		</div>
 	);

@@ -48,6 +48,12 @@ const clientServices = {
 	productSimilar: (payload: {product_id: string}) => {
 		return axiosClient.post(`/client/product-similar`, payload);
 	},
+	catalogCategoryParent: () => {
+		return axiosClient.get(`/client/catalog-category-parent`);
+	},
+	getContact: () => {
+		return axiosClient.get(`/client/contact`);
+	},
 };
 
 export default clientServices;

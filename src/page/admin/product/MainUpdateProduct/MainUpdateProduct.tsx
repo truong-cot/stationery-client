@@ -1,66 +1,56 @@
 'use client';
 
-import {Fragment, useEffect, useState} from 'react';
-import styles from './MainUpdateProduct.module.scss';
-import type {PropsMainUpdateProduct} from './interfaces';
-import {IDataUploadFile} from '~/components/common/UploadSingleFile/interfaces';
 import {useMutation, useQuery} from '@tanstack/react-query';
+import {useRouter, useSearchParams} from 'next/navigation';
+import {Fragment, useEffect, useState} from 'react';
+import Button from '~/components/common/Button';
+import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
+import Loading from '~/components/common/Loading';
+import UploadMultipleFile from '~/components/common/UploadMultipleFile';
+import {IDataUploadFile} from '~/components/common/UploadSingleFile/interfaces';
+import FlexLayout from '~/components/layout/FlexLayout';
+import FlexItem from '~/components/layout/FlexLayout/FlexItem';
+import GridColumn from '~/components/layout/GridColumn';
+import Breadcrumb from '~/components/utils/Breadcrumb';
+import HeaderActions from '~/components/utils/HeaderActions';
+import WrapperForm from '~/components/utils/WrapperForm';
+import {PATH} from '~/constants/config';
 import {QUERY_KEY} from '~/constants/config/enum';
+import {convertCoin, price} from '~/funcs/convertCoin';
 import {httpRequest} from '~/funcs/httpRequest';
+import {getQueryParams} from '~/funcs/queryParams';
+import {toastWarn} from '~/funcs/toast';
+import categoryServices from '~/services/category.service';
 import colorServices from '~/services/color.service';
+import productServices from '~/services/product.service';
 import sizeServices from '~/services/size.service';
 import trademarkServices from '~/services/trademark.service';
-import categoryServices from '~/services/category.service';
-import {useRouter, useSearchParams} from 'next/navigation';
-import productServices from '~/services/product.service';
-import {convertCoin, price} from '~/funcs/convertCoin';
-import {toastWarn} from '~/funcs/toast';
 import uploadServices from '~/services/upload.service';
-import Loading from '~/components/common/Loading';
-import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
-import FlexLayout from '~/components/layout/FlexLayout';
-import HeaderActions from '~/components/utils/HeaderActions';
-import Breadcrumb from '~/components/utils/Breadcrumb';
-import {PATH} from '~/constants/config';
-import Button from '~/components/common/Button';
-import FlexItem from '~/components/layout/FlexLayout/FlexItem';
-import WrapperForm from '~/components/utils/WrapperForm';
-import GridColumn from '~/components/layout/GridColumn';
-import UploadMultipleFile from '~/components/common/UploadMultipleFile';
-import EditerContent from '~/components/utils/EditerContent';
-import {Trash} from 'iconsax-react';
-import {getQueryParams} from '~/funcs/queryParams';
 import {IDetailProduct} from '../MainDetailProduct/interfaces';
+import type {PropsMainUpdateProduct} from './interfaces';
 
 interface IFormUpdateProduct {
 	name: string;
 	price: string;
-	code: string;
+	pack_size: string;
 	short_description: string;
-	detail_description: string;
 	category_id: string;
 	color_id: string;
 	size_id: string;
 	trademark_id: string;
 	is_featured: string;
-	specifications: {
-		name: string;
-		description: string;
-	}[];
 }
 
 const initForm: IFormUpdateProduct = {
 	name: '',
 	price: '0',
-	code: '',
+	pack_size: '',
 	short_description: '',
-	detail_description: '',
 	category_id: '',
 	color_id: '',
 	size_id: '',
 	trademark_id: '',
 	is_featured: '1',
-	specifications: [{name: '', description: ''}],
 };
 
 function MainUpdateProduct({}: PropsMainUpdateProduct) {
@@ -92,16 +82,14 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 		if (!!product && isSuccess) {
 			setForm({
 				name: product?.name || '',
-				code: product?.code || '',
+				pack_size: product?.pack_size || '',
 				price: convertCoin(product.price) || '0',
 				short_description: product?.short_description,
-				detail_description: product?.detail_description,
 				category_id: product?.category?._id,
 				color_id: product?.color?._id || '',
 				size_id: product?.size?._id || '',
 				trademark_id: product?.trademark?._id || '',
 				is_featured: product?.is_featured ? '1' : '0',
-				specifications: product?.specifications?.length > 0 ? product?.specifications : [{name: '', description: ''}],
 			});
 			setImages(
 				product?.images?.map((v) => ({
@@ -176,17 +164,15 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 				msgSuccess: 'Chỉnh sửa sản phẩm thành công!',
 				http: productServices.update({
 					_id: _id as string,
-					code: form.code,
+					pack_size: form.pack_size,
 					name: form.name,
 					price: price(form.price),
-					detail_description: form.detail_description,
 					short_description: form.short_description,
 					category_id: form.category_id,
 					color_id: form.color_id,
 					size_id: form.size_id,
 					trademark_id: form.trademark_id,
 					is_featured: form.is_featured == '1' ? true : false,
-					specifications: form.specifications,
 					images: body.images,
 				}),
 			}),
@@ -261,24 +247,23 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 										<Input
 											label={
 												<span>
-													Mã sản phẩm <span style={{color: 'red'}}>* </span>
+													Tên sản phẩm <span style={{color: 'red'}}>* </span>
 												</span>
 											}
-											placeholder='Nhập mã sản phẩm'
-											name='code'
+											placeholder='Nhập tên sản phẩm'
+											name='name'
 											type='text'
 											isRequired
-											isUppercase
 										/>
 										<div>
 											<Input
 												label={
 													<span>
-														Tên sản phẩm <span style={{color: 'red'}}>* </span>
+														Kích thước đóng gói <span style={{color: 'red'}}>* </span>
 													</span>
 												}
-												placeholder='Nhập tên sản phẩm'
-												name='name'
+												placeholder='Nhập mã sản phẩm'
+												name='pack_size'
 												type='text'
 												isRequired
 											/>
@@ -414,21 +399,6 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 										</div>
 									</GridColumn>
 									<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
-								</FlexLayout>
-							</WrapperForm>
-
-							<WrapperForm title='Mô tả sản phẩm'>
-								<FlexLayout column gap-16>
-									<EditerContent
-										label='Mô tả chi tiết'
-										content={form.detail_description}
-										setContent={(c) =>
-											setForm((prev) => ({
-												...prev,
-												detail_description: typeof c === 'function' ? c(prev.detail_description) : c,
-											}))
-										}
-									/>
 									<div>
 										<UploadMultipleFile
 											label={
@@ -441,91 +411,6 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 										/>
 									</div>
 								</FlexLayout>
-							</WrapperForm>
-
-							<WrapperForm
-								title='Thông số kĩ thuật'
-								actions={
-									<Button
-										p_4_8
-										outline-green
-										maxContent
-										maxHeight
-										bold
-										onClick={() =>
-											setForm((prev) => ({
-												...prev,
-												specifications: [
-													...prev.specifications,
-													{
-														name: '',
-														description: '',
-													},
-												],
-											}))
-										}
-									>
-										+ Thêm thông số kỹ thuật
-									</Button>
-								}
-							>
-								{form?.specifications?.map((spec, index) => (
-									<div key={index} className={styles.grid}>
-										<Input
-											name=''
-											type='text'
-											label={index == 0 ? <span>Tên thông số</span> : null}
-											placeholder='Nhập tên thông số'
-											value={spec.name}
-											isShowValue={true}
-											onChangeValue={(value) => {
-												setForm((prev) => ({
-													...prev,
-													specifications: prev.specifications.map((item, i) =>
-														i === index ? {...item, name: value as string} : item
-													),
-												}));
-											}}
-										/>
-										<div>
-											<Input
-												name=''
-												type='text'
-												label={index == 0 ? <span>Mô tả thông số</span> : null}
-												placeholder='Nhập mô tả thông số'
-												value={spec.description}
-												isShowValue={true}
-												onChangeValue={(value) => {
-													setForm((prev) => ({
-														...prev,
-														specifications: prev.specifications.map((item, i) =>
-															i === index ? {...item, description: value as string} : item
-														),
-													}));
-												}}
-											/>
-										</div>
-										<div
-											className={styles.delete}
-											onClick={() =>
-												setForm((prev) => ({
-													...prev,
-													specifications:
-														prev.specifications.length > 1
-															? prev.specifications.filter((_, i) => i !== index)
-															: [
-																	{
-																		name: '',
-																		description: '',
-																	},
-																],
-												}))
-											}
-										>
-											<Trash color='#E54040' size={24} />
-										</div>
-									</div>
-								))}
 							</WrapperForm>
 						</FlexLayout>
 					</FlexItem>

@@ -13,34 +13,6 @@
 	}
 }
 
-.slider {
-	height: 200px;
-	overflow: hidden;
-
-	:global(.slick-slider),
-	:global(.slick-list),
-	:global(.slick-track),
-	:global(.slick-slide),
-	:global(.slick-slide > div) {
-		height: 100%;
-	}
-
-	:global(.slick-list) {
-		border-radius: 6px;
-	}
-}
-
-.image {
-	position: relative;
-	width: 100%;
-	height: 100%;
-
-	img {
-		border-radius: 6px;
-		object-fit: cover;
-	}
-}
-
 @media (max-width: 1200px) {
 	.main_banner {
 		padding-top: 8px;

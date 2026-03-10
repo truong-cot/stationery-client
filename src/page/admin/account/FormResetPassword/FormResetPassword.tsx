@@ -53,15 +53,19 @@ function FormResetPassword({_idAccount, onClose}: PropsFormResetPassword) {
 				width={540}
 				title='Reset mật khẩu'
 				actions={
-					<FlexLayout row gap-8>
-						<Button p_8_24 rounded_8 white bold maxHeight onClick={onClose}>
-							Hủy bỏ
-						</Button>
+					<FlexLayout row items-center fit-height gap-8 wrap>
+						<div>
+							<Button p_8_24 rounded_8 white bold div onClick={onClose}>
+								Hủy bỏ
+							</Button>
+						</div>
 						<ContextForm.Consumer>
 							{({isDone}) => (
-								<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold maxHeight>
-									Cập nhật
-								</Button>
+								<div>
+									<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold d_block>
+										Cập nhật
+									</Button>
+								</div>
 							)}
 						</ContextForm.Consumer>
 					</FlexLayout>

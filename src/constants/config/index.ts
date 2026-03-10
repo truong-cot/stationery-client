@@ -1,4 +1,4 @@
-import {Element3, SecurityUser, Colorfilter, Size, TriangleLogo, Category2, Book1, Moneys} from 'iconsax-reactjs';
+import {Element3, SecurityUser, Colorfilter, Size, TriangleLogo, Category2, Book1, Moneys, SmsEdit} from 'iconsax-reactjs';
 
 export const KEY_STORE = 'stationery-client';
 
@@ -14,7 +14,6 @@ export const PATH = {
 
 	AuthLogin: '/login',
 
-	AdminDashboard: '/admin/dashboard',
 	AdminAccount: '/admin/account',
 	AdminColor: '/admin/color',
 	AdminSize: '/admin/size',
@@ -24,6 +23,8 @@ export const PATH = {
 	AdminProduct: '/admin/product',
 	AdminCreateProduct: '/admin/product/create',
 	AdminUpdateProduct: '/admin/product/update',
+
+	AdminContact: '/admin/contact',
 };
 
 export interface IMenu {
@@ -38,12 +39,6 @@ export const menusAdmin: {
 	title: string;
 	icon: any;
 }[] = [
-	{
-		title: 'Tổng quan',
-		icon: Element3,
-		path: PATH.AdminDashboard,
-		pathActive: PATH.AdminDashboard,
-	},
 	{
 		title: 'Quản lý tài khoản',
 		icon: SecurityUser,
@@ -85,6 +80,12 @@ export const menusAdmin: {
 		icon: Moneys,
 		path: PATH.AdminSetupPrice,
 		pathActive: PATH.AdminSetupPrice,
+	},
+	{
+		title: 'Thông tin liên hệ',
+		icon: SmsEdit,
+		path: PATH.AdminContact,
+		pathActive: PATH.AdminContact,
 	},
 ];
 

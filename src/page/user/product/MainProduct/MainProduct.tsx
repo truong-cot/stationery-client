@@ -1,14 +1,16 @@
 'use client';
 
 import {useQuery} from '@tanstack/react-query';
+import clsx from 'clsx';
+import Image from 'next/image';
 import {useSearchParams} from 'next/navigation';
+import {useState} from 'react';
 import SearchQuery from '~/components/common/SearchQuery';
 import LayoutGrid from '~/components/layout/LayoutGrid';
-import BannerImage from '~/components/utils/BannerImage';
 import Breadcrumb from '~/components/utils/Breadcrumb';
 import {PATH} from '~/constants/config';
 import {QUERY_KEY} from '~/constants/config/enum';
-import images from '~/constants/images/images';
+import icons from '~/constants/images/icons';
 import {ContextProduct, ICatalog, ICatalogSetupPrice} from '~/contexts/ContextProduct';
 import {httpRequest} from '~/funcs/httpRequest';
 import {getQueryParams} from '~/funcs/queryParams';
@@ -16,12 +18,8 @@ import clientServices from '~/services/client.service';
 import FilterProduct from './components/FilterProduct';
 import ListProduct from './components/ListProduct';
 import SortProduct from './components/SortProduct';
-import styles from './MainProduct.module.scss';
 import type {PropsMainProduct} from './interfaces';
-import Image from 'next/image';
-import icons from '~/constants/images/icons';
-import {useState} from 'react';
-import clsx from 'clsx';
+import styles from './MainProduct.module.scss';
 
 function MainProduct({}: PropsMainProduct) {
 	const searchParams = useSearchParams();
@@ -74,40 +72,41 @@ function MainProduct({}: PropsMainProduct) {
 		<ContextProduct.Provider
 			value={{colors: colors, categorys: categorys, sizes: sizes, trademarks: trademarks, setupPrices: setupPrices}}
 		>
-			<BannerImage image={images.bannerProduct} />
-			<LayoutGrid>
-				<div className={styles.head}>
-					<div className={styles.menu_line} onClick={() => setOpenTabsMobile(true)}>
-						<Image alt='Menu line' src={icons.menuLine} width={20} height={20} />
+			<div className={styles.main_product}>
+				<LayoutGrid>
+					<div className={styles.head}>
+						<div className={styles.menu_line} onClick={() => setOpenTabsMobile(true)}>
+							<Image alt='Menu line' src={icons.menuLine} width={20} height={20} />
+						</div>
+						<div className={styles.breadcrumb}>
+							<Breadcrumb
+								isPadding={false}
+								listUrls={[
+									{path: PATH.Home, title: 'Trang chủ'},
+									{path: '', title: 'Danh sách sản phẩm'},
+								]}
+							/>
+						</div>
+						<div className={styles.input_search}>
+							<SearchQuery placeholder='Tìm kiếm sản phẩm' keyName='_keyword' />
+						</div>
 					</div>
-					<div className={styles.breadcrumb}>
-						<Breadcrumb
-							isPadding={false}
-							listUrls={[
-								{path: PATH.Home, title: 'Trang chủ'},
-								{path: '', title: 'Sản phẩm'},
-							]}
-						/>
-					</div>
-					<div className={styles.input_search}>
-						<SearchQuery placeholder='Tìm kiếm sản phẩm' keyName='_keyword' />
-					</div>
-				</div>
 
-				<div className={styles.main}>
-					<div className={styles.filter_product}>
-						<FilterProduct />
+					<div className={styles.main}>
+						<div className={styles.filter_product}>
+							<FilterProduct />
+						</div>
+						<div>
+							<SortProduct />
+							<ListProduct />
+						</div>
 					</div>
-					<div>
-						<SortProduct />
-						<ListProduct />
-					</div>
-				</div>
 
-				<div className={clsx(styles.filter_product_mobile, {[styles.open]: openTabsMobile})}>
-					<FilterProduct onClose={() => setOpenTabsMobile(false)} />
-				</div>
-			</LayoutGrid>
+					<div className={clsx(styles.filter_product_mobile, {[styles.open]: openTabsMobile})}>
+						<FilterProduct onClose={() => setOpenTabsMobile(false)} />
+					</div>
+				</LayoutGrid>
+			</div>
 		</ContextProduct.Provider>
 	);
 }

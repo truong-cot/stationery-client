@@ -34,9 +34,9 @@ export async function buildProductDetailSEO(product: IProductDetail) {
 	const category = product.category;
 	const price = product.price ? `${product.price.toLocaleString('vi-VN')}₫` : 'Giá tốt';
 
-	const title = `${product.name} | ${category?.name} – ${price}`;
+	const title = `${product.name}  | ${category?.name} | ${product.pack_size} – ${price}`;
 
-	const description = `${product.name} - Danh mục: ${category?.name} - Giá: ${price}.`.trim();
+	const description = `${product.name} - Danh mục: ${category?.name} | Kích thước đóng gói: ${product.pack_size} - Giá: ${price}.`.trim();
 
 	return {
 		title,

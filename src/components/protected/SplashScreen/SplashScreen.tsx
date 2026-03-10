@@ -13,9 +13,10 @@ import {storage} from '~/funcs/storage';
 import authServices from '~/services/auth.service';
 import {RootState} from '~/store';
 import {IDataLoginStorage, setAccessToken, setDataLoginStorage, setIsLoading, setRememberPassword, setStateLogin} from '~/store/auth.slice';
-import {setInfoUser} from '~/store/user.slice';
+import {setInfoUser, setContact} from '~/store/user.slice';
 import loadingAnim from '../../../../public/anim/loading_screen.json';
 import styles from './SplashScreen.module.scss';
+import clientServices from '~/services/client.service';
 
 const Lottie = dynamic(() => import('react-lottie'), {
 	ssr: false,
@@ -76,9 +77,21 @@ function SplashScreen() {
 		enabled: !!access_token,
 	});
 
+	const {data: contact, isSuccess: isSuccessContact} = useQuery({
+		queryKey: [QUERY_KEY.getContact],
+		queryFn: () =>
+			httpRequest({
+				http: clientServices.getContact(),
+			}),
+	});
+
 	useEffect(() => {
 		if (isSuccess && !!data) dispatch(setInfoUser(data));
 	}, [data, isSuccess]);
+
+	useEffect(() => {
+		if (isSuccessContact && !!contact) dispatch(setContact(contact));
+	}, [isSuccessContact, contact]);
 
 	return (
 		<div className={clsx(styles.container, {[styles.close]: !isLoading})}>

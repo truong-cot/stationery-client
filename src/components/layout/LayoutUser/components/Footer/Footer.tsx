@@ -10,8 +10,13 @@ import Link from 'next/link';
 import {PATH} from '~/constants/config';
 import Image from 'next/image';
 import icons from '~/constants/images/icons';
+import {useSelector} from 'react-redux';
+import {RootState} from '~/store';
+import {formatPhoneVN} from '~/funcs/optionConvert';
 
 function Footer({}: PropsFooter) {
+	const {contact} = useSelector((state: RootState) => state.user);
+
 	return (
 		<footer>
 			<section className={styles.section}>
@@ -26,42 +31,60 @@ function Footer({}: PropsFooter) {
 				<LayoutGrid>
 					<div className={styles.copyright}>
 						<div className={styles.text}>
-							<p>Điện thoại: 033.994.0200</p>
-							<p>Email: email.gmail.com</p>
-							<p>Hotline: 033.994.0200 (08h00-17h00: T2-T6)</p>
-							<p>Đ/c: Tầng 3, số 105 Láng Hạ, phường Đống Đa, TP Hà Nội, Việt Nam.</p>
+							<p>Điện thoại: {formatPhoneVN(contact?.phone) || 'Đang cập nhật!'}</p>
+							<p>Hotline: {formatPhoneVN(contact?.phone) || 'Đang cập nhật!'} (T2-CN)</p>
+							<p>Email: {contact?.email || 'Đang cập nhật!'}</p>
+							<p>Địa chỉ: {contact?.address || 'Đang cập nhật!'}</p>
 						</div>
 						<div className={styles.right}>
 							<div className={styles.social_media}>
-								<Tippy content='Facebook'>
-									<div className={styles.social_media_item}>
-										<Facebook variant='Bold' size={20} className={styles.social_media_icon} />
-									</div>
-								</Tippy>
-								<Tippy content='Instagram'>
-									<div className={styles.social_media_item}>
-										<Instagram variant='Bold' size={20} className={styles.social_media_icon} />
-									</div>
-								</Tippy>
-								<Tippy content='Telegram'>
-									<div className={styles.social_media_item}>
-										<FaTelegram size={20} className={styles.social_media_icon} />
-									</div>
-								</Tippy>
-								<Tippy content='Email'>
-									<div className={styles.social_media_item}>
-										<Sms variant='Bold' size={20} className={styles.social_media_icon} />
-									</div>
-								</Tippy>
-								<Tippy content='Youtube'>
-									<div className={styles.social_media_item}>
-										<Youtube variant='Bold' size={20} className={styles.social_media_icon} />
-									</div>
-								</Tippy>
+								{contact?.facebook && (
+									<Tippy content='Facebook'>
+										<Link
+											href={contact.facebook}
+											target='_blank'
+											rel='noopener noreferrer'
+											className={styles.social_media_item}
+										>
+											<Facebook variant='Bold' size={20} className={styles.social_media_icon} />
+										</Link>
+									</Tippy>
+								)}
+
+								{contact?.instagram && (
+									<Tippy content='Instagram'>
+										<Link
+											href={contact.instagram}
+											target='_blank'
+											rel='noopener noreferrer'
+											className={styles.social_media_item}
+										>
+											<Instagram variant='Bold' size={20} className={styles.social_media_icon} />
+										</Link>
+									</Tippy>
+								)}
+
+								{contact?.email && (
+									<Tippy content='Email'>
+										<Link href={`mailto:${contact.email}`} className={styles.social_media_item}>
+											<Sms variant='Bold' size={20} className={styles.social_media_icon} />
+										</Link>
+									</Tippy>
+								)}
+
+								{contact?.youtube && (
+									<Tippy content='Youtube'>
+										<Link
+											href={contact.youtube}
+											target='_blank'
+											rel='noopener noreferrer'
+											className={styles.social_media_item}
+										>
+											<Youtube variant='Bold' size={20} className={styles.social_media_icon} />
+										</Link>
+									</Tippy>
+								)}
 							</div>
-							<Link href={PATH.About} className={styles.about}>
-								Về chúng tôi
-							</Link>
 						</div>
 					</div>
 				</LayoutGrid>

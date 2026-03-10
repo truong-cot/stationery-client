@@ -55,15 +55,19 @@ function FormCreateTrademark({onClose}: PropsFormCreateTrademark) {
 				width={540}
 				title='Thêm mới thương hiệu'
 				actions={
-					<FlexLayout row gap-8>
-						<Button p_8_24 rounded_8 white bold maxHeight onClick={onClose}>
-							Hủy bỏ
-						</Button>
+					<FlexLayout row items-center fit-height gap-8 wrap>
+						<div>
+							<Button p_8_24 rounded_8 white bold div onClick={onClose}>
+								Hủy bỏ
+							</Button>
+						</div>
 						<ContextForm.Consumer>
 							{({isDone}) => (
-								<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold maxHeight>
-									Lưu lại
-								</Button>
+								<div>
+									<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold d_block>
+										Lưu lại
+									</Button>
+								</div>
 							)}
 						</ContextForm.Consumer>
 					</FlexLayout>

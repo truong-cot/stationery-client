@@ -16,7 +16,7 @@ function RequiredLogout({children}: props) {
 	const {isLogin, isLoading} = useSelector((state: RootState) => state.auth);
 
 	useEffect(() => {
-		if (isLogin && !isLoading) replace(PATH.AdminDashboard);
+		if (isLogin && !isLoading) replace(PATH.AdminAccount);
 	}, [isLogin, isLoading, replace]);
 
 	if (!isLogin && !isLoading) {

@@ -18,10 +18,6 @@
 	align-items: center;
 }
 
-.icon_search {
-	display: none;
-}
-
 .phone {
 	display: flex;
 	align-items: center;
@@ -77,14 +73,8 @@
 		gap: 12px;
 	}
 
-	.icon_search {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 36px;
-		height: 36px;
-		border-radius: 50%;
-		border: 1px solid #cdd5df;
+	.search {
+		display: none;
 	}
 
 	.phone {

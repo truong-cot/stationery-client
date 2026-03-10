@@ -1,12 +1,13 @@
 'use client';
 
-import {useState} from 'react';
+import {Suspense, useState} from 'react';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import SplashScreen from '~/components/protected/SplashScreen';
 import {Provider} from 'react-redux';
 import {ToastContainer} from 'react-toastify';
 import {store} from '~/store';
+import QuickFilterCategory from '~/components/protected/QuickFilterCategory';
 
 const AppProvider = ({children}: {children: React.ReactNode}) => {
 	const [queryClient] = useState(
@@ -28,10 +29,15 @@ const AppProvider = ({children}: {children: React.ReactNode}) => {
 	return (
 		<Provider store={store}>
 			<QueryClientProvider client={queryClient}>
-				<SplashScreen />
 				<ToastContainer autoClose={3000} />
+				<SplashScreen />
+				<Suspense>
+					<QuickFilterCategory />
+				</Suspense>
 				{children}
-				{process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+				{process.env.NODE_ENV === 'development' && (
+					<ReactQueryDevtools initialIsOpen={false} position='left' buttonPosition='bottom-left' />
+				)}
 			</QueryClientProvider>
 		</Provider>
 	);

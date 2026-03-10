@@ -4,19 +4,14 @@ const productServices = {
 	create: (payload: {
 		name: string;
 		price: number;
-		code: string;
+		pack_size: string;
 		images: string[];
 		short_description: string;
-		detail_description: string;
 		category_id: string;
 		color_id: string;
 		size_id: string;
 		trademark_id: string;
 		is_featured: boolean;
-		specifications: {
-			name: string;
-			description: string;
-		}[];
 	}) => {
 		return axiosClient.post(`/product/create`, payload);
 	},
@@ -24,19 +19,14 @@ const productServices = {
 		_id: string;
 		name: string;
 		price: number;
-		code: string;
+		pack_size: string;
 		images: string[];
 		short_description: string;
-		detail_description: string;
 		category_id: string;
 		color_id: string;
 		size_id: string;
 		trademark_id: string;
 		is_featured: boolean;
-		specifications: {
-			name: string;
-			description: string;
-		}[];
 	}) => {
 		return axiosClient.post(`/product/update`, payload);
 	},

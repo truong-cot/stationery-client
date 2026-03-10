@@ -1,1 +1,3 @@
-export interface PropsNavbar {}
+export interface PropsNavbar {
+	onClose?: () => void;
+}

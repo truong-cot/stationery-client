@@ -6,11 +6,9 @@ export interface IProductDetail {
 	_id: string;
 	name: string;
 	price: number;
-	code: string;
+	pack_size: string;
 	images: string[];
 	short_description: string;
-	detail_description: string;
-	specifications: {name: string; description: string}[];
 	category: {
 		_id: string;
 		name: string;

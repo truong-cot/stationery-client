@@ -1,5 +1,6 @@
 export const QUERY_KEY = {
 	getProfile: 'get-profile',
+	getContact: 'get-contact',
 
 	pageListAccount: 'page-list-account',
 	detailAccount: 'detail-account',
@@ -27,6 +28,8 @@ export const QUERY_KEY = {
 	pageListProduct: 'page-list-product',
 	detailProduct: 'detail-product',
 
+	detailContact: 'detail-contact',
+
 	clientCatalogCategory: 'client-catalog-category',
 	clientCatalogColor: 'client-catalog-color',
 	clientCatalogSize: 'client-catalog-size',
@@ -38,4 +41,5 @@ export const QUERY_KEY = {
 	clientProductSimilar: 'client-product-similar',
 	clientProductNew: 'client-product-new',
 	clientPageListProduct: 'client-page-list-product',
+	clientCatalogCategoryParent: 'catalog-category-parent',
 };

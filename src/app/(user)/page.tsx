@@ -64,8 +64,8 @@ export default function Page() {
 		<Suspense>
 			<BannerHome />
 			<CategoryHome />
-			<FeaturedProducts />
 			<NewProducts />
+			<FeaturedProducts />
 		</Suspense>
 	);
 }

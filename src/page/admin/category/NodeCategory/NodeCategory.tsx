@@ -31,10 +31,10 @@ function NodeCategory({level, node}: PropsNodeCategory) {
 				<div className={styles.info}>
 					<FlexLayout column gap-4>
 						<p className={styles.name}>{node.name}</p>
-						<FlexLayout row items-center gap-8>
+						<FlexLayout row items-center gap-8 wrap>
 							<p className={styles.note}>Màu sắc: </p>
 							{node?.colors?.length > 0 ? (
-								<FlexLayout row items-center gap-4>
+								<FlexLayout row items-center gap-4 wrap>
 									{node?.colors?.map((c) => (
 										<TagRefItem key={c._id} name={c.name} />
 									))}
@@ -43,10 +43,10 @@ function NodeCategory({level, node}: PropsNodeCategory) {
 								<p className={styles.empty}>Trống!</p>
 							)}
 						</FlexLayout>
-						<FlexLayout row items-center gap-8>
+						<FlexLayout row items-center gap-8 wrap>
 							<p className={styles.note}>Kích cỡ: </p>
 							{node?.sizes?.length > 0 ? (
-								<FlexLayout row items-center gap-4>
+								<FlexLayout row items-center gap-4 wrap>
 									{node?.sizes?.map((c) => (
 										<TagRefItem key={c._id} name={c.name} />
 									))}
@@ -55,10 +55,10 @@ function NodeCategory({level, node}: PropsNodeCategory) {
 								<p className={styles.empty}>Trống!</p>
 							)}
 						</FlexLayout>
-						<FlexLayout row items-center gap-8>
+						<FlexLayout row items-center gap-8 wrap>
 							<p className={styles.note}>Thương hiệu: </p>
 							{node?.trademarks?.length > 0 ? (
-								<FlexLayout row items-center gap-4>
+								<FlexLayout row items-center gap-4 wrap>
 									{node?.trademarks?.map((c) => (
 										<TagRefItem key={c._id} name={c.name} />
 									))}
@@ -69,7 +69,7 @@ function NodeCategory({level, node}: PropsNodeCategory) {
 						</FlexLayout>
 					</FlexLayout>
 				</div>
-				<FlexLayout row>
+				<FlexLayout row wrap>
 					<IconActionTable
 						icon={<BoxAdd color='#F79009' size={24} />}
 						tooltip='Thêm sản phẩm'

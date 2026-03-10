@@ -72,20 +72,26 @@ function MainDetailProduct({}: PropsMainDetailProduct) {
 						},
 						{
 							path: '',
-							title: `Chi tiết sản phẩm: ${product?.code}`,
+							title: `Chi tiết sản phẩm: ${product?.name}`,
 						},
 					]}
 					actions={
-						<FlexLayout row gap-6>
-							<Button p_8_24 rounded_8 red bold onClick={() => setOpenDelete(true)}>
-								Xóa sản phẩm
-							</Button>
-							<Button p_8_24 rounded_8 bright-cyan bold href={`${PATH.AdminUpdateProduct}?_id=${_id}`}>
-								Chỉnh sửa sản phẩm
-							</Button>
-							<Button p_8_24 rounded_8 white bold onClick={() => router.back()}>
-								Quay lại
-							</Button>
+						<FlexLayout row gap-6 wrap fit-height>
+							<div>
+								<Button p_8_24 rounded_8 red bold onClick={() => setOpenDelete(true)}>
+									Xóa sản phẩm
+								</Button>
+							</div>
+							<div>
+								<Button p_8_24 rounded_8 bright-cyan bold href={`${PATH.AdminUpdateProduct}?_id=${_id}`}>
+									Chỉnh sửa sản phẩm
+								</Button>
+							</div>
+							<div>
+								<Button p_8_24 rounded_8 white bold onClick={() => router.back()}>
+									Quay lại
+								</Button>
+							</div>
 						</FlexLayout>
 					}
 				/>
@@ -95,8 +101,8 @@ function MainDetailProduct({}: PropsMainDetailProduct) {
 						<WrapperForm title='Thông tin sản phẩm'>
 							<FlexLayout column gap-16>
 								<GridColumn col_3>
-									<InfoDetail name='Mã sản phẩm' value={product?.code} />
 									<InfoDetail name='Tên sản phẩm' value={product?.name} />
+									<InfoDetail name='Kích thước đóng gói' value={product?.pack_size} />
 									<InfoDetail name='Giá sản phẩm' value={convertCoin(product?.price || 0)} />
 									<InfoDetail name='Danh mục' value={product?.category?.name} />
 									<InfoDetail name='Màu sắc' value={product?.color?.name} />
@@ -107,18 +113,6 @@ function MainDetailProduct({}: PropsMainDetailProduct) {
 								<InfoDetail name='Mô tả ngắn' value={product?.short_description} />
 								<InfoDetail name='Ảnh sản phẩm' value='' images={product?.images} />
 							</FlexLayout>
-						</WrapperForm>
-
-						<WrapperForm title='Mô tả chi tiết'>
-							<div dangerouslySetInnerHTML={{__html: product?.detail_description || ''}}></div>
-						</WrapperForm>
-
-						<WrapperForm title='Thông số kĩ thuật'>
-							<GridColumn col_3>
-								{product?.specifications?.map((spec, idx) => (
-									<InfoDetail key={idx} name={spec.name} value={spec?.description} />
-								))}
-							</GridColumn>
 						</WrapperForm>
 					</FlexLayout>
 				</FlexItem>

@@ -4,10 +4,9 @@ export interface IDetailProduct {
 	_id: string;
 	name: string;
 	price: number;
-	code: string;
+	pack_size: string;
 	images: string[];
 	short_description: string;
-	detail_description: string;
 	category: {
 		_id: string;
 		name: string;
@@ -25,8 +24,4 @@ export interface IDetailProduct {
 		name: string;
 	};
 	is_featured: boolean;
-	specifications: {
-		name: string;
-		description: string;
-	}[];
 }

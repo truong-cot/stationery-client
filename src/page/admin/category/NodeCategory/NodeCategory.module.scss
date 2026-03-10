@@ -4,6 +4,7 @@
 	border-radius: 6px;
 	display: flex;
 	align-items: flex-start;
+	flex-wrap: wrap;
 	gap: 8px;
 
 	& + & {
