@@ -132,7 +132,6 @@ function SearchProduct({widthFull = false, hiddenFilterCategory = false}: PropsS
 												style={{borderRadius: '8px'}}
 											/>
 											<div className={styles.info}>
-												<p>{product.code}</p>
 												<Tippy key={product._id} content={product.name}>
 													<Link
 														href={`${PATH.Product}/${product._id}`}
@@ -142,6 +141,7 @@ function SearchProduct({widthFull = false, hiddenFilterCategory = false}: PropsS
 														{product.name}
 													</Link>
 												</Tippy>
+												<p>{product.pack_size}</p>
 												<p>{convertCoin(product.price)}đ</p>
 											</div>
 										</div>

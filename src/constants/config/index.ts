@@ -45,24 +45,24 @@ export const menusAdmin: {
 		path: PATH.AdminAccount,
 		pathActive: PATH.AdminAccount,
 	},
-	{
-		title: 'Quản lý màu sắc',
-		icon: Colorfilter,
-		path: PATH.AdminColor,
-		pathActive: PATH.AdminColor,
-	},
-	{
-		title: 'Quản lý kích cỡ',
-		icon: Size,
-		path: PATH.AdminSize,
-		pathActive: PATH.AdminSize,
-	},
-	{
-		title: 'Quản lý thương hiệu',
-		icon: TriangleLogo,
-		path: PATH.AdminTrademark,
-		pathActive: PATH.AdminTrademark,
-	},
+	// {
+	// 	title: 'Quản lý màu sắc',
+	// 	icon: Colorfilter,
+	// 	path: PATH.AdminColor,
+	// 	pathActive: PATH.AdminColor,
+	// },
+	// {
+	// 	title: 'Quản lý kích cỡ',
+	// 	icon: Size,
+	// 	path: PATH.AdminSize,
+	// 	pathActive: PATH.AdminSize,
+	// },
+	// {
+	// 	title: 'Quản lý thương hiệu',
+	// 	icon: TriangleLogo,
+	// 	path: PATH.AdminTrademark,
+	// 	pathActive: PATH.AdminTrademark,
+	// },
 	{
 		title: 'Quản lý danh mục',
 		icon: Category2,

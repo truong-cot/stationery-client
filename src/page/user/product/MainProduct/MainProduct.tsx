@@ -42,6 +42,7 @@ function MainProduct({}: PropsMainProduct) {
 			httpRequest({
 				http: clientServices.catalogColor({category_id: _categoryId as string}),
 			}),
+		enabled: !!_categoryId,
 	});
 
 	const {data: sizes = []} = useQuery<ICatalog[]>({
@@ -50,6 +51,7 @@ function MainProduct({}: PropsMainProduct) {
 			httpRequest({
 				http: clientServices.catalogSize({category_id: _categoryId as string}),
 			}),
+		enabled: !!_categoryId,
 	});
 
 	const {data: trademarks = []} = useQuery<ICatalog[]>({
@@ -58,6 +60,7 @@ function MainProduct({}: PropsMainProduct) {
 			httpRequest({
 				http: clientServices.catalogTrademark({category_id: _categoryId as string}),
 			}),
+		enabled: !!_categoryId,
 	});
 
 	const {data: setupPrices = []} = useQuery<ICatalogSetupPrice[]>({

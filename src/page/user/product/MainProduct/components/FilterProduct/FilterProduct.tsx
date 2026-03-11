@@ -237,6 +237,7 @@ function NodeCategory({
 
 	const {_categoryId} = getQueryParams(searchParams);
 
+	const isRoot = level === 0;
 	const isActive = activePath.includes(node._id);
 
 	const [open, setOpen] = useState<boolean>(level <= 0 || isActive);
@@ -278,12 +279,14 @@ function NodeCategory({
 						updateQueryParams(router, pathname, searchParams, {
 							...((_categoryId as string) == node._id
 								? {
-										delete: ['_categoryId', '_colorId', '_sizeId', '_trademarkId'],
+										delete: ['_categoryId', '_categoryParentId', '_colorId', '_sizeId', '_trademarkId'],
 									}
 								: {
 										set: {
 											_categoryId: node._id,
+											...(isRoot ? {_categoryParentId: node._id} : {}),
 										},
+										...(!isRoot ? {delete: ['_categoryParentId']} : {}),
 									}),
 							options: {
 								scroll: false,

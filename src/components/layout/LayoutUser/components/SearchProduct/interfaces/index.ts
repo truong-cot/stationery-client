@@ -7,6 +7,6 @@ export interface ISearchProduct {
 	_id: string;
 	name: string;
 	price: number;
-	code: string;
+	pack_size: string;
 	images: string[];
 }

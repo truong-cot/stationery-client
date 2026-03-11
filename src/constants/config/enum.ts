@@ -41,5 +41,6 @@ export const QUERY_KEY = {
 	clientProductSimilar: 'client-product-similar',
 	clientProductNew: 'client-product-new',
 	clientPageListProduct: 'client-page-list-product',
-	clientCatalogCategoryParent: 'catalog-category-parent',
+	clientCatalogCategoryParent: 'client-catalog-category-parent',
+	clientDirectSubCategory: 'client-direct-sub-category',
 };

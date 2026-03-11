@@ -21,7 +21,7 @@ function QuickFilterCategory({}: PropsQuickFilterCategory) {
 
 	const pathname = usePathname();
 
-	const {_categoryId} = getQueryParams(searchParams);
+	const {_categoryParentId} = getQueryParams(searchParams);
 
 	const hiddenRoutes = ['/admin', '/login'];
 
@@ -37,10 +37,10 @@ function QuickFilterCategory({}: PropsQuickFilterCategory) {
 	}, [isHiddenRoute]);
 
 	useEffect(() => {
-		if (!!_categoryId) {
-			setCategoryId(_categoryId as string);
+		if (!!_categoryParentId) {
+			setCategoryId(_categoryParentId as string);
 		}
-	}, [_categoryId]);
+	}, [_categoryParentId]);
 
 	const {data: categorys = []} = useQuery<ICatalog[]>({
 		queryKey: [QUERY_KEY.clientCatalogCategoryParent],
@@ -53,7 +53,10 @@ function QuickFilterCategory({}: PropsQuickFilterCategory) {
 	const handleQuickFilterCategory = () => {
 		const params = new URLSearchParams();
 
-		if (categoryId) params.set('_categoryId', categoryId);
+		if (categoryId) {
+			params.set('_categoryParentId', categoryId);
+			params.set('_categoryId', categoryId);
+		}
 
 		const query = params.toString();
 

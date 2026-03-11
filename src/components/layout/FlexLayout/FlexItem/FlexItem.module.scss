@@ -1,31 +1,31 @@
 .scrollbar {
-  /* Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: #149343 transparent;
+	/* Firefox */
+	scrollbar-width: thin;
+	scrollbar-color: #149343 transparent;
 
-  /* Webkit */
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
+	/* Webkit */
+	&::-webkit-scrollbar {
+		width: 8px;
+	}
 
-  &::-webkit-scrollbar-thumb {
-    background-color: #149343;
-    border-radius: 4px;
-  }
+	&::-webkit-scrollbar-thumb {
+		background-color: #149343;
+		border-radius: 4px;
+	}
 
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: #149343;
-  }
+	&::-webkit-scrollbar-thumb:hover {
+		background-color: #149343;
+	}
 }
 
 .flex-1 {
-  flex: 1;
+	flex: 1;
 }
 
 .overflow-x {
-  overflow-x: auto;
+	overflow-x: auto;
 }
 
 .overflow-y {
-  overflow-y: auto;
+	overflow-y: auto;
 }

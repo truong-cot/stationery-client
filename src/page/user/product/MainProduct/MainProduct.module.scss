@@ -22,6 +22,10 @@
 	display: grid;
 	grid-template-columns: 300px 1fr;
 	gap: 24px;
+
+	& > div:last-child {
+		min-width: 0;
+	}
 }
 
 .filter_product_mobile {

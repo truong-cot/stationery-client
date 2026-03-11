@@ -9,6 +9,9 @@ import {PATH} from '~/constants/config';
 function NodeCategoryHome({node, level}: PropsNodeCategoryHome) {
 	const [open, setOpen] = useState<boolean>(level <= 0);
 
+	const href =
+		level === 0 ? `${PATH.Product}?_categoryId=${node._id}&_categoryParentId=${node._id}` : `${PATH.Product}?_categoryId=${node._id}`;
+
 	return (
 		<Fragment>
 			<div
@@ -35,7 +38,7 @@ function NodeCategoryHome({node, level}: PropsNodeCategoryHome) {
 						}}
 					/>
 				)}
-				<Link href={`${PATH.Product}?_categoryId=${node._id}`} className={styles.node_name}>
+				<Link href={href} className={styles.node_name}>
 					{node.name}
 				</Link>
 			</div>

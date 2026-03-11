@@ -54,6 +54,9 @@ const clientServices = {
 	getContact: () => {
 		return axiosClient.get(`/client/contact`);
 	},
+	directSubCategory: (payload: {category_id: string}) => {
+		return axiosClient.post(`/client/direct-sub-category`, payload);
+	},
 };
 
 export default clientServices;

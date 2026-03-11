@@ -240,18 +240,18 @@ function MainProduct({}: PropsMainProduct) {
 										title: 'Danh mục',
 										render: (row, _) => <>{row?.category.name}</>,
 									},
-									{
-										title: 'Màu sắc',
-										render: (row, _) => <>{row?.color.name || '---'}</>,
-									},
-									{
-										title: 'Kích cỡ',
-										render: (row, _) => <>{row?.size.name || '---'}</>,
-									},
-									{
-										title: 'Thương hiệu',
-										render: (row, _) => <>{row?.trademark.name || '---'}</>,
-									},
+									// {
+									// 	title: 'Màu sắc',
+									// 	render: (row, _) => <>{row?.color.name || '---'}</>,
+									// },
+									// {
+									// 	title: 'Kích cỡ',
+									// 	render: (row, _) => <>{row?.size.name || '---'}</>,
+									// },
+									// {
+									// 	title: 'Thương hiệu',
+									// 	render: (row, _) => <>{row?.trademark.name || '---'}</>,
+									// },
 									{
 										title: 'SP nổi bật',
 										render: (row, _) => <>{row?.is_featured ? 'Có' : 'Không'}</>,

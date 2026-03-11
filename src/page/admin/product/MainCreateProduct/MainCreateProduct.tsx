@@ -157,6 +157,7 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 
 		const dataImages = await httpRequest({
 			setLoading,
+			showMessageFailed: true,
 			http: uploadServices.uploadMultil(files),
 		});
 
@@ -293,7 +294,7 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 											getOptionValue={(opt) => opt._id}
 											readOnly={!!_idCategory}
 										/>
-										<div>
+										{/* <div>
 											<Select
 												placeholder='Lựa chọn'
 												label='Màu sắc'
@@ -356,7 +357,7 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 												getOptionLabel={(opt) => opt.name}
 												getOptionValue={(opt) => opt._id}
 											/>
-										</div>
+										</div> */}
 									</GridColumn>
 									<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
 									<div>

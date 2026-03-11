@@ -20,6 +20,7 @@ function CardProduct({product}: PropsCardProduct) {
 				src: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
 				thumb: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
 				subHtml: `Ảnh sản phẩm ${index + 1}`,
+				downloadUrl: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
 			})) || [],
 		[product?.images]
 	);
@@ -28,6 +29,7 @@ function CardProduct({product}: PropsCardProduct) {
 		<LightGallery
 			dynamic
 			dynamicEl={lightGalleryItems}
+			download={true}
 			plugins={[lgZoom, lgShare]}
 			speed={500}
 			onInit={(detail: any) => {

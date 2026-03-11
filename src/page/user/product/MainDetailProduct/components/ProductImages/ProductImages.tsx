@@ -24,6 +24,7 @@ function ProductImages({images}: PropsProductImages) {
 				src: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
 				thumb: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
 				subHtml: `Ảnh sản phẩm ${index + 1}`,
+				downloadUrl: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
 			})),
 		[images]
 	);
@@ -32,6 +33,7 @@ function ProductImages({images}: PropsProductImages) {
 		<LightGallery
 			dynamic
 			dynamicEl={lightGalleryItems}
+			download={true}
 			plugins={[lgZoom, lgShare]}
 			speed={500}
 			onInit={(detail: any) => {

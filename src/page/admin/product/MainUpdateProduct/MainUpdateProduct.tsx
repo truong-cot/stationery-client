@@ -333,7 +333,7 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt._id}
 										/>
-										<div>
+										{/* <div>
 											<Select
 												placeholder='Lựa chọn'
 												label='Màu sắc'
@@ -396,7 +396,7 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 												getOptionLabel={(opt) => opt.name}
 												getOptionValue={(opt) => opt._id}
 											/>
-										</div>
+										</div> */}
 									</GridColumn>
 									<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
 									<div>

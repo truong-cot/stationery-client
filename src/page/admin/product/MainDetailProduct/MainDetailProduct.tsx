@@ -105,9 +105,9 @@ function MainDetailProduct({}: PropsMainDetailProduct) {
 									<InfoDetail name='Kích thước đóng gói' value={product?.pack_size} />
 									<InfoDetail name='Giá sản phẩm' value={convertCoin(product?.price || 0)} />
 									<InfoDetail name='Danh mục' value={product?.category?.name} />
-									<InfoDetail name='Màu sắc' value={product?.color?.name} />
+									{/* <InfoDetail name='Màu sắc' value={product?.color?.name} />
 									<InfoDetail name='Kích cỡ' value={product?.size?.name} />
-									<InfoDetail name='Thương hiệu' value={product?.trademark?.name} />
+									<InfoDetail name='Thương hiệu' value={product?.trademark?.name} /> */}
 									<InfoDetail name='Sản phẩm nổi bật' value={product?.is_featured ? 'Có' : 'Không'} />
 								</GridColumn>
 								<InfoDetail name='Mô tả ngắn' value={product?.short_description} />
