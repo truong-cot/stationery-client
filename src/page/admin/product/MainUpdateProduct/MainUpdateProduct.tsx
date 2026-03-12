@@ -50,7 +50,7 @@ const initForm: IFormUpdateProduct = {
 	color_id: '',
 	size_id: '',
 	trademark_id: '',
-	is_featured: '1',
+	is_featured: '0',
 };
 
 function MainUpdateProduct({}: PropsMainUpdateProduct) {
@@ -398,7 +398,7 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 											/>
 										</div> */}
 									</GridColumn>
-									<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
+									{/* <TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' /> */}
 									<div>
 										<UploadMultipleFile
 											label={

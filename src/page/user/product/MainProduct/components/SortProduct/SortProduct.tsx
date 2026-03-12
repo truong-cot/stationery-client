@@ -1,6 +1,6 @@
 import {ArrowDown2} from 'iconsax-react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {useContext, useState} from 'react';
+import {useContext, useMemo, useState} from 'react';
 import FlexLayout from '~/components/layout/FlexLayout';
 import TagRefItem from '~/components/utils/TagRefItem';
 import {ContextProduct, ICatalog, IContextProduct} from '~/contexts/ContextProduct';
@@ -17,12 +17,15 @@ import {QUERY_KEY} from '~/constants/config/enum';
 import clientServices from '~/services/client.service';
 import {httpRequest} from '~/funcs/httpRequest';
 
+const LIMIT_SHOW_DIRECT_SUB_CATEGORY = 15;
+
 function SortProduct({}: PropsSortProduct) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
 	const [openSort, setOpenSort] = useState<boolean>(false);
+	const [showAll, setShowAll] = useState<boolean>(false);
 
 	const {_categoryId, _sizeId, _trademarkId, _priceId, _colorId, _sort, _categoryParentId} = getQueryParams(searchParams);
 
@@ -37,29 +40,42 @@ function SortProduct({}: PropsSortProduct) {
 		enabled: !!_categoryParentId,
 	});
 
+	const showDirectSubCategorys: ICatalog[] = useMemo(() => {
+		if (!showAll) return directSubCategorys.slice(0, LIMIT_SHOW_DIRECT_SUB_CATEGORY);
+		return directSubCategorys;
+	}, [showAll, directSubCategorys]);
+
 	return (
 		<div className={styles.main_sort_product}>
 			{directSubCategorys?.length > 0 && (
-				<div className={styles.tabs}>
-					{directSubCategorys?.map((c) => (
-						<div
-							key={c?._id}
-							className={clsx(styles.tab, {[styles.active]: c._id == (_categoryId as string)})}
-							onClick={() =>
-								updateQueryParams(router, pathname, searchParams, {
-									set: {
-										_categoryId: c._id,
-									},
-									delete: ['_colorId', '_sizeId', '_trademarkId'],
-									options: {
-										scroll: false,
-									},
-								})
-							}
-						>
-							{c?.name}
-						</div>
-					))}
+				<div className={styles.tabs_wrapper}>
+					<div className={styles.tabs}>
+						{showDirectSubCategorys?.map((c) => (
+							<div
+								key={c?._id}
+								className={clsx(styles.tab, {[styles.active]: c._id == (_categoryId as string)})}
+								onClick={() =>
+									updateQueryParams(router, pathname, searchParams, {
+										set: {
+											_categoryId: c._id,
+										},
+										delete: ['_colorId', '_sizeId', '_trademarkId'],
+										options: {
+											scroll: false,
+										},
+									})
+								}
+							>
+								{c?.name}
+							</div>
+						))}
+					</div>
+
+					{directSubCategorys.length > LIMIT_SHOW_DIRECT_SUB_CATEGORY && (
+						<p className={styles.more_btn} onClick={() => setShowAll((prev) => !prev)}>
+							{showAll ? 'Ẩn bớt' : 'Xem thêm'}
+						</p>
+					)}
 				</div>
 			)}
 			<div className={styles.sort_product}>
