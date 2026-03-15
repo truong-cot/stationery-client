@@ -13,7 +13,7 @@ interface PropsPaginationQuery {
 	dependencies?: React.DependencyList;
 }
 
-export const LIMIT = 16;
+export const LIMIT = 40;
 
 function PaginationQuery({total, currentPage, dependencies = []}: PropsPaginationQuery) {
 	const router = useRouter();

@@ -10,6 +10,7 @@ import {useMemo, useRef} from 'react';
 import LightGallery from 'lightgallery/react';
 import lgShare from 'lightgallery/plugins/share';
 import lgZoom from 'lightgallery/plugins/zoom';
+import {HeartTick} from 'iconsax-react';
 
 function CardProduct({product}: PropsCardProduct) {
 	const refLightGallery = useRef<any>(null);
@@ -54,6 +55,11 @@ function CardProduct({product}: PropsCardProduct) {
 					<p className={styles.code}>{product?.pack_size}</p>
 					<p className={styles.price}>{convertCoin(product?.price || 0)} ₫</p>
 				</div>
+				{product?.is_featured && (
+					<div className={styles.featured}>
+						<HeartTick size='20' color='#ee0033' variant='Bold' />
+					</div>
+				)}
 			</div>
 		</LightGallery>
 	);
