@@ -1,5 +1,6 @@
 import {Metadata} from 'next';
 import {Suspense} from 'react';
+import Adsense from '~/components/seo/Adsense';
 import {buildHomePageSEO, seoKeywords, SITE_URL} from '~/funcs/seo';
 import BannerHome from '~/page/user/home/BannerHome';
 import CategoryHome from '~/page/user/home/CategoryHome';
@@ -63,6 +64,7 @@ export default function Page() {
 	return (
 		<Suspense>
 			<BannerHome />
+			<Adsense slot='2409080685' />
 			<CategoryHome />
 			<NewProducts />
 			<FeaturedProducts />

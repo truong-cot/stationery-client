@@ -20,6 +20,7 @@ import ListProduct from './components/ListProduct';
 import SortProduct from './components/SortProduct';
 import type {PropsMainProduct} from './interfaces';
 import styles from './MainProduct.module.scss';
+import Adsense from '~/components/seo/Adsense';
 
 function MainProduct({}: PropsMainProduct) {
 	const searchParams = useSearchParams();
@@ -77,6 +78,7 @@ function MainProduct({}: PropsMainProduct) {
 		>
 			<div className={styles.main_product}>
 				<LayoutGrid>
+					<Adsense slot='2217508996' />
 					<div className={styles.head}>
 						<div className={styles.menu_line} onClick={() => setOpenTabsMobile(true)}>
 							<Image alt='Menu line' src={icons.menuLine} width={20} height={20} />

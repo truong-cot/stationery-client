@@ -7,6 +7,7 @@ import {convertCoin} from '~/funcs/convertCoin';
 import {useSelector} from 'react-redux';
 import {RootState} from '~/store';
 import {formatPhoneVN} from '~/funcs/optionConvert';
+import Adsense from '~/components/seo/Adsense';
 
 function ProductInfo({product}: PropsProductInfo) {
 	const {contact} = useSelector((state: RootState) => state.user);
@@ -49,6 +50,8 @@ function ProductInfo({product}: PropsProductInfo) {
 			<p className={styles.contact}>
 				Gọi ngay <b>{formatPhoneVN(contact?.phone) || 'Đang cập nhật!'}</b> để có được tư vấn tốt nhất!
 			</p>
+
+			<Adsense slot='9269273552' />
 		</div>
 	);
 }

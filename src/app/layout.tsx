@@ -17,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import AppProvider from '~/contexts/AppProvider';
 import {DEFAULT_OG_IMAGE, SITE_URL} from '~/funcs/seo';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
 	title: 'Văn phòng phẩm Huyền Anh',
@@ -58,6 +59,9 @@ export const metadata: Metadata = {
 		description: 'Khám phá, tra cứu và xem thông tin văn phòng phẩm giá cả tốt.',
 		images: [DEFAULT_OG_IMAGE],
 	},
+	other: {
+		'google-adsense-account': 'ca-pub-6676484167876358',
+	},
 };
 
 export const viewport: Viewport = {
@@ -72,6 +76,15 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='vi'>
+			<head>
+				<Script
+					async
+					id='adsense-script'
+					strategy='beforeInteractive'
+					src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6676484167876358'
+					crossOrigin='anonymous'
+				/>
+			</head>
 			<body>
 				<AppProvider>{children}</AppProvider>
 			</body>

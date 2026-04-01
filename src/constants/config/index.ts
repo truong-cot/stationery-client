@@ -10,7 +10,6 @@ export const PATH = {
 	Any: '/any',
 	Home: '/',
 	Product: '/product',
-	About: '/about',
 
 	AuthLogin: '/login',
 

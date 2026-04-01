@@ -16,6 +16,7 @@ import clientServices from '~/services/client.service';
 import DataWrapper from '~/components/utils/DataWrapper';
 import GridColumn from '~/components/layout/GridColumn';
 import CardProduct from '../CardProduct';
+import Adsense from '~/components/seo/Adsense';
 
 function MainDetailProduct({product}: PropsMainDetailProduct) {
 	const params = useParams();
@@ -54,6 +55,7 @@ function MainDetailProduct({product}: PropsMainDetailProduct) {
 				<ProductInfo product={product} />
 			</div>
 
+			<Adsense slot='2025937300' />
 			<section className={styles.section}>
 				<div className={styles.head_section}>
 					<h4>Sản phẩm tương tự</h4>
