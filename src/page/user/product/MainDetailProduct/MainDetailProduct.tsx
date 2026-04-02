@@ -55,7 +55,7 @@ function MainDetailProduct({product}: PropsMainDetailProduct) {
 				<ProductInfo product={product} />
 			</div>
 
-			<Adsense slot='2025937300' />
+			{/* <Adsense slot='2025937300' /> */}
 			<section className={styles.section}>
 				<div className={styles.head_section}>
 					<h4>Sản phẩm tương tự</h4>

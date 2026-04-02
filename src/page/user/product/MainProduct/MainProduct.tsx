@@ -78,7 +78,7 @@ function MainProduct({}: PropsMainProduct) {
 		>
 			<div className={styles.main_product}>
 				<LayoutGrid>
-					<Adsense slot='2217508996' />
+					{/* <Adsense slot='2217508996' /> */}
 					<div className={styles.head}>
 						<div className={styles.menu_line} onClick={() => setOpenTabsMobile(true)}>
 							<Image alt='Menu line' src={icons.menuLine} width={20} height={20} />

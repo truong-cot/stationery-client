@@ -64,7 +64,7 @@ export default function Page() {
 	return (
 		<Suspense>
 			<BannerHome />
-			<Adsense slot='2409080685' />
+			{/* <Adsense slot='2409080685' /> */}
 			<CategoryHome />
 			<NewProducts />
 			<FeaturedProducts />

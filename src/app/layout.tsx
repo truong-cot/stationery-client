@@ -80,10 +80,10 @@ export default function RootLayout({
 				<Script
 					async
 					id='adsense-script'
-					strategy='beforeInteractive'
+					strategy='lazyOnload'
 					src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6676484167876358'
 					crossOrigin='anonymous'
-				/>
+				></Script>
 			</head>
 			<body>
 				<AppProvider>{children}</AppProvider>

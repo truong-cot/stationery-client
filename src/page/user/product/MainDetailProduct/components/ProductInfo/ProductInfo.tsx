@@ -51,7 +51,7 @@ function ProductInfo({product}: PropsProductInfo) {
 				Gọi ngay <b>{formatPhoneVN(contact?.phone) || 'Đang cập nhật!'}</b> để có được tư vấn tốt nhất!
 			</p>
 
-			<Adsense slot='9269273552' />
+			{/* <Adsense slot='9269273552' /> */}
 		</div>
 	);
 }
