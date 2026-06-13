@@ -1,4 +1,4 @@
-import {Element3, SecurityUser, Colorfilter, Size, TriangleLogo, Category2, Book1, Moneys, SmsEdit} from 'iconsax-reactjs';
+import { Book1, Category2, Moneys, SecurityUser, SmsEdit } from 'iconsax-reactjs';
 
 export const KEY_STORE = 'stationery-client';
 

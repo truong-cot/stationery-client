@@ -23,18 +23,18 @@ function QuickFilterCategory({}: PropsQuickFilterCategory) {
 
 	const {_categoryParentId} = getQueryParams(searchParams);
 
-	const hiddenRoutes = ['/admin', '/login'];
+	const showRoutes = [PATH.Home];
 
-	const isHiddenRoute = hiddenRoutes.some((route) => pathname.startsWith(route));
+	const isShowRoute = showRoutes.some((route) => (route === '/' ? pathname === '/' : pathname.startsWith(route)));
 
 	const [open, setOpen] = useState<boolean>(false);
 	const [categoryId, setCategoryId] = useState<string>('');
 
 	useEffect(() => {
-		if (!isHiddenRoute) {
+		if (isShowRoute) {
 			setOpen(true);
 		}
-	}, [isHiddenRoute]);
+	}, [isShowRoute]);
 
 	useEffect(() => {
 		if (!!_categoryParentId) {
