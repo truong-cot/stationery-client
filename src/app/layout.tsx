@@ -16,14 +16,23 @@ import 'tippy.js/dist/tippy.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 import AppProvider from '~/contexts/AppProvider';
-import {DEFAULT_OG_IMAGE, SITE_URL} from '~/funcs/seo';
+import {DEFAULT_OG_IMAGE, seoKeywords, SITE_URL} from '~/funcs/seo';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-	title: 'Văn phòng phẩm Huyền Anh',
-	description: 'Khám phá, tra cứu và xem thông tin văn phòng phẩm giá cả tốt.',
+	title: {
+		default: 'Văn phòng phẩm Huyền Anh - Đồ dùng học sinh & văn phòng phẩm giá tốt',
+		template: '%s | Văn phòng phẩm Huyền Anh',
+	},
+	description:
+		'Văn phòng phẩm Huyền Anh chuyên cung cấp sỉ lẻ đồ dùng học tập, thiết bị văn phòng phẩm, bút viết, giấy in, sổ vở chính hãng với giá cả cạnh tranh nhất.',
+	keywords: seoKeywords,
 	alternates: {
 		canonical: SITE_URL,
+	},
+	icons: {
+		icon: '/favicon.ico',
+		apple: '/favicon.ico',
 	},
 	robots: {
 		index: true,
@@ -38,16 +47,17 @@ export const metadata: Metadata = {
 	},
 	metadataBase: new URL(SITE_URL),
 	openGraph: {
-		title: 'Văn phòng phẩm Huyền Anh',
-		description: 'Khám phá, tra cứu và xem thông tin văn phòng phẩm giá cả tốt.',
+		title: 'Văn phòng phẩm Huyền Anh - Đồ dùng học sinh & văn phòng phẩm giá tốt',
+		description:
+			'Văn phòng phẩm Huyền Anh chuyên cung cấp sỉ lẻ đồ dùng học tập, thiết bị văn phòng phẩm, bút viết, giấy in chính hãng với giá tốt nhất.',
 		url: SITE_URL,
-		siteName: 'Xanh Stay',
+		siteName: 'Văn phòng phẩm Huyền Anh',
 		images: [
 			{
 				url: DEFAULT_OG_IMAGE,
 				width: 1200,
 				height: 630,
-				alt: 'Văn phòng phẩm giá tốt.',
+				alt: 'Văn phòng phẩm Huyền Anh',
 			},
 		],
 		locale: 'vi_VN',
@@ -55,8 +65,9 @@ export const metadata: Metadata = {
 	},
 	twitter: {
 		card: 'summary_large_image',
-		title: 'Văn phòng phẩm giá tốt.',
-		description: 'Khám phá, tra cứu và xem thông tin văn phòng phẩm giá cả tốt.',
+		title: 'Văn phòng phẩm Huyền Anh - Đồ dùng học sinh & văn phòng phẩm giá tốt',
+		description:
+			'Văn phòng phẩm Huyền Anh chuyên cung cấp sỉ lẻ đồ dùng học tập, thiết bị văn phòng phẩm chính hãng với giá tốt nhất.',
 		images: [DEFAULT_OG_IMAGE],
 	},
 	other: {
@@ -69,6 +80,23 @@ export const viewport: Viewport = {
 	initialScale: 1,
 };
 
+const organizationJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'OfficeSupplyStore',
+	name: 'Văn phòng phẩm Huyền Anh',
+	url: SITE_URL,
+	logo: `${SITE_URL}/favicon.ico`,
+	image: DEFAULT_OG_IMAGE,
+	telephone: '0384728493',
+	priceRange: '₫₫',
+	description:
+		'Chuyên cung cấp đồ dùng học tập, văn phòng phẩm & quà lưu niệm chính hãng với giá tốt nhất.',
+	address: {
+		'@type': 'PostalAddress',
+		addressCountry: 'VN',
+	},
+};
+
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -77,6 +105,10 @@ export default function RootLayout({
 	return (
 		<html lang='vi'>
 			<head>
+				<script
+					type='application/ld+json'
+					dangerouslySetInnerHTML={{__html: JSON.stringify(organizationJsonLd)}}
+				/>
 				<Script
 					async
 					id='adsense-script'

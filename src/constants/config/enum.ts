@@ -28,6 +28,9 @@ export const QUERY_KEY = {
 	pageListProduct: 'page-list-product',
 	detailProduct: 'detail-product',
 
+	pageListOrder: 'page-list-order',
+	detailOrder: 'detail-order',
+
 	detailContact: 'detail-contact',
 
 	clientCatalogCategory: 'client-catalog-category',
@@ -44,3 +47,16 @@ export const QUERY_KEY = {
 	clientCatalogCategoryParent: 'client-catalog-category-parent',
 	clientDirectSubCategory: 'client-direct-sub-category',
 };
+
+export enum TYPE_DATE {
+	ALL = -1,
+	TODAY = 1,
+	YESTERDAY = 2,
+	THIS_WEEK = 3,
+	LAST_WEEK = 4,
+	THIS_MONTH = 5,
+	LAST_MONTH = 6,
+	THIS_YEAR = 7,
+	LAST_7_DAYS = 8,
+	LUA_CHON = 9,
+}

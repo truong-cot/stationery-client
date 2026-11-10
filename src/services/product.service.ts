@@ -6,11 +6,11 @@ const productServices = {
 		price: number;
 		pack_size: string;
 		images: string[];
-		short_description: string;
+		short_description?: string;
 		category_id: string;
-		color_id: string;
-		size_id: string;
-		trademark_id: string;
+		color_ids: string[];
+		size_id?: string;
+		trademark_id?: string;
 		is_featured: boolean;
 	}) => {
 		return axiosClient.post(`/product/create`, payload);
@@ -21,11 +21,11 @@ const productServices = {
 		price: number;
 		pack_size: string;
 		images: string[];
-		short_description: string;
+		short_description?: string;
 		category_id: string;
-		color_id: string;
-		size_id: string;
-		trademark_id: string;
+		color_ids: string[];
+		size_id?: string;
+		trademark_id?: string;
 		is_featured: boolean;
 	}) => {
 		return axiosClient.post(`/product/update`, payload);
@@ -34,10 +34,10 @@ const productServices = {
 		page: number;
 		pageSize: number;
 		keyword: string;
-		category_id: string;
-		color_id: string;
-		size_id: string;
-		trademark_id: string;
+		category_id?: string;
+		color_id?: string;
+		size_id?: string;
+		trademark_id?: string;
 	}) => {
 		return axiosClient.post(`/product/page-list-product`, payload);
 	},

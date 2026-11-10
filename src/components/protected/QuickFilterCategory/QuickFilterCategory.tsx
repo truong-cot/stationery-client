@@ -1,10 +1,13 @@
 'use client';
 
 import {useQuery} from '@tanstack/react-query';
+import clsx from 'clsx';
+import {Category2, SearchNormal1, TickCircle} from 'iconsax-react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useEffect, useState} from 'react';
 import {IoClose} from 'react-icons/io5';
 import Button from '~/components/common/Button';
+import CategoryIcon from '~/components/common/CategoryIcon';
 import Popup from '~/components/common/Popup';
 import {PATH} from '~/constants/config';
 import {QUERY_KEY} from '~/constants/config/enum';
@@ -65,36 +68,72 @@ function QuickFilterCategory({}: PropsQuickFilterCategory) {
 		return;
 	};
 
+	const handleSelectCategory = (id: string) => {
+		setCategoryId((prev) => (prev === id ? '' : id));
+	};
+
 	return (
-		<Popup open={open} onClose={() => setOpen(false)} isFull={true}>
+		<Popup open={open} onClose={() => setOpen(false)}>
 			<div className={styles.quick_filter_category}>
-				<h4>Tìm kiếm sản phẩm theo danh mục</h4>
-				<div className={styles.line}></div>
+				<div className={styles.header}>
+					<div className={styles.header_left}>
+						<div className={styles.header_icon}>
+							<Category2 size='22' color='#00b7c4' variant='Bold' />
+						</div>
+						<div>
+							<h4>Tìm kiếm sản phẩm theo danh mục</h4>
+							<p>Chọn nhanh nhóm sản phẩm bạn đang quan tâm</p>
+						</div>
+					</div>
+					<button type='button' className={styles.close} onClick={() => setOpen(false)} aria-label='Đóng hộp thoại'>
+						<IoClose size={22} color='#64748b' />
+					</button>
+				</div>
 
 				<div className={styles.main}>
-					{categorys?.map((c) => (
-						<div key={c._id} className={styles.filter_item} onClick={() => setCategoryId(c?._id)}>
-							<input id={`size-${c._id}`} type='checkbox' name='size' checked={categoryId == c._id} />
-							<label htmlFor={`size-${c._id}`}>{c.name}</label>
-						</div>
-					))}
+					{categorys?.map((c) => {
+						const isActive = categoryId === c._id;
+
+						return (
+							<button
+								key={c._id}
+								type='button'
+								aria-pressed={isActive}
+								className={clsx(styles.filter_item, {[styles.active]: isActive})}
+								onClick={() => handleSelectCategory(c._id)}
+							>
+								<CategoryIcon name={c.name} size={36} />
+								<span className={styles.item_name}>{c.name}</span>
+								<span className={styles.check_icon}>
+									{isActive ? (
+										<TickCircle size='20' color='#00b7c4' variant='Bold' />
+									) : (
+										<span className={styles.check_circle} />
+									)}
+								</span>
+							</button>
+						);
+					})}
 				</div>
 
-				<div className={styles.list_btn}>
-					<div>
+				<div className={styles.footer}>
+					<div className={styles.btn_wrap}>
 						<Button p_10_24 white rounded_8 bold onClick={() => setOpen(false)}>
-							Hủy bỏ
+							Đóng
 						</Button>
 					</div>
-					<div>
-						<Button p_10_24 green rounded_8 bold onClick={handleQuickFilterCategory}>
-							Tìm kiếm
+					<div className={styles.btn_wrap}>
+						<Button
+							p_10_24
+							bright-cyan
+							rounded_8
+							bold
+							icon={<SearchNormal1 size='18' color='#fff' />}
+							onClick={handleQuickFilterCategory}
+						>
+							{categoryId ? 'Tìm kiếm' : 'Xem tất cả sản phẩm'}
 						</Button>
 					</div>
-				</div>
-
-				<div className={styles.close} onClick={() => setOpen(false)}>
-					<IoClose size={28} color='#8492A6' />
 				</div>
 			</div>
 		</Popup>

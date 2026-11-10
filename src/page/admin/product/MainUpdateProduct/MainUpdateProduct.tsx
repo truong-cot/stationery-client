@@ -4,7 +4,7 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {Fragment, useEffect, useState} from 'react';
 import Button from '~/components/common/Button';
-import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
+import Form, {ContextForm, Input, Select, SelectMany, TextArea} from '~/components/common/Form';
 import Loading from '~/components/common/Loading';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
 import {IDataUploadFile} from '~/components/common/UploadSingleFile/interfaces';
@@ -35,7 +35,7 @@ interface IFormUpdateProduct {
 	pack_size: string;
 	short_description: string;
 	category_id: string;
-	color_id: string;
+	color_ids: string[];
 	size_id: string;
 	trademark_id: string;
 	is_featured: string;
@@ -47,7 +47,7 @@ const initForm: IFormUpdateProduct = {
 	pack_size: '',
 	short_description: '',
 	category_id: '',
-	color_id: '',
+	color_ids: [],
 	size_id: '',
 	trademark_id: '',
 	is_featured: '0',
@@ -84,9 +84,9 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 				name: product?.name || '',
 				pack_size: product?.pack_size || '',
 				price: convertCoin(product.price) || '0',
-				short_description: product?.short_description,
-				category_id: product?.category?._id,
-				color_id: product?.color?._id || '',
+				short_description: product?.short_description || '',
+				category_id: product?.category?._id || '',
+				color_ids: product?.colors?.map((v) => v._id) || [],
 				size_id: product?.size?._id || '',
 				trademark_id: product?.trademark?._id || '',
 				is_featured: product?.is_featured ? '1' : '0',
@@ -107,12 +107,11 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 			name: string;
 		}[]
 	>({
-		queryKey: [QUERY_KEY.catalogColor, form.category_id],
+		queryKey: [QUERY_KEY.catalogColor],
 		queryFn: () =>
 			httpRequest({
-				http: colorServices.catalog({category_id: form.category_id}),
+				http: colorServices.catalog(),
 			}),
-		enabled: !!form.category_id,
 	});
 
 	const {data: sizes = []} = useQuery<
@@ -121,12 +120,11 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 			name: string;
 		}[]
 	>({
-		queryKey: [QUERY_KEY.catalogSize, form.category_id],
+		queryKey: [QUERY_KEY.catalogSize],
 		queryFn: () =>
 			httpRequest({
-				http: sizeServices.catalog({category_id: form.category_id}),
+				http: sizeServices.catalog(),
 			}),
-		enabled: !!form.category_id,
 	});
 
 	const {data: trademarks = []} = useQuery<
@@ -135,12 +133,11 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 			name: string;
 		}[]
 	>({
-		queryKey: [QUERY_KEY.catalogTrademark, form.category_id],
+		queryKey: [QUERY_KEY.catalogTrademark],
 		queryFn: () =>
 			httpRequest({
-				http: trademarkServices.catalog({category_id: form.category_id}),
+				http: trademarkServices.catalog(),
 			}),
-		enabled: !!form.category_id,
 	});
 
 	const {data: categorys = []} = useQuery<
@@ -169,9 +166,9 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 					price: price(form.price),
 					short_description: form.short_description,
 					category_id: form.category_id,
-					color_id: form.color_id,
-					size_id: form.size_id,
-					trademark_id: form.trademark_id,
+					color_ids: form.color_ids,
+					size_id: form.size_id || undefined,
+					trademark_id: form.trademark_id || undefined,
 					is_featured: form.is_featured == '1' ? true : false,
 					images: body.images,
 				}),
@@ -316,43 +313,34 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 												setForm((prev) => ({
 													...prev,
 													category_id: data._id,
-													color_id: '',
-													size_id: '',
-													trademark_id: '',
 												}))
 											}
 											onClean={() =>
 												setForm((prev) => ({
 													...prev,
 													category_id: '',
-													color_id: '',
-													size_id: '',
-													trademark_id: '',
 												}))
 											}
 											getOptionLabel={(opt) => opt.name}
 											getOptionValue={(opt) => opt._id}
 										/>
-										{/* <div>
-											<Select
-												placeholder='Lựa chọn'
+										<div>
+											<SelectMany
+												title='Màu sắc'
+												description='Thêm và lựa chọn màu sắc'
 												label='Màu sắc'
-												value={form.color_id}
-												options={colors}
-												onSelect={(data) =>
+												placeholder='Lựa chọn'
+												checkeds={form.color_ids}
+												options={colors?.map((m) => ({
+													_id: m?._id,
+													title: m?.name,
+												}))}
+												onSetDataCheckeds={(ids) =>
 													setForm((prev) => ({
 														...prev,
-														color_id: data._id,
+														color_ids: ids,
 													}))
 												}
-												onClean={() =>
-													setForm((prev) => ({
-														...prev,
-														color_id: '',
-													}))
-												}
-												getOptionLabel={(opt) => opt.name}
-												getOptionValue={(opt) => opt._id}
 											/>
 										</div>
 										<Select
@@ -396,9 +384,9 @@ function MainUpdateProduct({}: PropsMainUpdateProduct) {
 												getOptionLabel={(opt) => opt.name}
 												getOptionValue={(opt) => opt._id}
 											/>
-										</div> */}
+										</div>
 									</GridColumn>
-									{/* <TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' /> */}
+									<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
 									<div>
 										<UploadMultipleFile
 											label={

@@ -1,0 +1,163 @@
+.tableItems {
+	width: 100%;
+	border-collapse: collapse;
+	background: #ffffff;
+	border-radius: 8px;
+	overflow: hidden;
+
+	th {
+		background: #f8fafc;
+		color: #475569;
+		font-size: 13px;
+		font-weight: 600;
+		padding: 10px 14px;
+		text-align: left;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	td {
+		padding: 10px 14px;
+		font-size: 14px;
+		color: #1e293b;
+		border-bottom: 1px solid #f1f5f9;
+		vertical-align: middle;
+	}
+
+	tr:last-child td {
+		border-bottom: none;
+	}
+}
+
+.productCell {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+
+	.imageWrapper {
+		width: 44px;
+		height: 44px;
+		border-radius: 6px;
+		overflow: hidden;
+		background: #f1f5f9;
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	.productName {
+		font-weight: 600;
+		color: #0f172a;
+		font-size: 13px;
+	}
+}
+
+.summaryCard {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 14px 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	max-width: 360px;
+	margin-left: auto;
+
+	.summaryRow {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		font-size: 13px;
+		color: #475569;
+
+		&.total {
+			padding-top: 8px;
+			border-top: 1px dashed #cbd5e1;
+			font-size: 15px;
+			font-weight: 700;
+			color: #0f172a;
+
+			.totalPrice {
+				color: #ee0033;
+				font-size: 18px;
+			}
+		}
+	}
+}
+
+.noteSnapshot {
+	font-size: 12px;
+	color: #64748b;
+	font-style: italic;
+	margin-top: 8px;
+}
+
+.statusModal {
+	padding: 6px 0;
+
+	.orderInfo {
+		background: #f8fafc;
+		border-radius: 8px;
+		padding: 10px;
+		margin-bottom: 14px;
+
+		p {
+			font-size: 13px;
+			color: #334155;
+			margin-bottom: 6px;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			strong {
+				color: #0f172a;
+			}
+		}
+	}
+
+	.statusSelectGroup {
+		margin-bottom: 14px;
+
+		label {
+			display: block;
+			font-size: 13px;
+			font-weight: 600;
+			color: #334155;
+			margin-bottom: 6px;
+		}
+
+		select {
+			width: 100%;
+			height: 40px;
+			padding: 0 12px;
+			border-radius: 8px;
+			border: 1px solid #cbd5e1;
+			font-size: 14px;
+			outline: none;
+			background: #ffffff;
+			cursor: pointer;
+
+			&:focus {
+				border-color: #0070f4;
+			}
+		}
+	}
+
+	.ruleNote {
+		background: #fffbeb;
+		border: 1px solid #fef3c7;
+		border-radius: 8px;
+		padding: 8px 10px;
+		font-size: 12px;
+		color: #b45309;
+		line-height: 1.4;
+	}
+}
+

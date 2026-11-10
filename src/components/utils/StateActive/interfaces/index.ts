@@ -1,9 +1,9 @@
 export interface PropsStateActive {
 	isBox?: boolean;
-	stateActive: number | null;
+	stateActive: number | string | null;
 	isSmall?: boolean;
 	listState: {
-		state: number;
+		state: number | string;
 		text: string;
 		backgroundColor?: string;
 		textColor?: string;

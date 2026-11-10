@@ -7,7 +7,7 @@ const colorServices = {
 	update: (payload: {_id: string; name: string; code: string; description: string}) => {
 		return axiosClient.post(`/color/update`, payload);
 	},
-	getPageList: (payload: {page: number; pageSize: number; keyword: string; category_id: string}) => {
+	getPageList: (payload: {page: number; pageSize: number; keyword: string}) => {
 		return axiosClient.post(`/color/page-list-color`, payload);
 	},
 	delete: (payload: {_id: string}) => {
@@ -16,8 +16,8 @@ const colorServices = {
 	detail: (payload: {_id: string}) => {
 		return axiosClient.get(`/color/detail/${payload._id}`);
 	},
-	catalog: (payload: {category_id: string}) => {
-		return axiosClient.post(`/color/catalog-color`, payload);
+	catalog: (payload?: {category_id?: string}) => {
+		return axiosClient.post(`/color/catalog-color`, payload || {});
 	},
 };
 

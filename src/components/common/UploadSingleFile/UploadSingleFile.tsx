@@ -42,6 +42,14 @@ function UploadSingleFile({
     fileInputRef.current?.click();
   };
 
+  const imageSrc =
+    image?.url ||
+    (image?.path
+      ? image.path.startsWith("http") || image.path.startsWith("/")
+        ? image.path
+        : `${process.env.NEXT_PUBLIC_IMAGE}/${image.path}`
+      : "");
+
   return (
     <div className={styles.wrapper}>
       {label && (
@@ -51,14 +59,15 @@ function UploadSingleFile({
       )}
 
       <div className={styles.upload}>
-        {image ? (
+        {image && imageSrc ? (
           <div
             className={clsx(styles.box_image, styles[size])}
             onClick={handleReplaceImage}
             style={{ cursor: "pointer" }}
           >
             <Image
-              src={image.url || image.path}
+              unoptimized
+              src={imageSrc}
               alt="uploaded"
               layout="fill"
               style={{ objectFit: "cover" }}

@@ -1,6 +1,6 @@
 import {Metadata} from 'next';
 import {Suspense} from 'react';
-import {buildHomePageProductsSEO, SITE_URL} from '~/funcs/seo';
+import {buildHomePageProductsSEO, seoKeywords, SITE_URL} from '~/funcs/seo';
 import MainProduct from '~/page/user/product/MainProduct';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -9,6 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
 	return {
 		title: seo.title,
 		description: seo.description,
+		keywords: seoKeywords,
 		alternates: {
 			canonical: `${SITE_URL}/product`,
 		},
@@ -25,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			title: seo.title,
 			description: seo.description,
 			url: `${SITE_URL}/product`,
-			siteName: 'Danh sách sản phẩm',
+			siteName: 'Văn phòng phẩm Huyền Anh',
 			images: [
 				{
 					url: seo.image,
@@ -44,13 +45,33 @@ export async function generateMetadata(): Promise<Metadata> {
 			images: [seo.image],
 		},
 		other: {
-			'script:ld+json': JSON.stringify({
-				'@context': 'https://schema.org',
-				'@type': 'WebPage',
-				name: seo.title,
-				description: seo.description,
-				url: `${SITE_URL}/product`,
-			}),
+			'script:ld+json': JSON.stringify([
+				{
+					'@context': 'https://schema.org',
+					'@type': 'BreadcrumbList',
+					itemListElement: [
+						{
+							'@type': 'ListItem',
+							position: 1,
+							name: 'Trang chủ',
+							item: SITE_URL,
+						},
+						{
+							'@type': 'ListItem',
+							position: 2,
+							name: 'Danh sách sản phẩm',
+							item: `${SITE_URL}/product`,
+						},
+					],
+				},
+				{
+					'@context': 'https://schema.org',
+					'@type': 'CollectionPage',
+					name: seo.title,
+					description: seo.description,
+					url: `${SITE_URL}/product`,
+				},
+			]),
 		},
 	};
 }

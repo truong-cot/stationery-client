@@ -8,8 +8,4 @@ export interface IDetailColor {
 	code: string;
 	name: string;
 	description: string;
-	categories: {
-		_id: string;
-		name: string;
-	}[];
 }

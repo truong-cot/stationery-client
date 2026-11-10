@@ -1,78 +1,205 @@
-.category_home {
-	margin-top: 12px;
+.category_section {
+	padding: 16px 0 10px;
+
+	@media (max-width: 768px) {
+		padding: 12px 0 8px;
+	}
 }
 
 .head {
-	width: fit-content;
-	position: relative;
-	border-bottom: 4px solid #25c173;
-	border-radius: 4px;
-	padding-bottom: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	margin-bottom: 12px;
+	flex-wrap: wrap;
+	gap: 10px;
 
-	& > h4 {
-		font-size: 24px;
-		font-weight: 700;
+	@media (max-width: 768px) {
+		margin-bottom: 10px;
 	}
 }
 
-.main {
-	height: 480px;
-	display: grid;
-	grid-template-columns: 320px 1fr;
-	gap: 24px;
+.title_wrap {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
-.category {
-	height: 100%;
-	overflow: auto;
+.title_icon {
+	width: 32px;
+	height: 32px;
+	border-radius: 8px;
+	background: #e6f9fa;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-.slider {
-	height: 100%;
-	overflow: hidden;
+.title_text {
+	font-size: 18px;
+	font-weight: 700;
+	color: #1f2937;
 
-	:global(.slick-slider),
-	:global(.slick-list),
-	:global(.slick-track),
-	:global(.slick-slide),
-	:global(.slick-slide > div) {
-		height: 100%;
-	}
-
-	:global(.slick-list) {
-		border-radius: 4px;
+	@media (max-width: 768px) {
+		font-size: 16px;
 	}
 }
 
-.image {
+.parent_tabs {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	overflow-x: auto;
+	padding-bottom: 2px;
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+.tab_btn {
+	border: 1px solid #e5e7eb;
+	background: #ffffff;
+	color: #4b5563;
+	padding: 5px 12px;
+	border-radius: 18px;
+	font-size: 12.5px;
+	font-weight: 600;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: all 0.2s ease;
+
+	&:hover {
+		border-color: #00b7c4;
+		color: #00b7c4;
+	}
+
+	&.active {
+		background: #00b7c4;
+		border-color: #00b7c4;
+		color: #ffffff;
+		box-shadow: 0 2px 6px rgba(0, 183, 196, 0.25);
+	}
+
+	@media (max-width: 768px) {
+		font-size: 11.5px;
+		padding: 3px 8px;
+	}
+}
+
+.category_container {
 	position: relative;
-	width: 100%;
-	height: 100%;
+	background: #ffffff;
+	border: 1px solid #eaedf2;
+	border-radius: 14px;
+	padding: 16px 16px 10px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 
-	img {
-		object-fit: cover;
-		border-radius: 4px;
+	@media (max-width: 768px) {
+		padding: 10px 8px 6px;
+		border-radius: 10px;
 	}
 }
 
-@media (max-width: 1200px) {
-	.category_home {
-		margin-top: 4px;
-	}
+.category_grid {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 10px 6px;
 
-	.head {
-		& > h4 {
-			font-size: 20px;
+	@media (max-width: 768px) {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+		gap: 6px;
+		padding-bottom: 4px;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+}
+
+.category_card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-decoration: none;
+	padding: 8px 6px 8px;
+	border-radius: 10px;
+	transition: all 0.2s ease;
+	width: 98px;
+	box-sizing: border-box;
+	flex-shrink: 0;
+
+	&:hover {
+		background: #f0fdfa;
+
+		.icon_box {
+			transform: scale(1.06);
+		}
+
+		.category_name {
+			color: #00b7c4;
 		}
 	}
 
-	.main {
-		grid-template-columns: 1fr;
-		height: auto;
+	@media (max-width: 768px) {
+		width: 66px;
+		padding: 5px 2px 4px;
+		border-radius: 8px;
+		scroll-snap-align: start;
 	}
+}
 
-	.slider {
-		display: none;
+.icon_box {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 6px;
+	transition: transform 0.2s ease;
+
+	@media (max-width: 768px) {
+		margin-bottom: 3px;
+	}
+}
+
+.cat_icon {
+	@media (max-width: 768px) {
+		width: 40px !important;
+		height: 40px !important;
+		border-radius: 10px !important;
+
+		:global(span) {
+			font-size: 18px !important;
+		}
+	}
+}
+
+.category_name {
+	font-size: 13px;
+	font-weight: 600;
+	color: #334155;
+	text-align: center;
+	line-height: 17px;
+	height: 34px;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-break: break-word;
+	max-width: 90px;
+	transition: color 0.2s ease;
+
+	@media (max-width: 768px) {
+		font-size: 11px;
+		line-height: 14px;
+		height: 28px;
+		max-width: 64px;
+		font-weight: 500;
 	}
 }

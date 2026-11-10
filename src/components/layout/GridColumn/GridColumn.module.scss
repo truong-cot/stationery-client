@@ -65,17 +65,26 @@
 
 	&.col_5 {
 		--columns: 5;
+		--gap: 16px;
+
 		@media (max-width: 1440px) {
-			--columns: 3;
+			--columns: 5;
+			--gap: 14px;
 		}
 
 		@media (max-width: 1200px) {
-			--columns: 2;
+			--columns: 4;
+			--gap: 12px;
+		}
+
+		@media (max-width: 992px) {
+			--columns: 3;
+			--gap: 10px;
 		}
 
 		@media (max-width: 764px) {
-			--columns: 1;
-			--gap: 12px;
+			--columns: 2;
+			--gap: 8px;
 		}
 	}
 

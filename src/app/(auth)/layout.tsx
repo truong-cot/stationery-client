@@ -1,9 +1,19 @@
-import LayoutAuth from "~/components/layout/LayoutAuth";
+import type {Metadata} from 'next';
+import LayoutAuth from '~/components/layout/LayoutAuth';
+
+export const metadata: Metadata = {
+	title: 'Đăng nhập',
+	robots: {
+		index: false,
+		follow: false,
+		nocache: true,
+	},
+};
 
 export default async function Layout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return <LayoutAuth>{children}</LayoutAuth>;
+	return <LayoutAuth>{children}</LayoutAuth>;
 }

@@ -9,3 +9,9 @@
 		margin-top: 16px;
 	}
 }
+
+@media (max-width: 768px) {
+	.pagination {
+		justify-content: center;
+	}
+}

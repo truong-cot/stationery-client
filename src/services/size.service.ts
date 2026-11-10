@@ -7,7 +7,7 @@ const sizeServices = {
 	update: (payload: {_id: string; name: string; description: string}) => {
 		return axiosClient.post(`/size/update`, payload);
 	},
-	getPageList: (payload: {page: number; pageSize: number; keyword: string; category_id: string}) => {
+	getPageList: (payload: {page: number; pageSize: number; keyword: string}) => {
 		return axiosClient.post(`/size/page-list-size`, payload);
 	},
 	delete: (payload: {_id: string}) => {
@@ -16,8 +16,8 @@ const sizeServices = {
 	detail: (payload: {_id: string}) => {
 		return axiosClient.get(`/size/detail/${payload._id}`);
 	},
-	catalog: (payload: {category_id: string}) => {
-		return axiosClient.post(`/size/catalog-size`, payload);
+	catalog: (payload?: {category_id?: string}) => {
+		return axiosClient.post(`/size/catalog-size`, payload || {});
 	},
 };
 

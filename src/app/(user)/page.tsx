@@ -49,13 +49,29 @@ export async function generateMetadata(): Promise<Metadata> {
 			images: [seo.image],
 		},
 		other: {
-			'script:ld+json': JSON.stringify({
-				'@context': 'https://schema.org',
-				'@type': 'WebPage',
-				name: seo.title,
-				description: seo.description,
-				url: SITE_URL,
-			}),
+			'script:ld+json': JSON.stringify([
+				{
+					'@context': 'https://schema.org',
+					'@type': 'WebSite',
+					name: 'Văn phòng phẩm Huyền Anh',
+					url: SITE_URL,
+					potentialAction: {
+						'@type': 'SearchAction',
+						target: {
+							'@type': 'EntryPoint',
+							urlTemplate: `${SITE_URL}/product?_keyword={search_term_string}`,
+						},
+						'query-input': 'required name=search_term_string',
+					},
+				},
+				{
+					'@context': 'https://schema.org',
+					'@type': 'WebPage',
+					name: seo.title,
+					description: seo.description,
+					url: SITE_URL,
+				},
+			]),
 		},
 	};
 }

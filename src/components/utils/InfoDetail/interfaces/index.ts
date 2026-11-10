@@ -1,6 +1,6 @@
 export interface PropsInfoDetail {
 	name: string;
-	value: string | number | React.ReactNode;
+	value?: string | number | React.ReactNode;
 	textColor?: string;
 	images?: string[];
 	actions?: React.ReactNode;

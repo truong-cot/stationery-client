@@ -23,7 +23,7 @@ function Button({children, onClick, icon, href, className, target, div, ...props
 				[styles.maxContent]: props.maxContent,
 				[styles.maxHeight]: props.maxHeight,
 			})}
-			{...(href ? {href} : {onClick: handleClick})}
+			{...(href ? {href, onClick: handleClick} : {onClick: handleClick})}
 		>
 			<div className={clsx(styleClass, styles.btn, className)}>
 				{icon && <div className={styles.icon}>{icon}</div>}

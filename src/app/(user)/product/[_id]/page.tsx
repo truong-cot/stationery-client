@@ -25,6 +25,12 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
 		robots: {
 			index: true,
 			follow: true,
+			googleBot: {
+				index: true,
+				follow: true,
+				'max-image-preview': 'large',
+				'max-snippet': -1,
+			},
 		},
 		openGraph: {
 			title: seo.title,
@@ -40,7 +46,7 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
 				},
 			],
 			locale: 'vi_VN',
-			type: 'article',
+			type: 'website',
 		},
 		twitter: {
 			card: 'summary_large_image',

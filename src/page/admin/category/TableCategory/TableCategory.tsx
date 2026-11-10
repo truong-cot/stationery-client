@@ -1,11 +1,7 @@
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import Tippy from '@tippyjs/react';
-import {Add, Additem, BoxAdd, Edit, Trash, Warning2} from 'iconsax-react';
+import {useQuery} from '@tanstack/react-query';
+import {Additem, BoxAdd, Edit, Trash} from 'iconsax-react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {Fragment, useState} from 'react';
-import Dialog from '~/components/common/Dialog';
-import FilterCustom from '~/components/common/FilterCustom';
-import Loading from '~/components/common/Loading';
+import {useState} from 'react';
 import Pagination from '~/components/common/Pagination';
 import Table from '~/components/common/Table';
 import FlexLayout from '~/components/layout/FlexLayout';
@@ -18,9 +14,6 @@ import {QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/funcs/httpRequest';
 import {updateQueryParams} from '~/funcs/queryParams';
 import categoryServices from '~/services/category.service';
-import colorServices from '~/services/color.service';
-import sizeServices from '~/services/size.service';
-import trademarkServices from '~/services/trademark.service';
 import type {ICategory, PropsTableCategory} from './interfaces';
 import {PATH} from '~/constants/config';
 
@@ -32,48 +25,6 @@ function TableCategory({}: PropsTableCategory) {
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
-	const [colorId, setColorId] = useState<string>('');
-	const [sizeId, setSizeId] = useState<string>('');
-	const [trademarkId, setTrademarkId] = useState<string>('');
-
-	const {data: colors = []} = useQuery<
-		{
-			_id: string;
-			name: string;
-		}[]
-	>({
-		queryKey: [QUERY_KEY.catalogColor],
-		queryFn: () =>
-			httpRequest({
-				http: colorServices.catalog({category_id: ''}),
-			}),
-	});
-
-	const {data: sizes = []} = useQuery<
-		{
-			_id: string;
-			name: string;
-		}[]
-	>({
-		queryKey: [QUERY_KEY.catalogSize],
-		queryFn: () =>
-			httpRequest({
-				http: sizeServices.catalog({category_id: ''}),
-			}),
-	});
-
-	const {data: trademarks = []} = useQuery<
-		{
-			_id: string;
-			name: string;
-		}[]
-	>({
-		queryKey: [QUERY_KEY.catalogTrademark],
-		queryFn: () =>
-			httpRequest({
-				http: trademarkServices.catalog({category_id: ''}),
-			}),
-	});
 
 	const {
 		data = {
@@ -91,16 +42,13 @@ function TableCategory({}: PropsTableCategory) {
 			totalCount: number;
 		};
 	}>({
-		queryKey: [QUERY_KEY.pageListCategory, page, pageSize, keyword, colorId, sizeId, trademarkId],
+		queryKey: [QUERY_KEY.pageListCategory, page, pageSize, keyword],
 		queryFn: () =>
 			httpRequest({
 				http: categoryServices.getPageList({
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
-					color_id: colorId,
-					size_id: sizeId,
-					trademark_id: trademarkId,
 				}),
 			}),
 	});
@@ -111,41 +59,6 @@ function TableCategory({}: PropsTableCategory) {
 				keyword={keyword}
 				setKeyword={setKeyword}
 				placeholder='Tìm kiếm theo tên, mã danh mục'
-				action={
-					<FlexLayout row gap-8 fit-height>
-						<FlexItem flex-1 overflow-y scrollbar>
-							<FlexLayout row gap-8>
-								<FilterCustom
-									name='Màu sắc'
-									value={colorId}
-									setValue={setColorId}
-									listOption={colors.map((item) => ({
-										uuid: item._id,
-										name: item.name,
-									}))}
-								/>
-								<FilterCustom
-									name='Kích cỡ'
-									value={sizeId}
-									setValue={setSizeId}
-									listOption={sizes.map((item) => ({
-										uuid: item._id,
-										name: item.name,
-									}))}
-								/>
-								<FilterCustom
-									name='Thương hiệu'
-									value={trademarkId}
-									setValue={setTrademarkId}
-									listOption={trademarks.map((item) => ({
-										uuid: item._id,
-										name: item.name,
-									}))}
-								/>
-							</FlexLayout>
-						</FlexItem>
-					</FlexLayout>
-				}
 			/>
 
 			<FlexItem flex-1 overflow-x>
@@ -170,91 +83,8 @@ function TableCategory({}: PropsTableCategory) {
 									render: (row, _) => <p style={{fontWeight: '600'}}>{row?.parent?.name || '---'}</p>,
 								},
 								{
-									title: 'Màu sắc',
-									render: (row, _) => (
-										<>
-											{row?.colors?.length > 0 ? (
-												<>
-													{row?.colors?.[0]?.name}
-													{row?.colors?.length! > 1 && (
-														<Tippy
-															content={
-																<ol style={{paddingLeft: '16px'}}>
-																	{row?.colors?.slice(1)?.map((v) => (
-																		<li key={v._id}>{v?.name}</li>
-																	))}
-																</ol>
-															}
-														>
-															<b style={{cursor: 'pointer', marginLeft: '4px'}}>
-																và {row?.colors?.length! - 1} màu sắc khác
-															</b>
-														</Tippy>
-													)}
-												</>
-											) : (
-												'---'
-											)}
-										</>
-									),
-								},
-								{
-									title: 'Kích cỡ',
-									render: (row, _) => (
-										<>
-											{row?.sizes?.length > 0 ? (
-												<>
-													{row?.sizes?.[0]?.name}
-													{row?.sizes?.length! > 1 && (
-														<Tippy
-															content={
-																<ol style={{paddingLeft: '16px'}}>
-																	{row?.sizes?.slice(1)?.map((v) => (
-																		<li key={v._id}>{v?.name}</li>
-																	))}
-																</ol>
-															}
-														>
-															<b style={{cursor: 'pointer', marginLeft: '4px'}}>
-																và {row?.sizes?.length! - 1} kích cỡ khác
-															</b>
-														</Tippy>
-													)}
-												</>
-											) : (
-												'---'
-											)}
-										</>
-									),
-								},
-								{
-									title: 'Thương hiệu',
-									render: (row, _) => (
-										<>
-											{row?.trademarks?.length > 0 ? (
-												<>
-													{row?.trademarks?.[0]?.name}
-													{row?.trademarks?.length! > 1 && (
-														<Tippy
-															content={
-																<ol style={{paddingLeft: '16px'}}>
-																	{row?.trademarks?.slice(1)?.map((v) => (
-																		<li key={v._id}>{v?.name}</li>
-																	))}
-																</ol>
-															}
-														>
-															<b style={{cursor: 'pointer', marginLeft: '4px'}}>
-																và {row?.trademarks?.length! - 1} thương hiệu khác
-															</b>
-														</Tippy>
-													)}
-												</>
-											) : (
-												'---'
-											)}
-										</>
-									),
+									title: 'Mô tả',
+									render: (row, _) => <>{row?.description || '---'}</>,
 								},
 								{
 									title: 'Hành động',
@@ -322,7 +152,7 @@ function TableCategory({}: PropsTableCategory) {
 						pageSize={pageSize}
 						onSetPageSize={setPageSize}
 						total={data?.pagination?.totalCount || 0}
-						dependencies={[pageSize, keyword, colorId, sizeId, trademarkId]}
+						dependencies={[pageSize, keyword]}
 					/>
 				</MainTable>
 			</FlexItem>

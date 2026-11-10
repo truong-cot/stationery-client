@@ -1,47 +1,23 @@
 'use client';
 
-import LayoutGrid from '~/components/layout/LayoutGrid';
-import styles from './CategoryHome.module.scss';
-import type {PropsCategoryHome} from './interfaces';
+import {useMemo, useState, useRef} from 'react';
+import Link from 'next/link';
 import {useQuery} from '@tanstack/react-query';
-import {INodeCategory} from '../../product/MainProduct/components/FilterProduct/interfaces';
+import clsx from 'clsx';
+import {Category2} from 'iconsax-react';
+
+import LayoutGrid from '~/components/layout/LayoutGrid';
+import CategoryIcon from '~/components/common/CategoryIcon';
+import {PATH} from '~/constants/config';
 import {QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/funcs/httpRequest';
 import clientServices from '~/services/client.service';
-import NodeCategoryHome from '../NodeCategoryHome';
-import {useMemo} from 'react';
-import images from '~/constants/images/images';
-import Slider from 'react-slick';
-import Image from 'next/image';
+import styles from './CategoryHome.module.scss';
+import type {PropsCategoryHome} from './interfaces';
+import {INodeCategory} from '../../product/MainProduct/components/FilterProduct/interfaces';
 
 function CategoryHome({}: PropsCategoryHome) {
-	const sliders = useMemo(() => [images.slider1, images.slider3, images.slider2, images.slider4], []);
-
-	const sliderSettings = useMemo(
-		() => ({
-			slidesToShow: 1,
-			swipeToSlide: true,
-			arrows: false,
-			dots: true,
-			autoplay: true,
-			autoplaySpeed: 3000,
-			speed: 800,
-			pauseOnHover: true,
-			pauseOnFocus: true,
-			adaptiveHeight: true,
-			appendDots: (dots: React.ReactNode) => (
-				<div className={styles.custom_dots}>
-					<ul>{dots}</ul>
-				</div>
-			),
-			customPaging: () => (
-				<button className={styles.dot}>
-					<span />
-				</button>
-			),
-		}),
-		[]
-	);
+	const [activeParentId, setActiveParentId] = useState<string>('all');
 
 	const {data: nodes = []} = useQuery<INodeCategory[]>({
 		queryKey: [QUERY_KEY.clientTreeCategory],
@@ -51,32 +27,108 @@ function CategoryHome({}: PropsCategoryHome) {
 			}),
 	});
 
+	// Level 1 categories
+	const parentCategories = useMemo(() => {
+		return nodes.map((node) => ({
+			_id: node._id,
+			name: node.name,
+			image: node.image,
+		}));
+	}, [nodes]);
+
+	// Level 2 categories depending on active parent
+	const displayCategories = useMemo(() => {
+		if (activeParentId === 'all') {
+			// Flatten all level 2 children, only fallback to parent if parent has no children
+			const list: Array<{_id: string; name: string; image?: string | null}> = [];
+			nodes.forEach((parent) => {
+				if (parent.children && parent.children.length > 0) {
+					parent.children.forEach((child) => {
+						list.push({
+							_id: child._id,
+							name: child.name,
+							image: child.image || null, // DO NOT inherit parent image to avoid wide banner stretching on child icons
+						});
+					});
+				} else {
+					list.push({
+						_id: parent._id,
+						name: parent.name,
+						image: parent.image || null,
+					});
+				}
+			});
+			return list;
+		}
+
+		const selectedParent = nodes.find((n) => n._id === activeParentId);
+		if (!selectedParent) return [];
+		if (selectedParent.children && selectedParent.children.length > 0) {
+			return selectedParent.children.map((child) => ({
+				_id: child._id,
+				name: child.name,
+				image: child.image || null,
+			}));
+		}
+		return [{_id: selectedParent._id, name: selectedParent.name, image: selectedParent.image || null}];
+	}, [nodes, activeParentId]);
+
 	return (
 		<LayoutGrid>
-			<section className={styles.category_home}>
+			<section className={styles.category_section}>
+				{/* Section Header */}
 				<div className={styles.head}>
-					<h4>Danh mục sản phẩm</h4>
-				</div>
-				<div className={styles.main}>
-					<div className={styles.category}>
-						{nodes?.map((node) => (
-							<NodeCategoryHome key={node._id} level={0} node={node} />
+					<div className={styles.title_wrap}>
+						<div className={styles.title_icon}>
+							<Category2 size='20' color='#00b7c4' variant='Bold' />
+						</div>
+						<h2 className={styles.title_text}>Danh mục sản phẩm</h2>
+					</div>
+
+					{/* Level 1 Parent Tabs */}
+					<div className={styles.parent_tabs}>
+						<button
+							type='button'
+							className={clsx(styles.tab_btn, {[styles.active]: activeParentId === 'all'})}
+							onClick={() => setActiveParentId('all')}
+						>
+							Tất cả
+						</button>
+						{parentCategories.map((cat) => (
+							<button
+								key={cat._id}
+								type='button'
+								className={clsx(styles.tab_btn, {[styles.active]: activeParentId === cat._id})}
+								onClick={() => setActiveParentId(cat._id)}
+							>
+								{cat.name}
+							</button>
 						))}
 					</div>
-					<div className={styles.slider}>
-						<Slider {...sliderSettings}>
-							{sliders.map((image, idx) => (
-								<div key={idx} className={styles.image}>
-									<Image
-										src={image}
-										alt={`Ảnh banner ${idx + 1}`}
-										fill
-										style={{objectFit: 'cover'}}
-										priority={idx === 0}
+				</div>
+
+				{/* Category Items Grid */}
+				<div className={styles.category_container}>
+					<div className={styles.category_grid}>
+						{displayCategories.map((item) => (
+							<Link
+								key={item._id}
+								href={`${PATH.Product}?_categoryId=${item._id}`}
+								className={styles.category_card}
+							>
+								<div className={styles.icon_box}>
+									<CategoryIcon
+										name={item.name}
+										image={item.image}
+										size={54}
+										className={styles.cat_icon}
 									/>
 								</div>
-							))}
-						</Slider>
+								<span className={styles.category_name} title={item.name}>
+									{item.name}
+								</span>
+							</Link>
+						))}
 					</div>
 				</div>
 			</section>

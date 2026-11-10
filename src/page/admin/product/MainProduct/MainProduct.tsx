@@ -27,6 +27,7 @@ import trademarkServices from '~/services/trademark.service';
 import type {IProduct, PropsMainProduct} from './interfaces';
 import {Eye} from 'iconsax-react';
 import {PATH} from '~/constants/config';
+import TagRefItem from '~/components/utils/TagRefItem';
 
 function MainProduct({}: PropsMainProduct) {
 	const queryClient = useQueryClient();
@@ -50,7 +51,7 @@ function MainProduct({}: PropsMainProduct) {
 		queryKey: [QUERY_KEY.catalogColor],
 		queryFn: () =>
 			httpRequest({
-				http: colorServices.catalog({category_id: ''}),
+				http: colorServices.catalog(),
 			}),
 	});
 
@@ -63,7 +64,7 @@ function MainProduct({}: PropsMainProduct) {
 		queryKey: [QUERY_KEY.catalogSize],
 		queryFn: () =>
 			httpRequest({
-				http: sizeServices.catalog({category_id: ''}),
+				http: sizeServices.catalog(),
 			}),
 	});
 
@@ -76,7 +77,7 @@ function MainProduct({}: PropsMainProduct) {
 		queryKey: [QUERY_KEY.catalogTrademark],
 		queryFn: () =>
 			httpRequest({
-				http: trademarkServices.catalog({category_id: ''}),
+				http: trademarkServices.catalog(),
 			}),
 	});
 
@@ -238,20 +239,32 @@ function MainProduct({}: PropsMainProduct) {
 									},
 									{
 										title: 'Danh mục',
-										render: (row, _) => <>{row?.category.name}</>,
+										render: (row, _) => <>{row?.category?.name || '---'}</>,
 									},
-									// {
-									// 	title: 'Màu sắc',
-									// 	render: (row, _) => <>{row?.color.name || '---'}</>,
-									// },
-									// {
-									// 	title: 'Kích cỡ',
-									// 	render: (row, _) => <>{row?.size.name || '---'}</>,
-									// },
-									// {
-									// 	title: 'Thương hiệu',
-									// 	render: (row, _) => <>{row?.trademark.name || '---'}</>,
-									// },
+									{
+										title: 'Màu sắc',
+										render: (row, _) => (
+											<>
+												{row?.colors && row.colors.length > 0 ? (
+													<FlexLayout row gap-4 wrap>
+														{row.colors.map((c) => (
+															<TagRefItem key={c._id} name={c.name} />
+														))}
+													</FlexLayout>
+												) : (
+													'---'
+												)}
+											</>
+										),
+									},
+									{
+										title: 'Kích cỡ',
+										render: (row, _) => <>{row?.size?.name || '---'}</>,
+									},
+									{
+										title: 'Thương hiệu',
+										render: (row, _) => <>{row?.trademark?.name || '---'}</>,
+									},
 									{
 										title: 'SP nổi bật',
 										render: (row, _) => <>{row?.is_featured ? 'Có' : 'Không'}</>,

@@ -29,9 +29,10 @@
 }
 
 /* Tablet - PC low resolution */
-@media (min-width: 764px) and (max-width: 1199px) {
+@media (min-width: 765px) and (max-width: 1199px) {
 	.wide {
-		width: 764px;
+		width: 100%;
+		padding: 0 16px;
 	}
 }
 

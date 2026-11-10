@@ -1,0 +1,106 @@
+.dateFilter {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 0 10px;
+	height: 38px;
+
+	span {
+		font-size: 13px;
+		color: #64748b;
+		white-space: nowrap;
+	}
+
+	input {
+		border: none;
+		outline: none;
+		font-size: 13px;
+		color: #1e293b;
+		background: transparent;
+		cursor: pointer;
+		font-family: inherit;
+	}
+}
+
+.clearFilter {
+	font-size: 13px;
+	color: #ef4444;
+	cursor: pointer;
+	padding: 6px 10px;
+	border-radius: 6px;
+	background: #fee2e2;
+	white-space: nowrap;
+	font-weight: 500;
+	transition: all 0.2s;
+
+	&:hover {
+		background: #fecaca;
+	}
+}
+
+.statusModal {
+	padding: 8px 0;
+
+	.orderInfo {
+		background: #f8fafc;
+		border-radius: 8px;
+		padding: 12px;
+		margin-bottom: 16px;
+
+		p {
+			font-size: 14px;
+			color: #334155;
+			margin-bottom: 6px;
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			strong {
+				color: #0f172a;
+			}
+		}
+	}
+
+	.statusSelectGroup {
+		margin-bottom: 16px;
+
+		label {
+			display: block;
+			font-size: 13px;
+			font-weight: 600;
+			color: #334155;
+			margin-bottom: 8px;
+		}
+
+		select {
+			width: 100%;
+			height: 42px;
+			padding: 0 12px;
+			border-radius: 8px;
+			border: 1px solid #cbd5e1;
+			font-size: 14px;
+			outline: none;
+			background: #ffffff;
+			cursor: pointer;
+
+			&:focus {
+				border-color: #0070f4;
+			}
+		}
+	}
+
+	.ruleNote {
+		background: #fffbeb;
+		border: 1px solid #fef3c7;
+		border-radius: 8px;
+		padding: 10px;
+		font-size: 12px;
+		color: #b45309;
+		line-height: 1.5;
+	}
+}
+

@@ -1,3 +1,16 @@
 :root {
 	--height-header: 68px;
+	--primary-color: #00b7c4;
+	--primary-dark: #009aa6;
+	--primary-blue: #188efb;
+	--primary-gradient: linear-gradient(135deg, #00b7c4 0%, #188efb 100%);
+	--primary-light: #e6f9fa;
+	--price-color: #d92d20;
+	--text-color: #1f2937;
+	--text-muted: #6b7280;
+	--border-color: #eaedf2;
+	--card-radius: 12px;
+	--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+	--shadow-md: 0 6px 18px rgba(0, 0, 0, 0.06);
+	--shadow-hover: 0 12px 28px rgba(0, 183, 196, 0.18);
 }

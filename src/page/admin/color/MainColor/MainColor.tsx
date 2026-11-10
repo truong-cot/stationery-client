@@ -1,7 +1,6 @@
 'use client';
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import Tippy from '@tippyjs/react';
 import {AddCircle, Edit, Trash, Warning2} from 'iconsax-reactjs';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {Fragment, useState} from 'react';
@@ -25,8 +24,6 @@ import colorServices from '~/services/color.service';
 import FormCreateColor from '../FormCreateColor';
 import FormUpdateColor from '../FormUpdateColor';
 import type {IColor, PropsMainColor} from './interfaces';
-import FilterCustom from '~/components/common/FilterCustom';
-import categoryServices from '~/services/category.service';
 
 function MainColor({}: PropsMainColor) {
 	const router = useRouter();
@@ -39,22 +36,8 @@ function MainColor({}: PropsMainColor) {
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
-	const [categoryId, setCategoryId] = useState<string>('');
 
 	const [idDelete, setIdDelete] = useState<string>('');
-
-	const {data: categorys = []} = useQuery<
-		{
-			_id: string;
-			name: string;
-		}[]
-	>({
-		queryKey: [QUERY_KEY.catalogCategory],
-		queryFn: () =>
-			httpRequest({
-				http: categoryServices.catalog(),
-			}),
-	});
 
 	const {
 		data = {
@@ -72,14 +55,13 @@ function MainColor({}: PropsMainColor) {
 			totalCount: number;
 		};
 	}>({
-		queryKey: [QUERY_KEY.pageListColor, page, pageSize, keyword, categoryId],
+		queryKey: [QUERY_KEY.pageListColor, page, pageSize, keyword],
 		queryFn: () =>
 			httpRequest({
 				http: colorServices.getPageList({
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
-					category_id: categoryId,
 				}),
 			}),
 	});
@@ -135,23 +117,6 @@ function MainColor({}: PropsMainColor) {
 					keyword={keyword}
 					setKeyword={setKeyword}
 					placeholder='Tìm kiếm theo tên, mã màu sắc'
-					action={
-						<FlexLayout row gap-8 fit-height>
-							<FlexItem flex-1 overflow-y scrollbar>
-								<FlexLayout row gap-8>
-									<FilterCustom
-										name='Danh mục'
-										value={categoryId}
-										setValue={setCategoryId}
-										listOption={categorys.map((item) => ({
-											uuid: item._id,
-											name: item.name,
-										}))}
-									/>
-								</FlexLayout>
-							</FlexItem>
-						</FlexLayout>
-					}
 				/>
 
 				<FlexItem flex-1 overflow-x>
@@ -185,35 +150,6 @@ function MainColor({}: PropsMainColor) {
 									{
 										title: 'Tên màu',
 										render: (row, _) => <>{row?.name}</>,
-									},
-									{
-										title: 'Danh mục',
-										render: (row, _) => (
-											<>
-												{row?.categories?.length > 0 ? (
-													<>
-														{row?.categories?.[0]?.name}
-														{row?.categories?.length! > 1 && (
-															<Tippy
-																content={
-																	<ol style={{paddingLeft: '16px'}}>
-																		{row?.categories?.slice(1)?.map((v) => (
-																			<li key={v._id}>{v?.name}</li>
-																		))}
-																	</ol>
-																}
-															>
-																<b style={{cursor: 'pointer', marginLeft: '4px'}}>
-																	và {row?.categories?.length! - 1} danh mục khác
-																</b>
-															</Tippy>
-														)}
-													</>
-												) : (
-													'---'
-												)}
-											</>
-										),
 									},
 									{
 										title: 'Mô tả',
@@ -256,7 +192,7 @@ function MainColor({}: PropsMainColor) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination?.totalCount || 0}
-							dependencies={[pageSize, keyword, categoryId]}
+							dependencies={[pageSize, keyword]}
 						/>
 					</MainTable>
 				</FlexItem>

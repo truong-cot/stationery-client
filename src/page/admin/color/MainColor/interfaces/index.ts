@@ -5,8 +5,4 @@ export interface IColor {
 	name: string;
 	code: string;
 	description: string;
-	categories: {
-		_id: string;
-		name: string;
-	}[];
 }

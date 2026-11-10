@@ -1,7 +1,6 @@
 'use client';
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import Tippy from '@tippyjs/react';
 import {AddCircle, Edit, Trash, Warning2} from 'iconsax-reactjs';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {Fragment, useState} from 'react';
@@ -24,8 +23,6 @@ import {getQueryParams, updateQueryParams} from '~/funcs/queryParams';
 import FormCreateSize from '../FormCreateSize';
 import FormUpdateSize from '../FormUpdateSize';
 import type {ISize, PropsMainSize} from './interfaces';
-import FilterCustom from '~/components/common/FilterCustom';
-import categoryServices from '~/services/category.service';
 import sizeServices from '~/services/size.service';
 
 function MainSize({}: PropsMainSize) {
@@ -39,22 +36,8 @@ function MainSize({}: PropsMainSize) {
 	const [page, setPage] = useState<number>(1);
 	const [pageSize, setPageSize] = useState<number>(20);
 	const [keyword, setKeyword] = useState<string>('');
-	const [categoryId, setCategoryId] = useState<string>('');
 
 	const [idDelete, setIdDelete] = useState<string>('');
-
-	const {data: categorys = []} = useQuery<
-		{
-			_id: string;
-			name: string;
-		}[]
-	>({
-		queryKey: [QUERY_KEY.catalogCategory],
-		queryFn: () =>
-			httpRequest({
-				http: categoryServices.catalog(),
-			}),
-	});
 
 	const {
 		data = {
@@ -72,14 +55,13 @@ function MainSize({}: PropsMainSize) {
 			totalCount: number;
 		};
 	}>({
-		queryKey: [QUERY_KEY.pageListSize, page, pageSize, keyword, categoryId],
+		queryKey: [QUERY_KEY.pageListSize, page, pageSize, keyword],
 		queryFn: () =>
 			httpRequest({
 				http: sizeServices.getPageList({
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
-					category_id: categoryId,
 				}),
 			}),
 	});
@@ -135,23 +117,6 @@ function MainSize({}: PropsMainSize) {
 					keyword={keyword}
 					setKeyword={setKeyword}
 					placeholder='Tìm kiếm theo tên kích cỡ'
-					action={
-						<FlexLayout row gap-8 fit-height>
-							<FlexItem flex-1 overflow-y scrollbar>
-								<FlexLayout row gap-8>
-									<FilterCustom
-										name='Danh mục'
-										value={categoryId}
-										setValue={setCategoryId}
-										listOption={categorys.map((item) => ({
-											uuid: item._id,
-											name: item.name,
-										}))}
-									/>
-								</FlexLayout>
-							</FlexItem>
-						</FlexLayout>
-					}
 				/>
 
 				<FlexItem flex-1 overflow-x>
@@ -175,35 +140,6 @@ function MainSize({}: PropsMainSize) {
 									{
 										title: 'Tên kích cỡ',
 										render: (row, _) => <p style={{fontWeight: '600'}}>{row?.name}</p>,
-									},
-									{
-										title: 'Danh mục',
-										render: (row, _) => (
-											<>
-												{row?.categories?.length > 0 ? (
-													<>
-														{row?.categories?.[0]?.name}
-														{row?.categories?.length! > 1 && (
-															<Tippy
-																content={
-																	<ol style={{paddingLeft: '16px'}}>
-																		{row?.categories?.slice(1)?.map((v) => (
-																			<li key={v._id}>{v?.name}</li>
-																		))}
-																	</ol>
-																}
-															>
-																<b style={{cursor: 'pointer', marginLeft: '4px'}}>
-																	và {row?.categories?.length! - 1} danh mục khác
-																</b>
-															</Tippy>
-														)}
-													</>
-												) : (
-													'---'
-												)}
-											</>
-										),
 									},
 									{
 										title: 'Mô tả',
@@ -246,7 +182,7 @@ function MainSize({}: PropsMainSize) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination?.totalCount || 0}
-							dependencies={[pageSize, keyword, categoryId]}
+							dependencies={[pageSize, keyword]}
 						/>
 					</MainTable>
 				</FlexItem>

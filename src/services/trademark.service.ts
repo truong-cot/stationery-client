@@ -7,7 +7,7 @@ const trademarkServices = {
 	update: (payload: {_id: string; name: string; description: string}) => {
 		return axiosClient.post(`/trademark/update`, payload);
 	},
-	getPageList: (payload: {page: number; pageSize: number; keyword: string; category_id: string}) => {
+	getPageList: (payload: {page: number; pageSize: number; keyword: string}) => {
 		return axiosClient.post(`/trademark/page-list-trademark`, payload);
 	},
 	delete: (payload: {_id: string}) => {
@@ -16,8 +16,8 @@ const trademarkServices = {
 	detail: (payload: {_id: string}) => {
 		return axiosClient.get(`/trademark/detail/${payload._id}`);
 	},
-	catalog: (payload: {category_id: string}) => {
-		return axiosClient.post(`/trademark/catalog-trademark`, payload);
+	catalog: (payload?: {category_id?: string}) => {
+		return axiosClient.post(`/trademark/catalog-trademark`, payload || {});
 	},
 };
 

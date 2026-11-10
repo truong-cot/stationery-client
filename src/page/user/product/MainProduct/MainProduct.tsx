@@ -1,16 +1,12 @@
 'use client';
 
 import {useQuery} from '@tanstack/react-query';
-import clsx from 'clsx';
-import Image from 'next/image';
 import {useSearchParams} from 'next/navigation';
-import {useState} from 'react';
 import SearchQuery from '~/components/common/SearchQuery';
 import LayoutGrid from '~/components/layout/LayoutGrid';
 import Breadcrumb from '~/components/utils/Breadcrumb';
 import {PATH} from '~/constants/config';
 import {QUERY_KEY} from '~/constants/config/enum';
-import icons from '~/constants/images/icons';
 import {ContextProduct, ICatalog, ICatalogSetupPrice} from '~/contexts/ContextProduct';
 import {httpRequest} from '~/funcs/httpRequest';
 import {getQueryParams} from '~/funcs/queryParams';
@@ -20,14 +16,11 @@ import ListProduct from './components/ListProduct';
 import SortProduct from './components/SortProduct';
 import type {PropsMainProduct} from './interfaces';
 import styles from './MainProduct.module.scss';
-import Adsense from '~/components/seo/Adsense';
 
 function MainProduct({}: PropsMainProduct) {
 	const searchParams = useSearchParams();
 
 	const {_categoryId} = getQueryParams(searchParams);
-
-	const [openTabsMobile, setOpenTabsMobile] = useState<boolean>(false);
 
 	const {data: categorys = []} = useQuery<ICatalog[]>({
 		queryKey: [QUERY_KEY.clientCatalogCategory, _categoryId],
@@ -38,30 +31,27 @@ function MainProduct({}: PropsMainProduct) {
 	});
 
 	const {data: colors = []} = useQuery<ICatalog[]>({
-		queryKey: [QUERY_KEY.clientCatalogColor, _categoryId],
+		queryKey: [QUERY_KEY.clientCatalogColor],
 		queryFn: () =>
 			httpRequest({
-				http: clientServices.catalogColor({category_id: _categoryId as string}),
+				http: clientServices.catalogColor(),
 			}),
-		enabled: !!_categoryId,
 	});
 
 	const {data: sizes = []} = useQuery<ICatalog[]>({
-		queryKey: [QUERY_KEY.clientCatalogSize, _categoryId],
+		queryKey: [QUERY_KEY.clientCatalogSize],
 		queryFn: () =>
 			httpRequest({
-				http: clientServices.catalogSize({category_id: _categoryId as string}),
+				http: clientServices.catalogSize(),
 			}),
-		enabled: !!_categoryId,
 	});
 
 	const {data: trademarks = []} = useQuery<ICatalog[]>({
-		queryKey: [QUERY_KEY.clientCatalogTrademark, _categoryId],
+		queryKey: [QUERY_KEY.clientCatalogTrademark],
 		queryFn: () =>
 			httpRequest({
-				http: clientServices.catalogTrademark({category_id: _categoryId as string}),
+				http: clientServices.catalogTrademark(),
 			}),
-		enabled: !!_categoryId,
 	});
 
 	const {data: setupPrices = []} = useQuery<ICatalogSetupPrice[]>({
@@ -78,11 +68,9 @@ function MainProduct({}: PropsMainProduct) {
 		>
 			<div className={styles.main_product}>
 				<LayoutGrid>
-					{/* <Adsense slot='2217508996' /> */}
+					<h1 className={styles.sr_only}>Danh sách sản phẩm văn phòng phẩm Huyền Anh</h1>
+					{/* Header: Breadcrumb & Search */}
 					<div className={styles.head}>
-						<div className={styles.menu_line} onClick={() => setOpenTabsMobile(true)}>
-							<Image alt='Menu line' src={icons.menuLine} width={20} height={20} />
-						</div>
 						<div className={styles.breadcrumb}>
 							<Breadcrumb
 								isPadding={false}
@@ -93,22 +81,22 @@ function MainProduct({}: PropsMainProduct) {
 							/>
 						</div>
 						<div className={styles.input_search}>
-							<SearchQuery placeholder='Tìm kiếm sản phẩm' keyName='_keyword' />
+							<SearchQuery placeholder='Tìm kiếm sản phẩm...' keyName='_keyword' />
 						</div>
 					</div>
 
+					{/* Main Layout: Filter on TOP, Products on BOTTOM */}
 					<div className={styles.main}>
-						<div className={styles.filter_product}>
+						{/* Top Filter */}
+						<div className={styles.filter_top}>
 							<FilterProduct />
 						</div>
-						<div>
+
+						{/* Product List and Sorting */}
+						<div className={styles.content}>
 							<SortProduct />
 							<ListProduct />
 						</div>
-					</div>
-
-					<div className={clsx(styles.filter_product_mobile, {[styles.open]: openTabsMobile})}>
-						<FilterProduct onClose={() => setOpenTabsMobile(false)} />
 					</div>
 				</LayoutGrid>
 			</div>

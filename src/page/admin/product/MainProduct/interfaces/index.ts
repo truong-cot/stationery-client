@@ -6,22 +6,22 @@ export interface IProduct {
 	price: number;
 	pack_size: string;
 	images: string[];
-	short_description: string;
+	short_description?: string;
 	category: {
 		_id: string;
 		name: string;
 	};
-	color: {
+	colors: {
 		_id: string;
 		name: string;
-	};
-	size: {
+	}[];
+	size?: {
 		_id: string;
 		name: string;
-	};
-	trademark: {
+	} | null;
+	trademark?: {
 		_id: string;
 		name: string;
-	};
+	} | null;
 	is_featured: boolean;
 }

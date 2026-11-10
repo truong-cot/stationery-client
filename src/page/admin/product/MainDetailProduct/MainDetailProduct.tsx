@@ -20,6 +20,7 @@ import {convertCoin} from '~/funcs/convertCoin';
 import {httpRequest} from '~/funcs/httpRequest';
 import productServices from '~/services/product.service';
 import type {IDetailProduct, PropsMainDetailProduct} from './interfaces';
+import TagRefItem from '~/components/utils/TagRefItem';
 
 function MainDetailProduct({}: PropsMainDetailProduct) {
 	const router = useRouter();
@@ -105,9 +106,23 @@ function MainDetailProduct({}: PropsMainDetailProduct) {
 									<InfoDetail name='Kích thước đóng gói' value={product?.pack_size} />
 									<InfoDetail name='Giá sản phẩm' value={convertCoin(product?.price || 0)} />
 									<InfoDetail name='Danh mục' value={product?.category?.name} />
-									{/* <InfoDetail name='Màu sắc' value={product?.color?.name} />
+									<InfoDetail
+										name='Màu sắc'
+										value=''
+										actions={
+											product?.colors && product.colors.length > 0 ? (
+												<FlexLayout row gap-4 wrap>
+													{product.colors.map((c) => (
+														<TagRefItem key={c._id} name={c.name} />
+													))}
+												</FlexLayout>
+											) : (
+												'---'
+											)
+										}
+									/>
 									<InfoDetail name='Kích cỡ' value={product?.size?.name} />
-									<InfoDetail name='Thương hiệu' value={product?.trademark?.name} /> */}
+									<InfoDetail name='Thương hiệu' value={product?.trademark?.name} />
 									<InfoDetail name='Sản phẩm nổi bật' value={product?.is_featured ? 'Có' : 'Không'} />
 								</GridColumn>
 								<InfoDetail name='Mô tả ngắn' value={product?.short_description} />

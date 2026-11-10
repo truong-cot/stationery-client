@@ -5,13 +5,13 @@ import type {PropsLayoutUser} from './interfaces';
 
 function LayoutUser({children}: PropsLayoutUser) {
 	return (
-		<main>
+		<div>
 			<header className={styles.header}>
 				<Header />
 			</header>
-			<div className={styles.main}>{children}</div>
+			<main className={styles.main}>{children}</main>
 			<Footer />
-		</main>
+		</div>
 	);
 }
 

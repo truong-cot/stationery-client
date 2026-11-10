@@ -12,20 +12,47 @@ export const seoKeywords: string[] = [
 	'khám phá sản phẩm văn phòng phẩm',
 	'tra cứu sản phẩm văn phòng phẩm',
 	'văn phòng phẩm giá tốt',
+	'đồ dùng học sinh',
+	'dụng cụ học tập',
+	'bút viết',
+	'giấy in a4',
+	'vở vẽ',
+	'kéo',
+	'văn phòng phẩm giá sỉ',
 ];
 
 export async function buildHomePageSEO() {
-	const title = 'Tìm kiếm, tra cứu thông tin sản phẩm văn phòng phẩm giá tốt.';
+	const title = 'Văn phòng phẩm Huyền Anh - Đồ dùng học tập & văn phòng phẩm giá tốt';
 
-	const description = 'Danh sách danh mục, sản phẩm nổi bật và sản phẩm mới nhất tại Văn phòng phẩm Huyền Anh';
+	const description =
+		'Văn phòng phẩm Huyền Anh chuyên cung cấp sỉ lẻ đồ dùng học tập, thiết bị văn phòng phẩm, bút viết, giấy in, sổ vở chính hãng với giá cả cạnh tranh, giao hàng nhanh chóng.';
 
 	return {title, description, image: DEFAULT_OG_IMAGE};
 }
 
 export async function buildHomePageProductsSEO() {
-	const title = 'Danh sách sản phẩm';
+	const title = 'Danh sách sản phẩm văn phòng phẩm giá tốt';
 
-	const description = 'Tìm kiếm, tra cứu danh sách sản phẩm tại Văn phòng phẩm Huyền Anh';
+	const description =
+		'Khám phá danh sách đầy đủ các sản phẩm dụng cụ học tập, thiết bị văn phòng phẩm, bút viết, giấy in chất lượng cao tại Văn phòng phẩm Huyền Anh.';
+
+	return {title, description, image: DEFAULT_OG_IMAGE};
+}
+
+export async function buildPageOrderSEO() {
+	const title = 'Đặt mua hàng';
+
+	const description =
+		'Hoàn tất thông tin giao hàng và xác nhận đặt mua sản phẩm văn phòng phẩm chính hãng tại Văn phòng phẩm Huyền Anh.';
+
+	return {title, description, image: DEFAULT_OG_IMAGE};
+}
+
+export async function buildPageTrackingOrderSEO() {
+	const title = 'Tra cứu đơn hàng';
+
+	const description =
+		'Tra cứu nhanh trạng thái và tiến độ xử lý đơn hàng bằng Số điện thoại hoặc Mã đơn hàng tại Văn phòng phẩm Huyền Anh.';
 
 	return {title, description, image: DEFAULT_OG_IMAGE};
 }

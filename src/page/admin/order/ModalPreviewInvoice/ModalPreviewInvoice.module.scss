@@ -1,0 +1,94 @@
+.container {
+	width: min(94vw, 1050px);
+	height: 92vh;
+	background: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.header {
+	height: 54px;
+	min-height: 54px;
+	background: #ffffff;
+	border-bottom: 1px solid #e2e8f0;
+	padding: 0 16px 0 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.titleWrapper {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+
+	h3 {
+		font-size: 16px;
+		font-weight: 700;
+		color: #0f172a;
+		margin: 0;
+	}
+
+	.badge {
+		font-size: 11px;
+		font-weight: 600;
+		color: #0284c7;
+		background: #e0f2fe;
+		padding: 3px 8px;
+		border-radius: 6px;
+	}
+}
+
+.actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.closeBtn {
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #64748b;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+
+	&:hover {
+		background: #f1f5f9;
+		color: #0f172a;
+	}
+}
+
+.body {
+	flex: 1;
+	background: #525659; // same dark background as native pdf viewer
+	position: relative;
+	overflow: hidden;
+
+	iframe {
+		width: 100%;
+		height: 100%;
+		border: none;
+		display: block;
+	}
+}
+
+.loadingWrapper {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	background: #ffffff;
+	color: #64748b;
+	font-size: 14px;
+}
+

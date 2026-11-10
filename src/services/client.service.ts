@@ -4,6 +4,55 @@ import {RESPONSE_CODE} from '~/funcs/httpRequest';
 import {axiosClient} from '~/libs/axios';
 import {IProductDetail} from '~/page/user/product/MainDetailProduct/interfaces';
 
+export interface IClientCreateOrderPayload {
+	customer_name: string;
+	customer_phone: string;
+	shipping_address: string;
+	customer_note?: string;
+	items: {
+		product_id: string;
+		quantity: number;
+	}[];
+}
+
+export interface IClientOrderItemResponse {
+	product_id: string;
+	product_name: string;
+	product_image: string;
+	pack_size?: string;
+	price: number;
+	quantity: number;
+	subtotal: number;
+}
+
+export interface IClientOrderResponse {
+	_id: string;
+	code: string;
+	customer_name: string;
+	customer_phone: string;
+	shipping_address: string;
+	customer_note?: string;
+	items: IClientOrderItemResponse[];
+	total_amount: number;
+	order_status: string;
+	created_at: string;
+}
+
+export interface IClientTrackingOrderPayload {
+	phone?: string;
+	code?: string;
+	page?: number;
+	pageSize?: number;
+}
+
+export interface IClientTrackingOrderResponse {
+	items: IClientOrderResponse[];
+	pagination: {
+		currentPage: number;
+		totalCount: number;
+	};
+}
+
 const clientServices = {
 	searchProduct: (payload: {keyword: string; category_id: string}) => {
 		return axiosClient.post(`/client/search-product`, payload);
@@ -23,14 +72,14 @@ const clientServices = {
 	productNew: () => {
 		return axiosClient.get(`/client/product-new`);
 	},
-	catalogColor: (payload: {category_id: string}) => {
-		return axiosClient.post(`/client/catalog-color`, payload);
+	catalogColor: (payload?: {category_id?: string}) => {
+		return axiosClient.post(`/client/catalog-color`, payload || {});
 	},
-	catalogSize: (payload: {category_id: string}) => {
-		return axiosClient.post(`/client/catalog-size`, payload);
+	catalogSize: (payload?: {category_id?: string}) => {
+		return axiosClient.post(`/client/catalog-size`, payload || {});
 	},
-	catalogTrademark: (payload: {category_id: string}) => {
-		return axiosClient.post(`/client/catalog-trademark`, payload);
+	catalogTrademark: (payload?: {category_id?: string}) => {
+		return axiosClient.post(`/client/catalog-trademark`, payload || {});
 	},
 	pageListProduct: (payload: {
 		page: number;
@@ -56,6 +105,12 @@ const clientServices = {
 	},
 	directSubCategory: (payload: {category_id: string}) => {
 		return axiosClient.post(`/client/direct-sub-category`, payload);
+	},
+	createOrder: (payload: IClientCreateOrderPayload) => {
+		return axiosClient.post(`/client/create-order`, payload);
+	},
+	trackingOrder: (payload: IClientTrackingOrderPayload) => {
+		return axiosClient.post(`/client/tracking-order`, payload);
 	},
 };
 

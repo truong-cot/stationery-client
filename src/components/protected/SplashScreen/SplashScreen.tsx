@@ -13,6 +13,7 @@ import {storage} from '~/funcs/storage';
 import authServices from '~/services/auth.service';
 import {RootState} from '~/store';
 import {IDataLoginStorage, setAccessToken, setDataLoginStorage, setIsLoading, setRememberPassword, setStateLogin} from '~/store/auth.slice';
+import {ICartItem, setCarts} from '~/store/cart.slice';
 import {setInfoUser, setContact} from '~/store/user.slice';
 import loadingAnim from '../../../../public/anim/loading_screen.json';
 import styles from './SplashScreen.module.scss';
@@ -26,12 +27,14 @@ export type TypeStorage = {
 	rememberPassword: boolean;
 	isLogin: boolean;
 	dataLoginStorage: IDataLoginStorage | null;
+	carts: ICartItem[];
 };
 
 function SplashScreen() {
 	const dispatch = useDispatch();
 
 	const {rememberPassword, access_token, isLogin, isLoading, dataLoginStorage} = useSelector((state: RootState) => state.auth);
+	const {carts} = useSelector((state: RootState) => state.cart);
 
 	useEffect(() => {
 		(async () => {
@@ -44,6 +47,7 @@ function SplashScreen() {
 				if (cached?.isLogin) dispatch(setStateLogin(cached.isLogin));
 				if (cached?.rememberPassword) dispatch(setRememberPassword(cached.rememberPassword));
 				if (cached?.dataLoginStorage) dispatch(setDataLoginStorage(cached.dataLoginStorage));
+				if (Array.isArray(cached?.carts)) dispatch(setCarts(cached.carts));
 			} finally {
 				dispatch(setIsLoading(false));
 			}
@@ -62,11 +66,12 @@ function SplashScreen() {
 				isLogin: isLogin,
 				rememberPassword: rememberPassword,
 				dataLoginStorage: dataLoginStorage,
+				carts: carts,
 			};
 
 			storage.set(KEY_STORE, dataStorage);
 		}
-	}, [isLoading, rememberPassword, access_token, isLogin, dataLoginStorage]);
+	}, [isLoading, rememberPassword, access_token, isLogin, dataLoginStorage, carts]);
 
 	const {data, isSuccess} = useQuery({
 		queryKey: [QUERY_KEY.getProfile, access_token],

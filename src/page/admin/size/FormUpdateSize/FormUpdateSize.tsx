@@ -55,7 +55,7 @@ function FormUpdateSize({_idSize, onClose}: PropsFormUpdateSize) {
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
-				msgSuccess: 'Chỉnh sửa màu sắc thành công!',
+				msgSuccess: 'Chỉnh sửa kích cỡ thành công!',
 				http: sizeServices.update({
 					_id: _idSize,
 					name: form.name,

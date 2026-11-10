@@ -3,7 +3,6 @@ import styles from './NodeCategory.module.scss';
 import type {PropsNodeCategory} from './interfaces';
 import {Fragment, useState} from 'react';
 import FlexLayout from '~/components/layout/FlexLayout';
-import TagRefItem from '~/components/utils/TagRefItem';
 import IconActionTable from '~/components/utils/IconActionTable';
 import {updateQueryParams} from '~/funcs/queryParams';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
@@ -31,42 +30,7 @@ function NodeCategory({level, node}: PropsNodeCategory) {
 				<div className={styles.info}>
 					<FlexLayout column gap-4>
 						<p className={styles.name}>{node.name}</p>
-						<FlexLayout row items-center gap-8 wrap>
-							<p className={styles.note}>Màu sắc: </p>
-							{node?.colors?.length > 0 ? (
-								<FlexLayout row items-center gap-4 wrap>
-									{node?.colors?.map((c) => (
-										<TagRefItem key={c._id} name={c.name} />
-									))}
-								</FlexLayout>
-							) : (
-								<p className={styles.empty}>Trống!</p>
-							)}
-						</FlexLayout>
-						<FlexLayout row items-center gap-8 wrap>
-							<p className={styles.note}>Kích cỡ: </p>
-							{node?.sizes?.length > 0 ? (
-								<FlexLayout row items-center gap-4 wrap>
-									{node?.sizes?.map((c) => (
-										<TagRefItem key={c._id} name={c.name} />
-									))}
-								</FlexLayout>
-							) : (
-								<p className={styles.empty}>Trống!</p>
-							)}
-						</FlexLayout>
-						<FlexLayout row items-center gap-8 wrap>
-							<p className={styles.note}>Thương hiệu: </p>
-							{node?.trademarks?.length > 0 ? (
-								<FlexLayout row items-center gap-4 wrap>
-									{node?.trademarks?.map((c) => (
-										<TagRefItem key={c._id} name={c.name} />
-									))}
-								</FlexLayout>
-							) : (
-								<p className={styles.empty}>Trống!</p>
-							)}
-						</FlexLayout>
+						{node.description && <p className={styles.note}>{node.description}</p>}
 					</FlexLayout>
 				</div>
 				<FlexLayout row wrap>

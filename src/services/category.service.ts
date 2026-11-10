@@ -4,10 +4,8 @@ const categoryServices = {
 	create: (payload: {
 		name: string;
 		description: string;
-		parent_id: string;
-		color_ids: string[];
-		size_ids: string[];
-		trademark_ids: string[];
+		parent_id?: string;
+		image?: string | null;
 	}) => {
 		return axiosClient.post(`/category/create`, payload);
 	},
@@ -15,14 +13,12 @@ const categoryServices = {
 		_id: string;
 		name: string;
 		description: string;
-		parent_id: string;
-		color_ids: string[];
-		size_ids: string[];
-		trademark_ids: string[];
+		parent_id?: string;
+		image?: string | null;
 	}) => {
 		return axiosClient.post(`/category/update`, payload);
 	},
-	getPageList: (payload: {page: number; pageSize: number; keyword: string; color_id: string; size_id: string; trademark_id: string}) => {
+	getPageList: (payload: {page: number; pageSize: number; keyword: string}) => {
 		return axiosClient.post(`/category/page-list-category`, payload);
 	},
 	delete: (payload: {_id: string}) => {
