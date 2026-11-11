@@ -4,7 +4,7 @@ import {useQuery} from '@tanstack/react-query';
 import clsx from 'clsx';
 import {ArrowDown2, Category2, Money, Colorfilter, Size, TriangleLogo} from 'iconsax-react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {useContext, useEffect, useMemo, useState} from 'react';
+import {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import TippyHeadless from '@tippyjs/react/headless';
 import {BiCheck} from 'react-icons/bi';
 import {IoClose} from 'react-icons/io5';
@@ -37,6 +37,23 @@ function findPath(nodes: INodeCategory[], targetId: string, path: string[] = [])
 	return null;
 }
 
+function scrollItemToLeft(container: HTMLElement | null, item: HTMLElement | null, paddingOffset = 2) {
+	if (!container) return;
+	if (!item) {
+		container.scrollTo({left: 0, behavior: 'smooth'});
+		return;
+	}
+
+	const containerRect = container.getBoundingClientRect();
+	const itemRect = item.getBoundingClientRect();
+	const targetScrollLeft = container.scrollLeft + (itemRect.left - containerRect.left) - paddingOffset;
+
+	container.scrollTo({
+		left: Math.max(0, targetScrollLeft),
+		behavior: 'smooth',
+	});
+}
+
 function FilterProduct({onClose}: PropsFilterProduct) {
 	const router = useRouter();
 	const pathname = usePathname();
@@ -56,6 +73,11 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 	}, [_categoryId]);
 
 	const [openDropdown, setOpenDropdown] = useState<'price' | 'trademark' | 'size' | 'color' | null>(null);
+
+	const rootScrollRef = useRef<HTMLDivElement>(null);
+	const subScrollRef = useRef<HTMLDivElement>(null);
+	const rootItemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+	const subItemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
 	const {data: nodes = []} = useQuery<INodeCategory[]>({
 		queryKey: [QUERY_KEY.clientTreeCategory],
@@ -81,6 +103,29 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 	const subCategories = useMemo(() => {
 		return activeRootNode?.children || [];
 	}, [activeRootNode]);
+
+	// Auto scroll selected parent and child category pills to the left of their scroll containers
+	useEffect(() => {
+		const activeRootId = activePath[0];
+		const rafId = requestAnimationFrame(() => {
+			if (!activeRootId) {
+				scrollItemToLeft(rootScrollRef.current, null);
+				return;
+			}
+
+			scrollItemToLeft(rootScrollRef.current, rootItemRefs.current[activeRootId] || null, 2);
+
+			if (subCategories.length > 0) {
+				const subTarget =
+					currentCategoryId && currentCategoryId !== activeRootId
+						? subItemRefs.current[currentCategoryId] || null
+						: null;
+				scrollItemToLeft(subScrollRef.current, subTarget, 0);
+			}
+		});
+
+		return () => cancelAnimationFrame(rafId);
+	}, [activePath, currentCategoryId, subCategories]);
 
 	// Active attribute objects for display labels
 	const activePrice = useMemo(() => {
@@ -264,7 +309,7 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 
 				{/* Primary Root Categories with Horizontal Scroll on Mobile */}
 				<div className={styles.category_scroll_container}>
-					<div className={styles.category_scroll}>
+					<div ref={rootScrollRef} className={styles.category_scroll}>
 						{/* "All" category pill */}
 						<button
 							type='button'
@@ -285,6 +330,9 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 							return (
 								<button
 									key={node._id}
+									ref={(el) => {
+										rootItemRefs.current[node._id] = el;
+									}}
 									type='button'
 									className={clsx(styles.category_pill, {
 										[styles.active]: isRootActive,
@@ -307,7 +355,7 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 				{/* 2. Subcategories tier (if selected parent has children) */}
 				{subCategories.length > 0 && (
 					<div className={styles.subcategory_container}>
-						<div className={styles.subcategory_scroll}>
+						<div ref={subScrollRef} className={styles.subcategory_scroll}>
 							<button
 								type='button'
 								className={clsx(styles.sub_pill, {
@@ -326,6 +374,9 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 								return (
 									<button
 										key={child._id}
+										ref={(el) => {
+											subItemRefs.current[child._id] = el;
+										}}
 										type='button'
 										className={clsx(styles.sub_pill, {
 											[styles.active]: isChildActive,
