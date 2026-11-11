@@ -2,7 +2,7 @@
 
 import {useMutation} from '@tanstack/react-query';
 import {ArrowLeft, TickCircle} from 'iconsax-react';
-import {Fragment, useMemo, useState} from 'react';
+import {Fragment, useEffect, useMemo, useState} from 'react';
 import {BsCartXFill} from 'react-icons/bs';
 import {useDispatch, useSelector} from 'react-redux';
 import Button from '~/components/common/Button';
@@ -49,6 +49,14 @@ function MainOrder({}: PropsMainOrder) {
 	const [openOrderSuccess, setOpenOrderSuccess] = useState<boolean>(false);
 	const [createdOrder, setCreatedOrder] = useState<IClientOrderResponse | null>(null);
 	const [form, setForm] = useState<IFormOrder>(initForm);
+
+	useEffect(() => {
+		window.scrollTo(0, 0);
+		const rafId = requestAnimationFrame(() => {
+			window.scrollTo(0, 0);
+		});
+		return () => cancelAnimationFrame(rafId);
+	}, []);
 
 	const totalQuantity = useMemo(() => {
 		return carts.reduce((sum, item) => sum + item.quantity, 0);
@@ -111,9 +119,7 @@ function MainOrder({}: PropsMainOrder) {
 					</div>
 
 					<h1 className={styles.title}>Đặt mua hàng</h1>
-					<p className={styles.description}>
-						Điền đầy đủ thông tin nhận hàng để hoàn tất đơn hàng tại Văn phòng phẩm Huyền Anh.
-					</p>
+					<p className={styles.description}>Điền đầy đủ thông tin nhận hàng để hoàn tất đơn hàng tại Văn phòng phẩm Huyền Anh.</p>
 
 					{carts.length > 0 ? (
 						<Form form={form} setForm={setForm} onSubmit={handleSubmit}>
@@ -233,9 +239,7 @@ function MainOrder({}: PropsMainOrder) {
 									<BsCartXFill size={40} color='#d92d20' />
 								</div>
 								<h4>Chưa có sản phẩm nào trong giỏ hàng!</h4>
-								<p>
-									Vui lòng thêm sản phẩm vào giỏ hàng trước khi tiến hành đặt mua hàng tại Văn phòng phẩm Huyền Anh.
-								</p>
+								<p>Vui lòng thêm sản phẩm vào giỏ hàng trước khi tiến hành đặt mua hàng tại Văn phòng phẩm Huyền Anh.</p>
 								<div className={styles.empty_btn}>
 									<Button
 										icon={<ArrowLeft size='18' color='#fff' />}
@@ -262,4 +266,3 @@ function MainOrder({}: PropsMainOrder) {
 }
 
 export default MainOrder;
-

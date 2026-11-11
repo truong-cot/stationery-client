@@ -103,6 +103,10 @@
 	&::placeholder {
 		color: #9ca3af;
 	}
+
+	@media (max-width: 768px) {
+		font-size: 16px;
+	}
 }
 
 .clear_btn {
