@@ -8,6 +8,7 @@ import {Provider} from 'react-redux';
 import {ToastContainer} from 'react-toastify';
 import {store} from '~/store';
 import QuickFilterCategory from '~/components/protected/QuickFilterCategory';
+import ScrollToTop from '~/components/utils/ScrollToTop';
 
 const AppProvider = ({children}: {children: React.ReactNode}) => {
 	const [queryClient] = useState(
@@ -35,10 +36,13 @@ const AppProvider = ({children}: {children: React.ReactNode}) => {
 				<Suspense>
 					<QuickFilterCategory />
 				</Suspense>
+				<Suspense>
+					<ScrollToTop />
+				</Suspense>
 				{children}
-				{process.env.NODE_ENV === 'development' && (
+				{/* {process.env.NODE_ENV === 'development' && (
 					<ReactQueryDevtools initialIsOpen={false} position='left' buttonPosition='bottom-left' />
-				)}
+				)} */}
 			</QueryClientProvider>
 		</Provider>
 	);

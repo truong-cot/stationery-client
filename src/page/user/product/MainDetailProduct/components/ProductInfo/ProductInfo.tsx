@@ -46,7 +46,11 @@ function ProductInfo({product}: PropsProductInfo) {
 
 	const handleAddToCart = () => {
 		const imgEl = document.querySelector('#product-detail-main-img') as HTMLImageElement | null;
-		const cartEl = document.querySelector('#cart-icon') as HTMLElement | null;
+		const cartEl =
+			window.innerWidth <= 768
+				? ((document.querySelector('#cart-bottom-icon') as HTMLElement | null) ||
+				  (document.querySelector('#cart-icon') as HTMLElement | null))
+				: (document.querySelector('#cart-icon') as HTMLElement | null);
 
 		if (imgEl && cartEl) {
 			flyToCart(imgEl, cartEl);
@@ -63,23 +67,19 @@ function ProductInfo({product}: PropsProductInfo) {
 		dispatch(setOpenCart(true));
 	};
 
-	const colorList = product?.colors && product.colors.length > 0 ? product.colors : product?.color ? [product.color] : [];
+	const classifyList =
+		product?.classifies && product.classifies.length > 0
+			? product.classifies
+			: [];
 
 	return (
 		<div className={styles.main}>
 			{/* Top Meta: Brand & SKU */}
 			<div className={styles.top_meta}>
-				{product?.trademark?.name ? (
-					<span className={styles.brand_pill}>
-						<Shop size='14' color='#00b7c4' variant='Bold' />
-						Thương hiệu: <strong>{product.trademark.name}</strong>
-					</span>
-				) : (
-					<span className={styles.brand_pill}>
-						<Shop size='14' color='#00b7c4' variant='Bold' />
-						Văn phòng phẩm Huyền Anh
-					</span>
-				)}
+				<span className={styles.brand_pill}>
+					<Shop size='14' color='#00b7c4' variant='Bold' />
+					Văn phòng phẩm Huyền Anh
+				</span>
 
 				<span className={styles.stock_status}>
 					<span className={styles.stock_dot} />
@@ -109,12 +109,12 @@ function ProductInfo({product}: PropsProductInfo) {
 				</div>
 			</div>
 
-			{/* Color List (Display Only) */}
-			{colorList.length > 0 && (
+			{/* Classifies / Color List */}
+			{classifyList.length > 0 && (
 				<div className={styles.attr_section}>
-					<span className={styles.attr_label}>Màu sắc:</span>
+					<span className={styles.attr_label}>Phân loại:</span>
 					<div className={styles.color_pills}>
-						{colorList.map((c) => (
+						{classifyList.map((c) => (
 							<span key={c._id} className={styles.color_tag}>
 								{c.name}
 							</span>

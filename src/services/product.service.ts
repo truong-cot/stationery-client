@@ -8,7 +8,8 @@ const productServices = {
 		images: string[];
 		short_description?: string;
 		category_id: string;
-		color_ids: string[];
+		classify_ids: string[];
+		color_ids?: string[];
 		size_id?: string;
 		trademark_id?: string;
 		is_featured: boolean;
@@ -23,7 +24,8 @@ const productServices = {
 		images: string[];
 		short_description?: string;
 		category_id: string;
-		color_ids: string[];
+		classify_ids: string[];
+		color_ids?: string[];
 		size_id?: string;
 		trademark_id?: string;
 		is_featured: boolean;
@@ -35,6 +37,7 @@ const productServices = {
 		pageSize: number;
 		keyword: string;
 		category_id?: string;
+		classify_id?: string;
 		color_id?: string;
 		size_id?: string;
 		trademark_id?: string;

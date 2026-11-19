@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
 		minHeight: 24,
 	},
 
-	// Cells width: TT: 6%, Tên hàng: 46%, ĐV: 10%, SL: 10%, Đơn giá: 14%, Thành tiền: 14%
+	// Cells width: TT: 6%, Tên hàng: 42%, ĐV: 14%, SL: 10%, Đơn giá: 14%, Thành tiền: 14%
 	colTT: {
 		width: '6%',
 		borderRightWidth: 1,
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
 	},
 
 	colName: {
-		width: '46%',
+		width: '42%',
 		borderRightWidth: 1,
 		borderColor: '#000000',
 		paddingVertical: 3,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
 	},
 
 	colUnit: {
-		width: '10%',
+		width: '14%',
 		borderRightWidth: 1,
 		borderColor: '#000000',
 		paddingVertical: 3,
@@ -341,7 +341,6 @@ function InvoicePDF({order, orders, storeInfo}: PropsInvoicePDF) {
 								<Text style={styles.storeName}>{store.name}</Text>
 								<Text style={styles.storeSub}>{store.line1}</Text>
 								<Text style={styles.storeSub}>Địa chỉ: {store.address}</Text>
-								<Text style={styles.storeSub}>Điện thoại: {store.phones}</Text>
 							</View>
 
 							<View style={styles.orderBadgeContainer}>

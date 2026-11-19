@@ -4,7 +4,6 @@ import {useContext, useState} from 'react';
 import FlexLayout from '~/components/layout/FlexLayout';
 import TagRefItem from '~/components/utils/TagRefItem';
 import {ContextProduct, IContextProduct} from '~/contexts/ContextProduct';
-import {renderRangePrice} from '~/funcs/convertCoin';
 import {getQueryParams, updateQueryParams} from '~/funcs/queryParams';
 import styles from './SortProduct.module.scss';
 import type {PropsSortProduct} from './interfaces';
@@ -20,8 +19,8 @@ function SortProduct({}: PropsSortProduct) {
 
 	const [openSort, setOpenSort] = useState<boolean>(false);
 
-	const {_categoryId, _sizeId, _trademarkId, _priceId, _colorId, _sort} = getQueryParams(searchParams);
-	const {colors, sizes, trademarks, setupPrices, categorys} = useContext<IContextProduct>(ContextProduct);
+	const {_categoryId, _sizeId, _sort} = getQueryParams(searchParams);
+	const {sizes, categorys} = useContext<IContextProduct>(ContextProduct);
 
 	return (
 		<div className={styles.main_sort_product}>
@@ -30,7 +29,7 @@ function SortProduct({}: PropsSortProduct) {
 				<div className={styles.selected}>
 					<span className={styles.label_title}>Đang lọc theo:</span>
 
-					{!_categoryId && !_sizeId && !_trademarkId && !_priceId && !_colorId && <TagRefItem name='Tất cả' />}
+					{!_categoryId && !_sizeId && <TagRefItem name='Tất cả' />}
 
 					<FlexLayout row gap-6 wrap>
 						{!!_categoryId && (
@@ -47,57 +46,12 @@ function SortProduct({}: PropsSortProduct) {
 							/>
 						)}
 
-						{!!_priceId && (
-							<TagRefItem
-								name={renderRangePrice({
-									min: setupPrices?.find((v) => v._id === (_priceId as string))?.min || 0,
-									max: setupPrices?.find((v) => v._id === (_priceId as string))?.max || 0,
-								})}
-								onClean={() =>
-									updateQueryParams(router, pathname, searchParams, {
-										delete: ['_priceId', '_page'],
-										options: {
-											scroll: false,
-										},
-									})
-								}
-							/>
-						)}
-
-						{!!_colorId && (
-							<TagRefItem
-								name={colors?.find((v) => v._id === (_colorId as string))?.name || 'Màu sắc'}
-								onClean={() =>
-									updateQueryParams(router, pathname, searchParams, {
-										delete: ['_colorId', '_page'],
-										options: {
-											scroll: false,
-										},
-									})
-								}
-							/>
-						)}
-
 						{!!_sizeId && (
 							<TagRefItem
 								name={sizes?.find((v) => v._id === (_sizeId as string))?.name || 'Kích cỡ'}
 								onClean={() =>
 									updateQueryParams(router, pathname, searchParams, {
 										delete: ['_sizeId', '_page'],
-										options: {
-											scroll: false,
-										},
-									})
-								}
-							/>
-						)}
-
-						{!!_trademarkId && (
-							<TagRefItem
-								name={trademarks?.find((v) => v._id === (_trademarkId as string))?.name || 'Thương hiệu'}
-								onClean={() =>
-									updateQueryParams(router, pathname, searchParams, {
-										delete: ['_trademarkId', '_page'],
 										options: {
 											scroll: false,
 										},

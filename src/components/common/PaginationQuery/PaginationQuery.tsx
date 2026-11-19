@@ -30,9 +30,20 @@ function PaginationQuery({total, currentPage, pageSize = LIMIT, dependencies = [
 		});
 
 		if (typeof window !== 'undefined') {
-			window.scrollTo({
-				top: 300,
-				behavior: 'smooth',
+			try {
+				window.scrollTo({
+					top: 0,
+					left: 0,
+					behavior: 'smooth',
+				});
+			} catch {
+				window.scrollTo(0, 0);
+			}
+
+			// Dự phòng chắc chắn cho Safari WebKit
+			requestAnimationFrame(() => {
+				document.documentElement.scrollTop = 0;
+				document.body.scrollTop = 0;
 			});
 		}
 	};

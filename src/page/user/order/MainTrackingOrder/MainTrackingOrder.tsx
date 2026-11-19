@@ -22,7 +22,7 @@ import OrderTrackingCard from '../OrderTrackingCard';
 import styles from './MainTrackingOrder.module.scss';
 import type {PropsMainTrackingOrder} from './interfaces';
 
-const TRACKING_PAGE_SIZE = 2;
+const TRACKING_PAGE_SIZE = 5;
 
 const parseTrackingQuery = (rawValue: string): IClientTrackingOrderPayload | null => {
 	const trimmed = rawValue.trim();
@@ -257,7 +257,7 @@ function MainTrackingOrder({}: PropsMainTrackingOrder) {
 
 							<div className={styles.orders_list}>
 								{orders.map((order) => (
-									<OrderTrackingCard key={order._id || order.code} order={order} />
+									<OrderTrackingCard key={order._id || order.code} order={order} defaultExpanded={false} />
 								))}
 							</div>
 

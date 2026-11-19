@@ -9,6 +9,10 @@ export const QUERY_KEY = {
 	detailColor: 'detail-color',
 	catalogColor: 'catalog-color',
 
+	pageListClassify: 'page-list-classify',
+	detailClassify: 'detail-classify',
+	catalogClassify: 'catalog-classify',
+
 	pageListSize: 'page-list-size',
 	detailSize: 'detail-size',
 	catalogSize: 'catalog-size',
@@ -34,10 +38,7 @@ export const QUERY_KEY = {
 	detailContact: 'detail-contact',
 
 	clientCatalogCategory: 'client-catalog-category',
-	clientCatalogColor: 'client-catalog-color',
 	clientCatalogSize: 'client-catalog-size',
-	clientCatalogTrademark: 'client-catalog-trademark',
-	clientCatalogSetupPrice: 'client-catalog-price',
 	clientSearchProduct: 'client-search-product',
 	clientTreeCategory: 'client-tree-category',
 	clientProductFeatured: 'client-product-featured',

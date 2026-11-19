@@ -2,21 +2,18 @@
 
 import {useQuery} from '@tanstack/react-query';
 import clsx from 'clsx';
-import {ArrowDown2, Category2, Money, Colorfilter, Size, TriangleLogo} from 'iconsax-react';
+import {ArrowLeft2, ArrowRight2, Category2} from 'iconsax-react';
+import Image from 'next/image';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {useContext, useEffect, useMemo, useRef, useState} from 'react';
-import TippyHeadless from '@tippyjs/react/headless';
-import {BiCheck} from 'react-icons/bi';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import {IoClose} from 'react-icons/io5';
-import {RiRestartLine} from 'react-icons/ri';
 
 import CategoryIcon from '~/components/common/CategoryIcon';
 import {QUERY_KEY} from '~/constants/config/enum';
-import {ContextProduct, IContextProduct} from '~/contexts/ContextProduct';
-import {renderRangePrice} from '~/funcs/convertCoin';
 import {httpRequest} from '~/funcs/httpRequest';
 import {getQueryParams, updateQueryParams} from '~/funcs/queryParams';
 import clientServices from '~/services/client.service';
+import {BiCheck} from 'react-icons/bi';
 import styles from './FilterProduct.module.scss';
 import type {INodeCategory, PropsFilterProduct} from './interfaces';
 
@@ -37,7 +34,7 @@ function findPath(nodes: INodeCategory[], targetId: string, path: string[] = [])
 	return null;
 }
 
-function scrollItemToLeft(container: HTMLElement | null, item: HTMLElement | null, paddingOffset = 2) {
+function scrollItemToLeft(container: HTMLElement | null, item: HTMLElement | null, paddingOffset = 24) {
 	if (!container) return;
 	if (!item) {
 		container.scrollTo({left: 0, behavior: 'smooth'});
@@ -59,25 +56,31 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
-	const {_categoryId, _sizeId, _trademarkId, _priceId, _colorId} = getQueryParams(searchParams);
-	const {colors, sizes, trademarks, setupPrices} = useContext<IContextProduct>(ContextProduct);
+	const {_categoryId} = getQueryParams(searchParams);
 
 	// Optimistic category id for 0ms instant UI feedback
-	const [currentCategoryId, setCurrentCategoryId] = useState<string | null>(
-		(_categoryId as string) || null
-	);
+	const [currentCategoryId, setCurrentCategoryId] = useState<string | null>((_categoryId as string) || null);
 
 	// Sync with URL search params when changed outside (e.g. Back/Forward or tag clear)
 	useEffect(() => {
 		setCurrentCategoryId((_categoryId as string) || null);
 	}, [_categoryId]);
 
-	const [openDropdown, setOpenDropdown] = useState<'price' | 'trademark' | 'size' | 'color' | null>(null);
-
 	const rootScrollRef = useRef<HTMLDivElement>(null);
 	const subScrollRef = useRef<HTMLDivElement>(null);
 	const rootItemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 	const subItemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+	const [subScrollRatio, setSubScrollRatio] = useState(0);
+	const [canSubScroll, setCanSubScroll] = useState(false);
+	const [canScrollLeft, setCanScrollLeft] = useState(false);
+	const [canScrollRight, setCanScrollRight] = useState(false);
+	const [isSingleRow, setIsSingleRow] = useState(false);
+	const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+	const handleImageError = (id: string) => {
+		setImageErrors((prev) => ({...prev, [id]: true}));
+	};
 
 	const {data: nodes = []} = useQuery<INodeCategory[]>({
 		queryKey: [QUERY_KEY.clientTreeCategory],
@@ -104,6 +107,86 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 		return activeRootNode?.children || [];
 	}, [activeRootNode]);
 
+	const getImageUrl = (image?: string | null) => {
+		if (!image) return null;
+		if (image.startsWith('http://') || image.startsWith('https://') || image.startsWith('data:')) return image;
+		const base = (process.env.NEXT_PUBLIC_IMAGE || '').replace(/\/+$/, '');
+		const path = image.replace(/^\/+/, '');
+		return `${base}/${path}`;
+	};
+
+	// Track scroll position to update CellphoneS-style scroll progress indicator
+	const handleSubScroll = () => {
+		if (!subScrollRef.current) return;
+		const {scrollLeft, scrollWidth, clientWidth} = subScrollRef.current;
+		const maxScroll = scrollWidth - clientWidth;
+		if (maxScroll > 4) {
+			setCanSubScroll(true);
+			setCanScrollLeft(scrollLeft > 4);
+			setCanScrollRight(scrollLeft < maxScroll - 4);
+			setSubScrollRatio(Math.min(1, Math.max(0, scrollLeft / maxScroll)));
+		} else {
+			setCanSubScroll(false);
+			setCanScrollLeft(false);
+			setCanScrollRight(false);
+		}
+	};
+
+	const handleScrollBy = (direction: 'left' | 'right') => {
+		if (!subScrollRef.current) return;
+		const delta = subScrollRef.current.clientWidth * 0.75 * (direction === 'left' ? -1 : 1);
+		subScrollRef.current.scrollBy({left: delta, behavior: 'smooth'});
+	};
+
+	// Check whether all subcategories fit on 1 single row without wrapping
+	useEffect(() => {
+		const checkLayout = () => {
+			if (!subScrollRef.current) return;
+			const containerWidth = subScrollRef.current.clientWidth;
+			if (!containerWidth) return;
+
+			const isMobile = window.innerWidth <= 768;
+			const itemWidth = isMobile ? 78 : 88;
+			const gap = isMobile ? 8 : 12;
+			const totalItems = subCategories.length;
+			const neededWidth = totalItems * itemWidth + Math.max(0, totalItems - 1) * gap + (isMobile ? 12 : 16);
+
+			setIsSingleRow(neededWidth <= containerWidth);
+		};
+
+		checkLayout();
+
+		const el = subScrollRef.current;
+		const resizeObserver = new ResizeObserver(() => {
+			checkLayout();
+			handleSubScroll();
+		});
+
+		if (el) {
+			resizeObserver.observe(el);
+		}
+
+		window.addEventListener('resize', checkLayout);
+
+		return () => {
+			resizeObserver.disconnect();
+			window.removeEventListener('resize', checkLayout);
+		};
+	}, [subCategories]);
+
+	useEffect(() => {
+		const el = subScrollRef.current;
+		if (!el) return;
+
+		handleSubScroll();
+
+		el.addEventListener('scroll', handleSubScroll, {passive: true});
+
+		return () => {
+			el.removeEventListener('scroll', handleSubScroll);
+		};
+	}, [subCategories, isSingleRow]);
+
 	// Auto scroll selected parent and child category pills to the left of their scroll containers
 	useEffect(() => {
 		const activeRootId = activePath[0];
@@ -113,62 +196,61 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 				return;
 			}
 
-			scrollItemToLeft(rootScrollRef.current, rootItemRefs.current[activeRootId] || null, 2);
+			scrollItemToLeft(rootScrollRef.current, rootItemRefs.current[activeRootId] || null, 16);
 
 			if (subCategories.length > 0) {
 				const subTarget =
-					currentCategoryId && currentCategoryId !== activeRootId
-						? subItemRefs.current[currentCategoryId] || null
-						: null;
-				scrollItemToLeft(subScrollRef.current, subTarget, 0);
+					currentCategoryId && currentCategoryId !== activeRootId ? subItemRefs.current[currentCategoryId] || null : null;
+				scrollItemToLeft(subScrollRef.current, subTarget, 24);
 			}
 		});
 
 		return () => cancelAnimationFrame(rafId);
 	}, [activePath, currentCategoryId, subCategories]);
 
-	// Active attribute objects for display labels
-	const activePrice = useMemo(() => {
-		return setupPrices?.find((p) => p._id === (_priceId as string)) || null;
-	}, [setupPrices, _priceId]);
-
-	const activeTrademark = useMemo(() => {
-		return trademarks?.find((t) => t._id === (_trademarkId as string)) || null;
-	}, [trademarks, _trademarkId]);
-
-	const activeSize = useMemo(() => {
-		return sizes?.find((s) => s._id === (_sizeId as string)) || null;
-	}, [sizes, _sizeId]);
-
-	const activeColor = useMemo(() => {
-		return colors?.find((c) => c._id === (_colorId as string)) || null;
-	}, [colors, _colorId]);
-
-	const hasAnyFilter = Boolean(currentCategoryId || _priceId || _colorId || _sizeId || _trademarkId);
-
 	// Select / Deselect Root or Category with 0ms optimistic switch
 	const handleSelectCategory = (nodeId: string, isRoot: boolean) => {
 		const isCurrentlyActive = currentCategoryId === nodeId;
-		const nextCategoryId = isCurrentlyActive ? null : nodeId;
 
-		// 1. Instant optimistic update
-		setCurrentCategoryId(nextCategoryId);
+		if (isCurrentlyActive) {
+			if (!isRoot && activeRootNode) {
+				// Unselect subcategory -> return to parent root category
+				setCurrentCategoryId(activeRootNode._id);
+				onClose && onClose();
+				updateQueryParams(router, pathname, searchParams, {
+					set: {
+						_categoryId: activeRootNode._id,
+						_categoryParentId: activeRootNode._id,
+					},
+					delete: ['_page'],
+					options: {
+						scroll: false,
+					},
+				});
+				return;
+			}
 
+			// Unselect root category -> return to "All products"
+			setCurrentCategoryId(null);
+			onClose && onClose();
+			updateQueryParams(router, pathname, searchParams, {
+				delete: ['_categoryId', '_categoryParentId', '_page'],
+				options: {
+					scroll: false,
+				},
+			});
+			return;
+		}
+
+		// Normal selection
+		setCurrentCategoryId(nodeId);
 		onClose && onClose();
-
-		// 2. Sync URL query params
 		updateQueryParams(router, pathname, searchParams, {
-			...(isCurrentlyActive
-				? {
-						delete: ['_categoryId', '_categoryParentId', '_page'],
-					}
-				: {
-						set: {
-							_categoryId: nodeId,
-							...(isRoot ? {_categoryParentId: nodeId} : {}),
-						},
-						delete: isRoot ? ['_page'] : ['_categoryParentId', '_page'],
-					}),
+			set: {
+				_categoryId: nodeId,
+				...(isRoot ? {_categoryParentId: nodeId} : {}),
+			},
+			delete: isRoot ? ['_page'] : ['_categoryParentId', '_page'],
 			options: {
 				scroll: false,
 			},
@@ -181,103 +263,6 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 		onClose && onClose();
 		updateQueryParams(router, pathname, searchParams, {
 			delete: ['_categoryId', '_categoryParentId', '_page'],
-			options: {
-				scroll: false,
-			},
-		});
-	};
-
-	// Reset all filters
-	const handleResetAllFilters = () => {
-		setCurrentCategoryId(null);
-		onClose && onClose();
-		setOpenDropdown(null);
-		updateQueryParams(router, pathname, searchParams, {
-			delete: ['_categoryId', '_categoryParentId', '_colorId', '_sizeId', '_trademarkId', '_priceId', '_page'],
-			options: {
-				scroll: false,
-			},
-		});
-	};
-
-	// Toggle Price
-	const handleTogglePrice = (priceId: string) => {
-		onClose && onClose();
-		setOpenDropdown(null);
-		updateQueryParams(router, pathname, searchParams, {
-			...((_priceId as string) === priceId
-				? {
-						delete: ['_priceId', '_page'],
-					}
-				: {
-						set: {
-							_priceId: priceId,
-						},
-						delete: ['_page'],
-					}),
-			options: {
-				scroll: false,
-			},
-		});
-	};
-
-	// Toggle Trademark
-	const handleToggleTrademark = (trademarkId: string) => {
-		onClose && onClose();
-		setOpenDropdown(null);
-		updateQueryParams(router, pathname, searchParams, {
-			...((_trademarkId as string) === trademarkId
-				? {
-						delete: ['_trademarkId', '_page'],
-					}
-				: {
-						set: {
-							_trademarkId: trademarkId,
-						},
-						delete: ['_page'],
-					}),
-			options: {
-				scroll: false,
-			},
-		});
-	};
-
-	// Toggle Size
-	const handleToggleSize = (sizeId: string) => {
-		onClose && onClose();
-		setOpenDropdown(null);
-		updateQueryParams(router, pathname, searchParams, {
-			...((_sizeId as string) === sizeId
-				? {
-						delete: ['_sizeId', '_page'],
-					}
-				: {
-						set: {
-							_sizeId: sizeId,
-						},
-						delete: ['_page'],
-					}),
-			options: {
-				scroll: false,
-			},
-		});
-	};
-
-	// Toggle Color
-	const handleToggleColor = (colorId: string) => {
-		onClose && onClose();
-		setOpenDropdown(null);
-		updateQueryParams(router, pathname, searchParams, {
-			...((_colorId as string) === colorId
-				? {
-						delete: ['_colorId', '_page'],
-					}
-				: {
-						set: {
-							_colorId: colorId,
-						},
-						delete: ['_page'],
-					}),
 			options: {
 				scroll: false,
 			},
@@ -300,11 +285,6 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 						<Category2 size={18} color='#00b7c4' variant='Bold' />
 						<span className={styles.section_title}>Danh mục sản phẩm</span>
 					</div>
-					{currentCategoryId && (
-						<button type='button' className={styles.reset_category_btn} onClick={handleSelectAll}>
-							Xem tất cả danh mục
-						</button>
-					)}
 				</div>
 
 				{/* Primary Root Categories with Horizontal Scroll on Mobile */}
@@ -352,25 +332,43 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 					</div>
 				</div>
 
-				{/* 2. Subcategories tier (if selected parent has children) */}
+				{/* 2. Subcategories tier (CellphoneS style 2-row grid or 1-row if it fits) */}
 				{subCategories.length > 0 && (
 					<div className={styles.subcategory_container}>
-						<div ref={subScrollRef} className={styles.subcategory_scroll}>
+						{canScrollLeft && (
 							<button
 								type='button'
-								className={clsx(styles.sub_pill, {
-									[styles.active]: currentCategoryId === activeRootNode?._id,
-								})}
-								onClick={() => handleSelectCategory(activeRootNode!._id, true)}
+								className={clsx(styles.nav_btn, styles.nav_prev)}
+								onClick={() => handleScrollBy('left')}
+								aria-label='Xem danh mục trước'
 							>
-								<div className={styles.sub_thumb}>
-									<CategoryIcon name='Tất cả' size={18} />
-								</div>
-								<span>Tất cả</span>
+								<ArrowLeft2 size={16} color='#334155' />
 							</button>
+						)}
 
+						{canScrollRight && (
+							<button
+								type='button'
+								className={clsx(styles.nav_btn, styles.nav_next)}
+								onClick={() => handleScrollBy('right')}
+								aria-label='Xem thêm danh mục'
+							>
+								<ArrowRight2 size={16} color='#334155' />
+							</button>
+						)}
+
+						<div
+							ref={subScrollRef}
+							className={clsx(styles.subcategory_scroll, {
+								[styles.single_row]: isSingleRow,
+							})}
+						>
+							{/* Subcategory items */}
 							{subCategories.map((child) => {
 								const isChildActive = currentCategoryId === child._id;
+								const hasValidImage = Boolean(child.image) && !imageErrors[child._id];
+								const imageUrl = hasValidImage ? getImageUrl(child.image) : null;
+
 								return (
 									<button
 										key={child._id}
@@ -378,271 +376,53 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 											subItemRefs.current[child._id] = el;
 										}}
 										type='button'
-										className={clsx(styles.sub_pill, {
+										className={clsx(styles.sub_item, {
 											[styles.active]: isChildActive,
 										})}
 										onClick={() => handleSelectCategory(child._id, false)}
+										title={child.name}
 									>
-										<div className={styles.sub_thumb}>
-											<CategoryIcon name={child.name} size={18} />
+										{isChildActive && (
+											<span className={styles.active_check_badge}>
+												<BiCheck size={13} color='#ffffff' />
+											</span>
+										)}
+										<div className={styles.sub_thumb_wrap}>
+											{imageUrl ? (
+												<Image
+													src={imageUrl}
+													alt={child.name}
+													fill
+													sizes='56px'
+													className={styles.sub_thumb_img}
+													onError={() => handleImageError(child._id)}
+												/>
+											) : (
+												<CategoryIcon name={child.name} size={52} />
+											)}
 										</div>
-										<span>{child.name}</span>
+										<span className={styles.sub_name}>{child.name}</span>
 									</button>
 								);
 							})}
 						</div>
+
+						{/* Scroll Progress Indicator Bar (CellphoneS style) */}
+						{canSubScroll && (
+							<div className={styles.scroll_indicator_wrap}>
+								<div className={styles.scroll_indicator_track}>
+									<div
+										className={styles.scroll_indicator_thumb}
+										style={{
+											transform: `translateX(${subScrollRatio * 18}px)`,
+										}}
+									/>
+								</div>
+							</div>
+						)}
 					</div>
 				)}
 			</div>
-
-			{/* 3. Attribute Filters Bar (Khoảng giá, Thương hiệu, Kích cỡ, Màu sắc) */}
-			{(setupPrices.length > 0 || trademarks.length > 0 || sizes.length > 0 || colors.length > 0) && (
-				<div className={styles.attribute_bar}>
-					<span className={styles.attr_bar_label}>Bộ lọc:</span>
-
-					<div className={styles.attr_pills_scroll}>
-						{/* Price Filter Dropdown */}
-						{setupPrices.length > 0 && (
-							<TippyHeadless
-								interactive
-								visible={openDropdown === 'price'}
-								onClickOutside={() => setOpenDropdown(null)}
-								placement='bottom-start'
-								render={() => (
-									<div className={styles.dropdown_card}>
-										<div className={styles.dropdown_header}>
-											<span>Khoảng giá</span>
-											{_priceId && (
-												<button
-													type='button'
-													onClick={() => handleTogglePrice(_priceId as string)}
-													className={styles.dropdown_clear}
-												>
-													Bỏ chọn
-												</button>
-											)}
-										</div>
-										<div className={styles.dropdown_list}>
-											{setupPrices.map((p) => {
-												const isSelected = (_priceId as string) === p._id;
-												return (
-													<button
-														key={p._id}
-														type='button'
-														className={clsx(styles.dropdown_item, {
-															[styles.item_active]: isSelected,
-														})}
-														onClick={() => handleTogglePrice(p._id)}
-													>
-														<span>{renderRangePrice({min: p.min, max: p.max})}</span>
-														{isSelected && <BiCheck size={16} color='#00b7c4' />}
-													</button>
-												);
-											})}
-										</div>
-									</div>
-								)}
-							>
-								<button
-									type='button'
-									className={clsx(styles.filter_btn, {
-										[styles.active]: Boolean(_priceId),
-									})}
-									onClick={() => setOpenDropdown(openDropdown === 'price' ? null : 'price')}
-								>
-									<Money size={14} variant='Bold' />
-									<span>
-										{activePrice
-											? renderRangePrice({min: activePrice.min, max: activePrice.max})
-											: 'Khoảng giá'}
-									</span>
-									<ArrowDown2 size={12} className={clsx({[styles.rotate]: openDropdown === 'price'})} />
-								</button>
-							</TippyHeadless>
-						)}
-
-						{/* Trademark Filter Dropdown */}
-						{trademarks.length > 0 && (
-							<TippyHeadless
-								interactive
-								visible={openDropdown === 'trademark'}
-								onClickOutside={() => setOpenDropdown(null)}
-								placement='bottom-start'
-								render={() => (
-									<div className={styles.dropdown_card}>
-										<div className={styles.dropdown_header}>
-											<span>Thương hiệu</span>
-											{_trademarkId && (
-												<button
-													type='button'
-													onClick={() => handleToggleTrademark(_trademarkId as string)}
-													className={styles.dropdown_clear}
-												>
-													Bỏ chọn
-												</button>
-											)}
-										</div>
-										<div className={styles.dropdown_list}>
-											{trademarks.map((t) => {
-												const isSelected = (_trademarkId as string) === t._id;
-												return (
-													<button
-														key={t._id}
-														type='button'
-														className={clsx(styles.dropdown_item, {
-															[styles.item_active]: isSelected,
-														})}
-														onClick={() => handleToggleTrademark(t._id)}
-													>
-														<span>{t.name}</span>
-														{isSelected && <BiCheck size={16} color='#00b7c4' />}
-													</button>
-												);
-											})}
-										</div>
-									</div>
-								)}
-							>
-								<button
-									type='button'
-									className={clsx(styles.filter_btn, {
-										[styles.active]: Boolean(_trademarkId),
-									})}
-									onClick={() => setOpenDropdown(openDropdown === 'trademark' ? null : 'trademark')}
-								>
-									<TriangleLogo size={14} variant='Bold' />
-									<span>{activeTrademark ? activeTrademark.name : 'Thương hiệu'}</span>
-									<ArrowDown2 size={12} className={clsx({[styles.rotate]: openDropdown === 'trademark'})} />
-								</button>
-							</TippyHeadless>
-						)}
-
-						{/* Size Filter Dropdown */}
-						{sizes.length > 0 && (
-							<TippyHeadless
-								interactive
-								visible={openDropdown === 'size'}
-								onClickOutside={() => setOpenDropdown(null)}
-								placement='bottom-start'
-								render={() => (
-									<div className={styles.dropdown_card}>
-										<div className={styles.dropdown_header}>
-											<span>Kích cỡ</span>
-											{_sizeId && (
-												<button
-													type='button'
-													onClick={() => handleToggleSize(_sizeId as string)}
-													className={styles.dropdown_clear}
-												>
-													Bỏ chọn
-												</button>
-											)}
-										</div>
-										<div className={styles.dropdown_chips}>
-											{sizes.map((s) => {
-												const isSelected = (_sizeId as string) === s._id;
-												return (
-													<button
-														key={s._id}
-														type='button'
-														className={clsx(styles.chip_item, {
-															[styles.chip_active]: isSelected,
-														})}
-														onClick={() => handleToggleSize(s._id)}
-													>
-														{s.name}
-													</button>
-												);
-											})}
-										</div>
-									</div>
-								)}
-							>
-								<button
-									type='button'
-									className={clsx(styles.filter_btn, {
-										[styles.active]: Boolean(_sizeId),
-									})}
-									onClick={() => setOpenDropdown(openDropdown === 'size' ? null : 'size')}
-								>
-									<Size size={14} variant='Bold' />
-									<span>{activeSize ? activeSize.name : 'Kích cỡ'}</span>
-									<ArrowDown2 size={12} className={clsx({[styles.rotate]: openDropdown === 'size'})} />
-								</button>
-							</TippyHeadless>
-						)}
-
-						{/* Color Filter Dropdown */}
-						{colors.length > 0 && (
-							<TippyHeadless
-								interactive
-								visible={openDropdown === 'color'}
-								onClickOutside={() => setOpenDropdown(null)}
-								placement='bottom-start'
-								render={() => (
-									<div className={styles.dropdown_card}>
-										<div className={styles.dropdown_header}>
-											<span>Màu sắc</span>
-											{_colorId && (
-												<button
-													type='button'
-													onClick={() => handleToggleColor(_colorId as string)}
-													className={styles.dropdown_clear}
-												>
-													Bỏ chọn
-												</button>
-											)}
-										</div>
-										<div className={styles.dropdown_colors}>
-											{colors.map((c) => {
-												const isSelected = (_colorId as string) === c._id;
-												return (
-													<button
-														key={c._id}
-														type='button'
-														className={clsx(styles.color_item, {
-															[styles.color_active]: isSelected,
-														})}
-														onClick={() => handleToggleColor(c._id)}
-														title={c.name}
-													>
-														<span
-															className={styles.color_dot}
-															style={{background: c.code || '#ddd'}}
-														/>
-														<span className={styles.color_name}>{c.name}</span>
-														{isSelected && <BiCheck size={14} color='#00b7c4' />}
-													</button>
-												);
-											})}
-										</div>
-									</div>
-								)}
-							>
-								<button
-									type='button'
-									className={clsx(styles.filter_btn, {
-										[styles.active]: Boolean(_colorId),
-									})}
-									onClick={() => setOpenDropdown(openDropdown === 'color' ? null : 'color')}
-								>
-									<Colorfilter size={14} variant='Bold' />
-									<span>{activeColor ? activeColor.name : 'Màu sắc'}</span>
-									<ArrowDown2 size={12} className={clsx({[styles.rotate]: openDropdown === 'color'})} />
-								</button>
-							</TippyHeadless>
-						)}
-
-						{/* Reset all filters button */}
-						{hasAnyFilter && (
-							<button type='button' className={styles.reset_all_btn} onClick={handleResetAllFilters}>
-								<RiRestartLine size={14} />
-								<span>Xóa tất cả</span>
-							</button>
-						)}
-					</div>
-				</div>
-			)}
 		</div>
 	);
 }

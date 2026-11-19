@@ -46,7 +46,7 @@ function PositionContainer({children, open, onClose, disableOverlay, idParent, c
 								className={clsx({[styles.overlay]: on})}
 								onClick={onClose}
 								style={{
-									zIndex: classStyle?.main ? '-1' : '10',
+									zIndex: classStyle?.main ? '-1' : '1000',
 								}}
 							></div>
 						) : null}

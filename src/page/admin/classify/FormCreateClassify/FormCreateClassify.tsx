@@ -1,62 +1,60 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {useState} from 'react';
 import Button from '~/components/common/Button';
-import Form, {ContextForm, Input, InputColor, TextArea} from '~/components/common/Form';
+import Form, {ContextForm, Input, TextArea} from '~/components/common/Form';
 import Loading from '~/components/common/Loading';
 import FlexLayout from '~/components/layout/FlexLayout';
 import WrapperForm from '~/components/utils/WrapperForm';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import {QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/funcs/httpRequest';
-import colorServices from '~/services/color.service';
-import type {PropsFormCreateColor} from './interfaces';
+import classifyServices from '~/services/classify.service';
+import type {PropsFormCreateClassify} from './interfaces';
 
-interface IFormCreateColor {
-	code: string;
+interface IFormCreateClassify {
 	name: string;
 	description: string;
 }
 
-const initForm: IFormCreateColor = {
-	code: '',
+const initForm: IFormCreateClassify = {
 	name: '',
 	description: '',
 };
 
-function FormCreateColor({onClose}: PropsFormCreateColor) {
+function FormCreateClassify({onClose}: PropsFormCreateClassify) {
 	const queryClient = useQueryClient();
 
-	const [form, setForm] = useState<IFormCreateColor>(initForm);
+	const [form, setForm] = useState<IFormCreateClassify>(initForm);
 
-	const funcCreateColor = useMutation({
+	const funcCreateClassify = useMutation({
 		mutationFn: () =>
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
-				msgSuccess: 'Tạo màu sắc thành công!',
-				http: colorServices.create({
+				msgSuccess: 'Tạo phân loại thành công!',
+				http: classifyServices.create({
 					name: form.name,
-					code: form.code,
 					description: form.description,
 				}),
 			}),
 		onSuccess: () => {
 			setForm(initForm);
 			onClose();
-			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListColor]});
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListClassify]});
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.catalogClassify]});
 		},
 	});
 
-	const handleCreateColor = () => {
-		return funcCreateColor.mutate();
+	const handleCreateClassify = () => {
+		return funcCreateClassify.mutate();
 	};
 
 	return (
-		<Form form={form} setForm={setForm} onSubmit={handleCreateColor}>
-			<Loading loading={funcCreateColor.isPending} />
+		<Form form={form} setForm={setForm} onSubmit={handleCreateClassify}>
+			<Loading loading={funcCreateClassify.isPending} />
 			<WrapperFormPostion
 				width={540}
-				title='Thêm mới màu sắc'
+				title='Thêm mới phân loại'
 				actions={
 					<FlexLayout row items-center fit-height gap-8 wrap>
 						<div>
@@ -76,29 +74,15 @@ function FormCreateColor({onClose}: PropsFormCreateColor) {
 					</FlexLayout>
 				}
 			>
-				<WrapperForm title='Thông tin màu sắc'>
+				<WrapperForm title='Thông tin phân loại'>
 					<FlexLayout column gap-16>
-						<InputColor
-							label={
-								<span>
-									Mã màu <span style={{color: 'red'}}>*</span>
-								</span>
-							}
-							color={form.code}
-							onSetColor={(color) =>
-								setForm((prev) => ({
-									...prev,
-									code: color,
-								}))
-							}
-						/>
 						<Input
 							label={
 								<span>
-									Tên màu sắc <span style={{color: 'red'}}>*</span>
+									Tên phân loại <span style={{color: 'red'}}>*</span>
 								</span>
 							}
-							placeholder='Nhập tên màu sắc'
+							placeholder='Nhập tên phân loại'
 							type='text'
 							name='name'
 							isRequired
@@ -112,4 +96,4 @@ function FormCreateColor({onClose}: PropsFormCreateColor) {
 	);
 }
 
-export default FormCreateColor;
+export default FormCreateClassify;

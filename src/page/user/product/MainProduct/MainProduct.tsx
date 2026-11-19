@@ -7,13 +7,12 @@ import LayoutGrid from '~/components/layout/LayoutGrid';
 import Breadcrumb from '~/components/utils/Breadcrumb';
 import {PATH} from '~/constants/config';
 import {QUERY_KEY} from '~/constants/config/enum';
-import {ContextProduct, ICatalog, ICatalogSetupPrice} from '~/contexts/ContextProduct';
+import {ContextProduct, ICatalog} from '~/contexts/ContextProduct';
 import {httpRequest} from '~/funcs/httpRequest';
 import {getQueryParams} from '~/funcs/queryParams';
 import clientServices from '~/services/client.service';
 import FilterProduct from './components/FilterProduct';
 import ListProduct from './components/ListProduct';
-import SortProduct from './components/SortProduct';
 import type {PropsMainProduct} from './interfaces';
 import styles from './MainProduct.module.scss';
 
@@ -30,14 +29,6 @@ function MainProduct({}: PropsMainProduct) {
 			}),
 	});
 
-	const {data: colors = []} = useQuery<ICatalog[]>({
-		queryKey: [QUERY_KEY.clientCatalogColor],
-		queryFn: () =>
-			httpRequest({
-				http: clientServices.catalogColor(),
-			}),
-	});
-
 	const {data: sizes = []} = useQuery<ICatalog[]>({
 		queryKey: [QUERY_KEY.clientCatalogSize],
 		queryFn: () =>
@@ -46,25 +37,9 @@ function MainProduct({}: PropsMainProduct) {
 			}),
 	});
 
-	const {data: trademarks = []} = useQuery<ICatalog[]>({
-		queryKey: [QUERY_KEY.clientCatalogTrademark],
-		queryFn: () =>
-			httpRequest({
-				http: clientServices.catalogTrademark(),
-			}),
-	});
-
-	const {data: setupPrices = []} = useQuery<ICatalogSetupPrice[]>({
-		queryKey: [QUERY_KEY.clientCatalogSetupPrice],
-		queryFn: () =>
-			httpRequest({
-				http: clientServices.catalogSetupPrice(),
-			}),
-	});
-
 	return (
 		<ContextProduct.Provider
-			value={{colors: colors, categorys: categorys, sizes: sizes, trademarks: trademarks, setupPrices: setupPrices}}
+			value={{categorys, sizes}}
 		>
 			<div className={styles.main_product}>
 				<LayoutGrid>
@@ -92,9 +67,8 @@ function MainProduct({}: PropsMainProduct) {
 							<FilterProduct />
 						</div>
 
-						{/* Product List and Sorting */}
+						{/* Product List */}
 						<div className={styles.content}>
-							<SortProduct />
 							<ListProduct />
 						</div>
 					</div>

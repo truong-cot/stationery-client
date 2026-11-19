@@ -20,12 +20,12 @@ import SearchBlock from '~/components/utils/SearchBlock';
 import {QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/funcs/httpRequest';
 import {getQueryParams, updateQueryParams} from '~/funcs/queryParams';
-import colorServices from '~/services/color.service';
-import FormCreateColor from '../FormCreateColor';
-import FormUpdateColor from '../FormUpdateColor';
-import type {IColor, PropsMainColor} from './interfaces';
+import classifyServices from '~/services/classify.service';
+import FormCreateClassify from '../FormCreateClassify';
+import FormUpdateClassify from '../FormUpdateClassify';
+import type {IClassify, PropsMainClassify} from './interfaces';
 
-function MainColor({}: PropsMainColor) {
+function MainClassify({}: PropsMainClassify) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -49,16 +49,16 @@ function MainColor({}: PropsMainColor) {
 		},
 		isLoading,
 	} = useQuery<{
-		items: IColor[];
+		items: IClassify[];
 		pagination: {
 			currentPage: number;
 			totalCount: number;
 		};
 	}>({
-		queryKey: [QUERY_KEY.pageListColor, page, pageSize, keyword],
+		queryKey: [QUERY_KEY.pageListClassify, page, pageSize, keyword],
 		queryFn: () =>
 			httpRequest({
-				http: colorServices.getPageList({
+				http: classifyServices.getPageList({
 					page: page,
 					pageSize: pageSize,
 					keyword: keyword,
@@ -66,28 +66,29 @@ function MainColor({}: PropsMainColor) {
 			}),
 	});
 
-	const funcDeleteColor = useMutation({
+	const funcDeleteClassify = useMutation({
 		mutationFn: () =>
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
-				msgSuccess: 'Xóa màu sắc thành công!',
-				http: colorServices.delete({
+				msgSuccess: 'Xóa phân loại thành công!',
+				http: classifyServices.delete({
 					_id: idDelete,
 				}),
 			}),
 		onSuccess: () => {
 			setIdDelete('');
-			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListColor]});
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListClassify]});
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.catalogClassify]});
 		},
 	});
 
 	return (
 		<Fragment>
-			<Loading loading={funcDeleteColor.isPending} />
+			<Loading loading={funcDeleteClassify.isPending} />
 			<FlexLayout column gap-12>
 				<HeaderActions
-					title='Danh sách màu sắc'
+					title='Danh sách phân loại'
 					actions={
 						<FlexLayout row gap-6>
 							<Button
@@ -116,7 +117,7 @@ function MainColor({}: PropsMainColor) {
 				<SearchBlock
 					keyword={keyword}
 					setKeyword={setKeyword}
-					placeholder='Tìm kiếm theo tên, mã màu sắc'
+					placeholder='Tìm kiếm theo tên phân loại'
 				/>
 
 				<FlexItem flex-1 overflow-x>
@@ -125,9 +126,9 @@ function MainColor({}: PropsMainColor) {
 							data={data?.items}
 							loading={isLoading}
 							title='Dữ liệu trống!'
-							note='Danh sách màu sắc hiện đang trống!'
+							note='Danh sách phân loại hiện đang trống!'
 						>
-							<Table<IColor>
+							<Table<IClassify>
 								rowKey={(row) => row._id}
 								data={data?.items}
 								fixedHeader={true}
@@ -138,18 +139,8 @@ function MainColor({}: PropsMainColor) {
 										render: (_, index) => <>{index + 1}</>,
 									},
 									{
-										title: 'Hiển thị',
-										render: (row, _) => (
-											<div style={{width: 60, height: 20, borderRadius: 4, background: row.code}}></div>
-										),
-									},
-									{
-										title: 'Mã màu',
-										render: (row, _) => <p style={{fontWeight: '600'}}>{row?.code}</p>,
-									},
-									{
-										title: 'Tên màu',
-										render: (row, _) => <>{row?.name}</>,
+										title: 'Tên phân loại',
+										render: (row, _) => <p style={{fontWeight: '600'}}>{row?.name}</p>,
 									},
 									{
 										title: 'Mô tả',
@@ -162,7 +153,7 @@ function MainColor({}: PropsMainColor) {
 											<FlexLayout row>
 												<IconActionTable
 													icon={<Edit color='#292D32' size={24} />}
-													tooltip='Chỉnh sửa màu sắc'
+													tooltip='Chỉnh sửa phân loại'
 													onClick={() =>
 														updateQueryParams(router, pathname, searchParams, {
 															set: {
@@ -176,7 +167,7 @@ function MainColor({}: PropsMainColor) {
 												/>
 												<IconActionTable
 													icon={<Trash color='#EE0033' size={24} />}
-													tooltip='Xóa màu sắc'
+													tooltip='Xóa phân loại'
 													onClick={() => setIdDelete(row?._id)}
 												/>
 											</FlexLayout>
@@ -209,7 +200,7 @@ function MainColor({}: PropsMainColor) {
 					})
 				}
 			>
-				<FormCreateColor
+				<FormCreateClassify
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_action'],
@@ -232,8 +223,8 @@ function MainColor({}: PropsMainColor) {
 					})
 				}
 			>
-				<FormUpdateColor
-					_idColor={_idUpdate as string}
+				<FormUpdateClassify
+					_idClassify={_idUpdate as string}
 					onClose={() =>
 						updateQueryParams(router, pathname, searchParams, {
 							delete: ['_idUpdate'],
@@ -250,14 +241,14 @@ function MainColor({}: PropsMainColor) {
 				type='error'
 				backgroundIconColor='#ffdce4'
 				borderIconColor='#fff0f3'
-				title='Xóa màu sắc'
-				note='Bạn có chắc chắn muốn xóa màu sắc này không?'
+				title='Xóa phân loại'
+				note='Bạn có chắc chắn muốn xóa phân loại này không?'
 				icon={<Warning2 size='28' color='#EE0033' />}
 				onClose={() => setIdDelete('')}
-				onSubmit={funcDeleteColor.mutate}
+				onSubmit={funcDeleteClassify.mutate}
 			/>
 		</Fragment>
 	);
 }
 
-export default MainColor;
+export default MainClassify;

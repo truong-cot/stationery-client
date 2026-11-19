@@ -56,7 +56,7 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 
 	return (
 		<WrapperFormPostion
-			width={520}
+			width={420}
 			title={
 				<div className={styles.drawer_title}>
 					<ShoppingCart size='22' color='#00b7c4' variant='Bold' />

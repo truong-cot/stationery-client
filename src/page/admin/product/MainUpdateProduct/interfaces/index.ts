@@ -1,1 +1,4 @@
-export interface PropsMainUpdateProduct {}
+export interface PropsMainUpdateProduct {
+	_idProduct?: string;
+	onClose?: () => void;
+}

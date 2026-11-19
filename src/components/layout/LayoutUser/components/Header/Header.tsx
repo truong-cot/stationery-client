@@ -1,9 +1,10 @@
 'use client';
 
 import clsx from 'clsx';
-import {Call, LockSlash, ReceiptSearch, ShoppingCart} from 'iconsax-react';
+import {Call, Home, LockSlash, ReceiptSearch, ShoppingCart} from 'iconsax-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import {usePathname} from 'next/navigation';
 import {Fragment, useEffect, useRef, useState} from 'react';
 import LayoutGrid from '~/components/layout/LayoutGrid';
 import PositionContainer from '~/components/common/PositionContainer';
@@ -20,6 +21,7 @@ import Tippy from '@tippyjs/react';
 
 function Header({}: PropsHeader) {
 	const dispatch = useDispatch();
+	const pathname = usePathname();
 	const {contact} = useSelector((state: RootState) => state.user);
 	const {carts, isOpenCart} = useSelector((state: RootState) => state.cart);
 
@@ -47,7 +49,15 @@ function Header({}: PropsHeader) {
 				<LayoutGrid>
 					<div className={styles.main_header}>
 						{/* Logo */}
-						<Link href={PATH.Home} className={styles.logo_link}>
+						<Link
+							href={PATH.Home}
+							onClick={() => {
+								if (pathname === PATH.Home) {
+									window.scrollTo({top: 0, behavior: 'smooth'});
+								}
+							}}
+							className={styles.logo_link}
+						>
 							<Image
 								alt='Văn phòng phẩm Huyền Anh'
 								src={icons.logo}
@@ -107,6 +117,55 @@ function Header({}: PropsHeader) {
 					</div>
 				</LayoutGrid>
 			</div>
+
+			{/* Mobile Bottom Navigation Bar */}
+			<nav className={styles.bottom_nav} aria-label='Điều hướng chân trang mobile'>
+				{/* 1. Trang chủ */}
+				<Link
+					href={PATH.Home}
+					onClick={() => {
+						if (pathname === PATH.Home) {
+							window.scrollTo({top: 0, behavior: 'smooth'});
+						}
+					}}
+					className={clsx(styles.bottom_nav_item, {[styles.active]: pathname === PATH.Home})}
+				>
+					<div className={styles.bottom_nav_icon_wrap}>
+						<Home size='22' color='#00b7c4' variant={pathname === PATH.Home ? 'Bold' : 'Linear'} />
+					</div>
+					<span className={styles.bottom_nav_label}>Trang chủ</span>
+				</Link>
+
+				{/* 2. Tra cứu đơn hàng */}
+				<Link
+					href={PATH.TrackingOrder}
+					onClick={() => {
+						if (pathname === PATH.TrackingOrder) {
+							window.scrollTo({top: 0, behavior: 'smooth'});
+						}
+					}}
+					className={clsx(styles.bottom_nav_item, {[styles.active]: pathname === PATH.TrackingOrder})}
+				>
+					<div className={styles.bottom_nav_icon_wrap}>
+						<ReceiptSearch size='22' color='#00b7c4' variant={pathname === PATH.TrackingOrder ? 'Bold' : 'Linear'} />
+					</div>
+					<span className={styles.bottom_nav_label}>Tra cứu đơn hàng</span>
+				</Link>
+
+				{/* 3. Giỏ hàng */}
+				<button
+					type='button'
+					className={clsx(styles.bottom_nav_item, {[styles.active]: isOpenCart})}
+					onClick={() => dispatch(setOpenCart(true))}
+					aria-label='Giỏ hàng của bạn'
+				>
+					<div className={styles.bottom_nav_icon_wrap} id='cart-bottom-icon'>
+						<ShoppingCart size='22' color='#00b7c4' variant='Bold' />
+						<span className={clsx(styles.bottom_nav_badge, {[styles.bump]: animate})}>{carts.length}</span>
+					</div>
+					<span className={styles.bottom_nav_label}>Giỏ hàng</span>
+				</button>
+			</nav>
 
 			<PositionContainer open={isOpenCart} onClose={() => dispatch(setOpenCart(false))}>
 				<CartDrawer onClose={() => dispatch(setOpenCart(false))} />

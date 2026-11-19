@@ -1,4 +1,5 @@
 import {AddCircle, Additem, BoxAdd, Edit, MinusCirlce, Trash} from 'iconsax-react';
+import Image from 'next/image';
 import styles from './NodeCategory.module.scss';
 import type {PropsNodeCategory} from './interfaces';
 import {Fragment, useState} from 'react';
@@ -25,6 +26,31 @@ function NodeCategory({level, node}: PropsNodeCategory) {
 						) : (
 							<AddCircle size='20' color='#17B26A' variant='Bold' />
 						)}
+					</div>
+				)}
+				{node.image && (
+					<div
+						style={{
+							width: 36,
+							height: 36,
+							position: 'relative',
+							borderRadius: 6,
+							overflow: 'hidden',
+							border: '1px solid #e5e7eb',
+							flexShrink: 0,
+						}}
+					>
+						<Image
+							unoptimized
+							src={
+								node.image.startsWith('http') || node.image.startsWith('/')
+									? node.image
+									: `${process.env.NEXT_PUBLIC_IMAGE}/${node.image}`
+							}
+							alt={node.name}
+							fill
+							style={{objectFit: 'cover'}}
+						/>
 					</div>
 				)}
 				<div className={styles.info}>

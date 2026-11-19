@@ -17,7 +17,7 @@ export const PATH = {
 	AuthLogin: '/login',
 
 	AdminAccount: '/admin/account',
-	AdminColor: '/admin/color',
+	AdminClassify: '/admin/classify',
 	AdminSize: '/admin/size',
 	AdminTrademark: '/admin/trademark',
 	AdminCategory: '/admin/category',
@@ -50,10 +50,10 @@ export const menusAdmin: {
 		pathActive: PATH.AdminAccount,
 	},
 	{
-		title: 'Quản lý màu sắc',
+		title: 'Quản lý phân loại',
 		icon: Colorfilter,
-		path: PATH.AdminColor,
-		pathActive: PATH.AdminColor,
+		path: PATH.AdminClassify,
+		pathActive: PATH.AdminClassify,
 	},
 	// {
 	// 	title: 'Quản lý kích cỡ',

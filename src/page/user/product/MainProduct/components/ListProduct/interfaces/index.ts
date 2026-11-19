@@ -8,9 +8,8 @@ export interface IProductClient {
 	images: string[];
 	short_description: string;
 	is_featured: boolean;
-	colors?: {
+	classifies?: {
 		_id: string;
 		name: string;
-		code?: string;
 	}[];
 }

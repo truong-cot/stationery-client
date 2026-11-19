@@ -3,10 +3,10 @@
 import {Fragment, useEffect, useState} from 'react';
 import type {PropsMainCreateProduct} from './interfaces';
 import {IDataUploadFile} from '~/components/common/UploadSingleFile/interfaces';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/funcs/httpRequest';
-import colorServices from '~/services/color.service';
+import classifyServices from '~/services/classify.service';
 import sizeServices from '~/services/size.service';
 import trademarkServices from '~/services/trademark.service';
 import categoryServices from '~/services/category.service';
@@ -18,16 +18,11 @@ import uploadServices from '~/services/upload.service';
 import Loading from '~/components/common/Loading';
 import Form, {ContextForm, Input, Select, SelectMany, TextArea} from '~/components/common/Form';
 import FlexLayout from '~/components/layout/FlexLayout';
-import HeaderActions from '~/components/utils/HeaderActions';
-import Breadcrumb from '~/components/utils/Breadcrumb';
-import {PATH} from '~/constants/config';
 import Button from '~/components/common/Button';
-import FlexItem from '~/components/layout/FlexLayout/FlexItem';
 import WrapperForm from '~/components/utils/WrapperForm';
+import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import GridColumn from '~/components/layout/GridColumn';
 import UploadMultipleFile from '~/components/common/UploadMultipleFile';
-import EditerContent from '~/components/utils/EditerContent';
-import {Trash} from 'iconsax-react';
 import {getQueryParams} from '~/funcs/queryParams';
 
 interface IFormCreateProduct {
@@ -36,7 +31,7 @@ interface IFormCreateProduct {
 	pack_size: string;
 	short_description: string;
 	category_id: string;
-	color_ids: string[];
+	classify_ids: string[];
 	size_id: string;
 	trademark_id: string;
 	is_featured: string;
@@ -48,15 +43,16 @@ const initForm: IFormCreateProduct = {
 	pack_size: '',
 	short_description: '',
 	category_id: '',
-	color_ids: [],
+	classify_ids: [],
 	size_id: '',
 	trademark_id: '',
 	is_featured: '0',
 };
 
-function MainCreateProduct({}: PropsMainCreateProduct) {
+function MainCreateProduct({onClose}: PropsMainCreateProduct) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const queryClient = useQueryClient();
 
 	const {_idCategory} = getQueryParams(searchParams);
 
@@ -68,16 +64,16 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 		if (!!_idCategory) setForm((prev) => ({...prev, category_id: _idCategory as string}));
 	}, [_idCategory]);
 
-	const {data: colors = []} = useQuery<
+	const {data: classifies = []} = useQuery<
 		{
 			_id: string;
 			name: string;
 		}[]
 	>({
-		queryKey: [QUERY_KEY.catalogColor],
+		queryKey: [QUERY_KEY.catalogClassify],
 		queryFn: () =>
 			httpRequest({
-				http: colorServices.catalog(),
+				http: classifyServices.catalog(),
 			}),
 	});
 
@@ -132,7 +128,7 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 					price: price(form.price),
 					short_description: form.short_description,
 					category_id: form.category_id,
-					color_ids: form.color_ids,
+					classify_ids: form.classify_ids,
 					size_id: form.size_id || undefined,
 					trademark_id: form.trademark_id || undefined,
 					is_featured: form.is_featured == '1' ? true : false,
@@ -141,7 +137,13 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 			}),
 		onSuccess: () => {
 			setForm(initForm);
-			router.back();
+			setImages([]);
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListProduct]});
+			if (onClose) {
+				onClose();
+			} else {
+				router.back();
+			}
 		},
 	});
 
@@ -167,203 +169,192 @@ function MainCreateProduct({}: PropsMainCreateProduct) {
 		<Fragment>
 			<Loading loading={loading || funcCreateProduct.isPending} />
 			<Form heightFull={true} form={form} setForm={setForm} onSubmit={handleCreateProduct}>
-				<FlexLayout column gap-12>
-					<HeaderActions title='Thêm mới sản phẩm' />
-					<Breadcrumb
-						listUrls={[
-							{
-								title: 'Danh sách sản phẩm',
-								path: PATH.AdminProduct,
-							},
-							{
-								path: '',
-								title: 'Thêm mới sản phẩm',
-							},
-						]}
-						actions={
-							<FlexLayout row gap-6>
-								<Button p_8_24 rounded_8 white bold onClick={() => router.back()}>
+				<WrapperFormPostion
+					width={780}
+					title='Thêm mới sản phẩm'
+					actions={
+						<FlexLayout row items-center fit-height gap-8 wrap>
+							<div>
+								<Button p_8_24 rounded_8 white bold onClick={onClose || (() => router.back())}>
 									Hủy bỏ
 								</Button>
-								<ContextForm.Consumer>
-									{({isDone}) => (
-										<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold>
+							</div>
+							<ContextForm.Consumer>
+								{({isDone}) => (
+									<div>
+										<Button disable={!isDone} p_8_24 rounded_8 bright-cyan bold d_block>
 											Lưu lại
 										</Button>
-									)}
-								</ContextForm.Consumer>
-							</FlexLayout>
-						}
-					/>
-
-					<FlexItem flex-1 overflow-x>
-						<FlexLayout column gap-12>
-							<WrapperForm title='Thông tin sản phẩm'>
-								<FlexLayout column gap-16>
-									<GridColumn col_2>
-										<Input
-											label={
-												<span>
-													Tên sản phẩm <span style={{color: 'red'}}>* </span>
-												</span>
-											}
-											placeholder='Nhập tên sản phẩm'
-											name='name'
-											type='text'
-											isRequired
-										/>
-										<div>
-											<Input
-												label={
-													<span>
-														Kích thước đóng gói <span style={{color: 'red'}}>* </span>
-													</span>
-												}
-												placeholder='Nhập kích thước đóng gói'
-												name='pack_size'
-												type='text'
-												isRequired
-											/>
-										</div>
-										<Input
-											label={
-												<span>
-													Giá sản phẩm <span style={{color: 'red'}}>* </span>
-												</span>
-											}
-											placeholder='Nhập giá sản phẩm'
-											name='price'
-											type='text'
-											isMoney
-											isRequired
-										/>
-										<div>
-											<Select
-												placeholder='Lựa chọn'
-												label={
-													<span>
-														Sản phẩm nổi bật <span style={{color: 'red'}}>* </span>
-													</span>
-												}
-												value={form.is_featured}
-												options={[
-													{_id: '1', name: 'Có'},
-													{_id: '0', name: 'Không'},
-												]}
-												onSelect={(data) =>
-													setForm((prev) => ({
-														...prev,
-														is_featured: data._id,
-													}))
-												}
-												getOptionLabel={(opt) => opt.name}
-												getOptionValue={(opt) => opt._id}
-											/>
-										</div>
-										<Select
-											placeholder='Lựa chọn'
-											label={
-												<span>
-													Danh mục <span style={{color: 'red'}}>* </span>
-												</span>
-											}
-											value={form.category_id}
-											options={categorys}
-											onSelect={(data) =>
-												setForm((prev) => ({
-													...prev,
-													category_id: data._id,
-												}))
-											}
-											onClean={() =>
-												setForm((prev) => ({
-													...prev,
-													category_id: '',
-												}))
-											}
-											getOptionLabel={(opt) => opt.name}
-											getOptionValue={(opt) => opt._id}
-											readOnly={!!_idCategory}
-										/>
-										<div>
-											<SelectMany
-												title='Màu sắc'
-												description='Thêm và lựa chọn màu sắc'
-												label='Màu sắc'
-												placeholder='Lựa chọn'
-												checkeds={form.color_ids}
-												options={colors?.map((m) => ({
-													_id: m?._id,
-													title: m?.name,
-												}))}
-												onSetDataCheckeds={(ids) =>
-													setForm((prev) => ({
-														...prev,
-														color_ids: ids,
-													}))
-												}
-											/>
-										</div>
-										<Select
-											placeholder='Lựa chọn'
-											label='Kích cỡ'
-											value={form.size_id}
-											options={sizes}
-											onSelect={(data) =>
-												setForm((prev) => ({
-													...prev,
-													size_id: data._id,
-												}))
-											}
-											onClean={() =>
-												setForm((prev) => ({
-													...prev,
-													size_id: '',
-												}))
-											}
-											getOptionLabel={(opt) => opt.name}
-											getOptionValue={(opt) => opt._id}
-										/>
-										<div>
-											<Select
-												placeholder='Lựa chọn'
-												label='Thương hiệu'
-												value={form.trademark_id}
-												options={trademarks}
-												onSelect={(data) =>
-													setForm((prev) => ({
-														...prev,
-														trademark_id: data._id,
-													}))
-												}
-												onClean={() =>
-													setForm((prev) => ({
-														...prev,
-														trademark_id: '',
-													}))
-												}
-												getOptionLabel={(opt) => opt.name}
-												getOptionValue={(opt) => opt._id}
-											/>
-										</div>
-									</GridColumn>
-									<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
-									<div>
-										<UploadMultipleFile
-											label={
-												<span>
-													Hình ảnh sản phẩm <span style={{color: 'red'}}>*</span>
-												</span>
-											}
-											images={images}
-											setImages={setImages}
-										/>
 									</div>
-								</FlexLayout>
-							</WrapperForm>
+								)}
+							</ContextForm.Consumer>
 						</FlexLayout>
-					</FlexItem>
-				</FlexLayout>
+					}
+				>
+					<WrapperForm title='Thông tin sản phẩm'>
+						<FlexLayout column gap-16>
+							<GridColumn col_2>
+								<Input
+									label={
+										<span>
+											Tên sản phẩm <span style={{color: 'red'}}>* </span>
+										</span>
+									}
+									placeholder='Nhập tên sản phẩm'
+									name='name'
+									type='text'
+									isRequired
+								/>
+								<div>
+									<Input
+										label={
+											<span>
+												Kích thước đóng gói <span style={{color: 'red'}}>* </span>
+											</span>
+										}
+										placeholder='Nhập kích thước đóng gói'
+										name='pack_size'
+										type='text'
+										isRequired
+									/>
+								</div>
+								<Input
+									label={
+										<span>
+											Giá sản phẩm <span style={{color: 'red'}}>* </span>
+										</span>
+									}
+									placeholder='Nhập giá sản phẩm'
+									name='price'
+									type='text'
+									isMoney
+									isRequired
+								/>
+								<div>
+									<Select
+										placeholder='Lựa chọn'
+										label={
+											<span>
+												Sản phẩm nổi bật <span style={{color: 'red'}}>* </span>
+											</span>
+										}
+										value={form.is_featured}
+										options={[
+											{_id: '1', name: 'Có'},
+											{_id: '0', name: 'Không'},
+										]}
+										onSelect={(data) =>
+											setForm((prev) => ({
+												...prev,
+												is_featured: data._id,
+											}))
+										}
+										getOptionLabel={(opt) => opt.name}
+										getOptionValue={(opt) => opt._id}
+									/>
+								</div>
+								<Select
+									placeholder='Lựa chọn'
+									label={
+										<span>
+											Danh mục <span style={{color: 'red'}}>* </span>
+										</span>
+									}
+									value={form.category_id}
+									options={categorys}
+									onSelect={(data) =>
+										setForm((prev) => ({
+											...prev,
+											category_id: data._id,
+										}))
+									}
+									onClean={() =>
+										setForm((prev) => ({
+											...prev,
+											category_id: '',
+										}))
+									}
+									getOptionLabel={(opt) => opt.name}
+									getOptionValue={(opt) => opt._id}
+									readOnly={!!_idCategory}
+								/>
+								<div>
+									<SelectMany
+										title='Phân loại'
+										description='Thêm và lựa chọn phân loại'
+										label='Phân loại'
+										placeholder='Lựa chọn'
+										checkeds={form.classify_ids}
+										options={classifies?.map((m) => ({
+											_id: m?._id,
+											title: m?.name,
+										}))}
+										onSetDataCheckeds={(ids) =>
+											setForm((prev) => ({
+												...prev,
+												classify_ids: ids,
+											}))
+										}
+									/>
+								</div>
+								<Select
+									placeholder='Lựa chọn'
+									label='Kích cỡ'
+									value={form.size_id}
+									options={sizes}
+									onSelect={(data) =>
+										setForm((prev) => ({
+											...prev,
+											size_id: data._id,
+										}))
+									}
+									onClean={() =>
+										setForm((prev) => ({
+											...prev,
+											size_id: '',
+										}))
+									}
+									getOptionLabel={(opt) => opt.name}
+									getOptionValue={(opt) => opt._id}
+								/>
+								<div>
+									<Select
+										placeholder='Lựa chọn'
+										label='Thương hiệu'
+										value={form.trademark_id}
+										options={trademarks}
+										onSelect={(data) =>
+											setForm((prev) => ({
+												...prev,
+												trademark_id: data._id,
+											}))
+										}
+										onClean={() =>
+											setForm((prev) => ({
+												...prev,
+												trademark_id: '',
+											}))
+										}
+										getOptionLabel={(opt) => opt.name}
+										getOptionValue={(opt) => opt._id}
+									/>
+								</div>
+							</GridColumn>
+							<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
+							<div>
+								<UploadMultipleFile
+									label={
+										<span>
+											Hình ảnh sản phẩm <span style={{color: 'red'}}>*</span>
+										</span>
+									}
+									images={images}
+									setImages={setImages}
+								/>
+							</div>
+						</FlexLayout>
+					</WrapperForm>
+				</WrapperFormPostion>
 			</Form>
 		</Fragment>
 	);

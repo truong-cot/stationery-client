@@ -3,12 +3,16 @@ import {useEffect, useState} from 'react';
 import Button from '~/components/common/Button';
 import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
 import Loading from '~/components/common/Loading';
+import UploadSingleFile from '~/components/common/UploadSingleFile';
+import {IDataUploadFile} from '~/components/common/UploadSingleFile/interfaces';
 import FlexLayout from '~/components/layout/FlexLayout';
 import WrapperForm from '~/components/utils/WrapperForm';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import {QUERY_KEY} from '~/constants/config/enum';
 import {httpRequest} from '~/funcs/httpRequest';
+import {toastWarn} from '~/funcs/toast';
 import categoryServices from '~/services/category.service';
+import uploadServices from '~/services/upload.service';
 import type {PropsFormCreateCategory} from './interfaces';
 
 interface IFormCreateCategory {
@@ -27,6 +31,8 @@ function FormCreateCategory({_idParent, onClose}: PropsFormCreateCategory) {
 	const queryClient = useQueryClient();
 
 	const [form, setForm] = useState<IFormCreateCategory>(initForm);
+	const [image, setImage] = useState<IDataUploadFile | null>(null);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (!!_idParent) setForm((prev) => ({...prev, parent_id: _idParent}));
@@ -46,32 +52,47 @@ function FormCreateCategory({_idParent, onClose}: PropsFormCreateCategory) {
 	});
 
 	const funcCreateCategory = useMutation({
-		mutationFn: () =>
+		mutationFn: (body: {image: string}) =>
 			httpRequest({
 				showMessageFailed: true,
 				showMessageSuccess: true,
 				msgSuccess: 'Tạo danh mục thành công!',
 				http: categoryServices.create({
 					name: form.name,
-					parent_id: form.parent_id,
+					parent_id: form.parent_id || undefined,
 					description: form.description,
+					image: body.image,
 				}),
 			}),
 		onSuccess: () => {
 			setForm(initForm);
+			setImage(null);
 			onClose();
 			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListCategory]});
 			queryClient.invalidateQueries({queryKey: [QUERY_KEY.treeCategoryFull]});
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.catalogCategory]});
 		},
 	});
 
-	const handleCreateCategory = () => {
-		return funcCreateCategory.mutate();
+	const handleCreateCategory = async () => {
+		if (!image || !image.file) {
+			return toastWarn({msg: 'Vui lòng chọn hình ảnh danh mục!'});
+		}
+
+		const dataImage = await httpRequest({
+			setLoading,
+			showMessageFailed: true,
+			http: uploadServices.uploadSingle(image.file),
+		});
+
+		return funcCreateCategory.mutate({
+			image: dataImage,
+		});
 	};
 
 	return (
 		<Form form={form} setForm={setForm} onSubmit={handleCreateCategory}>
-			<Loading loading={funcCreateCategory.isPending} />
+			<Loading loading={loading || funcCreateCategory.isPending} />
 			<WrapperFormPostion
 				width={540}
 				title='Thêm mới danh mục'
@@ -130,6 +151,15 @@ function FormCreateCategory({_idParent, onClose}: PropsFormCreateCategory) {
 							readOnly={!!_idParent}
 						/>
 						<TextArea label='Mô tả' placeholder='Nhập ghi chú' name='description' />
+						<UploadSingleFile
+							label={
+								<span>
+									Hình ảnh danh mục <span style={{color: 'red'}}>*</span>
+								</span>
+							}
+							image={image}
+							setImage={setImage}
+						/>
 					</FlexLayout>
 				</WrapperForm>
 			</WrapperFormPostion>

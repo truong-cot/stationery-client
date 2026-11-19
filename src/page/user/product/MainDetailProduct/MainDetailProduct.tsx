@@ -11,9 +11,7 @@ import {
 	Box,
 	TruckFast,
 	Category2,
-	TriangleLogo,
 	Size,
-	Colorfilter,
 	Verify,
 } from 'iconsax-react';
 
@@ -48,11 +46,6 @@ function MainDetailProduct({product}: PropsMainDetailProduct) {
 			}),
 		enabled: !!_id,
 	});
-
-	const colorList =
-		product?.colors && product.colors.length > 0
-			? product.colors.map((c) => c.name).join(', ')
-			: product?.color?.name || '';
 
 	return (
 		<LayoutGrid>
@@ -135,15 +128,17 @@ function MainDetailProduct({product}: PropsMainDetailProduct) {
 											{product?.category?.name || 'Văn phòng phẩm'}
 										</td>
 									</tr>
-									<tr>
-										<td className={styles.spec_title}>
-											<TriangleLogo size='16' color='#00b7c4' />
-											<span>Thương hiệu</span>
-										</td>
-										<td className={styles.spec_data}>
-											{product?.trademark?.name || 'Chính hãng'}
-										</td>
-									</tr>
+									{product?.classifies && product.classifies.length > 0 && (
+										<tr>
+											<td className={styles.spec_title}>
+												<Box size='16' color='#00b7c4' />
+												<span>Phân loại</span>
+											</td>
+											<td className={styles.spec_data}>
+												{product.classifies.map((c) => c.name).join(', ')}
+											</td>
+										</tr>
+									)}
 									{product?.size?.name && (
 										<tr>
 											<td className={styles.spec_title}>
@@ -151,15 +146,6 @@ function MainDetailProduct({product}: PropsMainDetailProduct) {
 												<span>Kích thước</span>
 											</td>
 											<td className={styles.spec_data}>{product.size.name}</td>
-										</tr>
-									)}
-									{colorList && (
-										<tr>
-											<td className={styles.spec_title}>
-												<Colorfilter size='16' color='#00b7c4' />
-												<span>Màu sắc</span>
-											</td>
-											<td className={styles.spec_data}>{colorList}</td>
 										</tr>
 									)}
 									{product?.pack_size && (

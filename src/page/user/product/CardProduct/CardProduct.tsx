@@ -24,15 +24,30 @@ function CardProduct({product}: PropsCardProduct) {
 	const refLightGallery = useRef<any>(null);
 	const imgRef = useRef<HTMLImageElement | null>(null);
 
+	const primaryImage = product?.images?.[0] ? `${process.env.NEXT_PUBLIC_IMAGE}/${product.images[0]}` : '/images/banner-home.jpg';
+
 	const lightGalleryItems = useMemo(
 		() =>
-			product?.images?.map((img: string, index: number) => ({
-				src: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
-				thumb: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
-				subHtml: `<h4>${product.name}</h4><p>Ảnh ${index + 1}</p>`,
-			})) || [],
-		[product?.images, product?.name]
+			product?.images && product.images.length > 0
+				? product.images.map((img: string, index: number) => ({
+						src: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
+						thumb: `${process.env.NEXT_PUBLIC_IMAGE}/${img}`,
+						subHtml: `<h4>${product.name}</h4><p>Ảnh ${index + 1}</p>`,
+				  }))
+				: [
+						{
+							src: primaryImage,
+							thumb: primaryImage,
+							subHtml: `<h4>${product?.name || 'Ảnh sản phẩm'}</h4>`,
+						},
+				  ],
+		[product?.images, product?.name, primaryImage]
 	);
+
+	const classifyList =
+		product?.classifies && product.classifies.length > 0
+			? product.classifies
+			: [];
 
 	const handleDecrease = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -50,7 +65,10 @@ function CardProduct({product}: PropsCardProduct) {
 		e.preventDefault();
 		e.stopPropagation();
 
-		const cartEl = document.querySelector('#cart-icon');
+		const cartEl =
+			window.innerWidth <= 768
+				? document.querySelector('#cart-bottom-icon') || document.querySelector('#cart-icon')
+				: document.querySelector('#cart-icon');
 		if (imgRef.current && cartEl) {
 			flyToCart(imgRef.current, cartEl as HTMLElement);
 		}
@@ -79,8 +97,6 @@ function CardProduct({product}: PropsCardProduct) {
 		refLightGallery.current?.openGallery(0);
 	};
 
-	const primaryImage = product?.images?.[0] ? `${process.env.NEXT_PUBLIC_IMAGE}/${product.images[0]}` : '/images/banner-home.jpg';
-
 	return (
 		<div className={styles.card_product}>
 			{/* Hidden LightGallery for zoom */}
@@ -96,9 +112,9 @@ function CardProduct({product}: PropsCardProduct) {
 				/>
 			</div>
 
-			{/* Image container */}
-			<div className={styles.box_image}>
-				<Link href={`${PATH.Product}/${product?._id}`} className={styles.image_link}>
+			{/* Image container - Click mở preview ảnh */}
+			<div className={styles.box_image} onClick={handleOpenGallery} title='Nhấn để xem ảnh phóng to'>
+				<div className={styles.image_wrapper}>
 					<Image
 						ref={imgRef}
 						alt={product?.name || 'Ảnh sản phẩm'}
@@ -107,7 +123,7 @@ function CardProduct({product}: PropsCardProduct) {
 						sizes='(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw'
 						className={styles.img}
 					/>
-				</Link>
+				</div>
 
 				{/* Quick view image zoom button */}
 				{product?.images && product.images.length > 0 && (
@@ -140,18 +156,22 @@ function CardProduct({product}: PropsCardProduct) {
 					</Link>
 				</Tippy>
 
-				{/* Pack size & Colors */}
+				{/* Pack size & Classifies */}
 				<div className={styles.meta_row}>
-					{product?.pack_size && <span className={styles.pack_size_badge}>{product.pack_size}</span>}
+					{product?.pack_size?.trim() && <span className={styles.pack_size_badge}>{product.pack_size.trim()}</span>}
 
-					{product?.colors && product.colors.length > 0 && (
-						<div className={styles.color_dots} title={`Màu: ${product.colors.map((c) => c.name).join(', ')}`}>
-							{product.colors.slice(0, 5).map((c, idx) => (
-								<Tippy key={c._id || idx} content={c.name}>
-									<span className={styles.color_dot} style={{backgroundColor: c.code || '#00b7c4'}} />
-								</Tippy>
+					{classifyList.length > 0 && (
+						<div className={styles.classifies_wrap}>
+							{classifyList.slice(0, 2).map((c: any, idx: number) => (
+								<span key={c._id || idx} className={styles.classify_pill} title={c.name}>
+									{c.name}
+								</span>
 							))}
-							{product.colors.length > 5 && <span className={styles.color_more}>+{product.colors.length - 5}</span>}
+							{classifyList.length > 2 && (
+								<Tippy content={`Phân loại: ${classifyList.map((c: any) => c.name).join(', ')}`}>
+									<span className={styles.classify_more}>+{classifyList.length - 2}</span>
+								</Tippy>
+							)}
 						</div>
 					)}
 				</div>

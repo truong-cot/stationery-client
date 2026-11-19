@@ -23,7 +23,7 @@ export function ProductJsonLd({product}: {product: IProductDetail}) {
 		mpn: product._id,
 		brand: {
 			'@type': 'Brand',
-			name: product?.trademark?.name || 'Văn phòng phẩm Huyền Anh',
+			name: 'Văn phòng phẩm Huyền Anh',
 		},
 		category: product?.category?.name || 'Văn phòng phẩm',
 		offers: {

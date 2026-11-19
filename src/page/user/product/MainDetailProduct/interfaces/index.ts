@@ -13,19 +13,11 @@ export interface IProductDetail {
 		_id: string;
 		name: string;
 	};
-	color?: {
-		_id: string;
-		name: string;
-	};
-	colors?: {
+	classifies?: {
 		_id: string;
 		name: string;
 	}[];
 	size?: {
-		_id: string;
-		name: string;
-	};
-	trademark?: {
 		_id: string;
 		name: string;
 	};

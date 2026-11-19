@@ -1,1 +1,3 @@
-export interface PropsMainCreateProduct {}
+export interface PropsMainCreateProduct {
+	onClose?: () => void;
+}

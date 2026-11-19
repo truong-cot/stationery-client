@@ -11,7 +11,11 @@ export interface IProduct {
 		_id: string;
 		name: string;
 	};
-	colors: {
+	classifies?: {
+		_id: string;
+		name: string;
+	}[];
+	colors?: {
 		_id: string;
 		name: string;
 	}[];

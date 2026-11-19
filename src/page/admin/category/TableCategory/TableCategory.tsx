@@ -1,5 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
 import {Additem, BoxAdd, Edit, Trash} from 'iconsax-react';
+import Image from 'next/image';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useState} from 'react';
 import Pagination from '~/components/common/Pagination';
@@ -73,6 +74,36 @@ function TableCategory({}: PropsTableCategory) {
 									title: 'STT',
 									fixedLeft: true,
 									render: (_, index) => <>{index + 1}</>,
+								},
+								{
+									title: 'Hình ảnh',
+									render: (row, _) =>
+										row?.image ? (
+											<div
+												style={{
+													width: 44,
+													height: 44,
+													position: 'relative',
+													borderRadius: 6,
+													overflow: 'hidden',
+													border: '1px solid #e5e7eb',
+												}}
+											>
+												<Image
+													unoptimized
+													src={
+														row.image.startsWith('http') || row.image.startsWith('/')
+															? row.image
+															: `${process.env.NEXT_PUBLIC_IMAGE}/${row.image}`
+													}
+													alt={row.name}
+													fill
+													style={{objectFit: 'cover'}}
+												/>
+											</div>
+										) : (
+											<span style={{color: '#9ca3af'}}>---</span>
+										),
 								},
 								{
 									title: 'Tên danh mục',

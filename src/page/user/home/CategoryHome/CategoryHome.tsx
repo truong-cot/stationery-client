@@ -1,7 +1,8 @@
 'use client';
 
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {useQuery} from '@tanstack/react-query';
 import clsx from 'clsx';
 import {ArrowLeft2, ArrowRight2, Category2} from 'iconsax-react';
@@ -14,34 +15,18 @@ import {httpRequest} from '~/funcs/httpRequest';
 import clientServices from '~/services/client.service';
 import styles from './CategoryHome.module.scss';
 import type {PropsCategoryHome} from './interfaces';
-import {INodeCategory} from '../../product/MainProduct/components/FilterProduct/interfaces';
-
-function getVisibleCols(width: number): number {
-	if (width <= 480) return 4;
-	if (width <= 768) return 5;
-	if (width <= 1024) return 7;
-	if (width < 1400) return 10;
-	return 12;
-}
+import type {INodeCategory} from '../../product/MainProduct/components/FilterProduct/interfaces';
 
 function CategoryHome({}: PropsCategoryHome) {
 	const [activeParentId, setActiveParentId] = useState<string>('all');
-	const [visibleCols, setVisibleCols] = useState<number>(10);
-	const [scrollState, setScrollState] = useState<{
-		canScroll: boolean;
-		canScrollLeft: boolean;
-		canScrollRight: boolean;
-		thumbWidth: number;
-		thumbLeft: number;
-	}>({
-		canScroll: false,
-		canScrollLeft: false,
-		canScrollRight: false,
-		thumbWidth: 35,
-		thumbLeft: 0,
-	});
+	const [subScrollRatio, setSubScrollRatio] = useState(0);
+	const [canSubScroll, setCanSubScroll] = useState(false);
+	const [canScrollLeft, setCanScrollLeft] = useState(false);
+	const [canScrollRight, setCanScrollRight] = useState(false);
+	const [isSingleRow, setIsSingleRow] = useState(false);
+	const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
-	const gridRef = useRef<HTMLDivElement>(null);
+	const subScrollRef = useRef<HTMLDivElement>(null);
 
 	const {data: nodes = [], isLoading} = useQuery<INodeCategory[]>({
 		queryKey: [QUERY_KEY.clientTreeCategory],
@@ -51,16 +36,19 @@ function CategoryHome({}: PropsCategoryHome) {
 			}),
 	});
 
-	useEffect(() => {
-		const updateCols = () => {
-			setVisibleCols(getVisibleCols(window.innerWidth));
-		};
-		updateCols();
-		window.addEventListener('resize', updateCols);
-		return () => window.removeEventListener('resize', updateCols);
-	}, []);
+	const handleImageError = (id: string) => {
+		setImageErrors((prev) => ({...prev, [id]: true}));
+	};
 
-	// Level 1 categories
+	const getImageUrl = (image?: string | null) => {
+		if (!image) return null;
+		if (image.startsWith('http://') || image.startsWith('https://') || image.startsWith('data:')) return image;
+		const base = (process.env.NEXT_PUBLIC_IMAGE || '').replace(/\/+$/, '');
+		const path = image.replace(/^\/+/, '');
+		return `${base}/${path}`;
+	};
+
+	// Level 1 categories (giữ nguyên danh mục cấp 1 cũ)
 	const parentCategories = useMemo(() => {
 		return nodes.map((node) => ({
 			_id: node._id,
@@ -69,10 +57,10 @@ function CategoryHome({}: PropsCategoryHome) {
 		}));
 	}, [nodes]);
 
-	// Level 2 categories depending on active parent
+	// Level 2 display categories based on selected level 1 parent
 	const displayCategories = useMemo(() => {
 		if (activeParentId === 'all') {
-			// Flatten all level 2 children, only fallback to parent if parent has no children
+			// Flatten all level 2 children across all parents
 			const list: Array<{_id: string; name: string; image?: string | null}> = [];
 			nodes.forEach((parent) => {
 				if (parent.children && parent.children.length > 0) {
@@ -80,7 +68,7 @@ function CategoryHome({}: PropsCategoryHome) {
 						list.push({
 							_id: child._id,
 							name: child.name,
-							image: child.image || null, // DO NOT inherit parent image to avoid wide banner stretching on child icons
+							image: child.image || null,
 						});
 					});
 				} else {
@@ -106,56 +94,83 @@ function CategoryHome({}: PropsCategoryHome) {
 		return [{_id: selectedParent._id, name: selectedParent.name, image: selectedParent.image || null}];
 	}, [nodes, activeParentId]);
 
-	const isSingleRow = displayCategories.length > 0 && displayCategories.length <= visibleCols;
-
-	const updateScrollState = useCallback(() => {
-		const el = gridRef.current;
-		if (!el) return;
-
-		const {scrollLeft, scrollWidth, clientWidth} = el;
+	// Track subcategory scroll progress
+	const handleSubScroll = () => {
+		if (!subScrollRef.current) return;
+		const {scrollLeft, scrollWidth, clientWidth} = subScrollRef.current;
 		const maxScroll = scrollWidth - clientWidth;
+		if (maxScroll > 4) {
+			setCanSubScroll(true);
+			setCanScrollLeft(scrollLeft > 4);
+			setCanScrollRight(scrollLeft < maxScroll - 4);
+			setSubScrollRatio(Math.min(1, Math.max(0, scrollLeft / maxScroll)));
+		} else {
+			setCanSubScroll(false);
+			setCanScrollLeft(false);
+			setCanScrollRight(false);
+		}
+	};
 
-		if (maxScroll <= 4) {
-			setScrollState({
-				canScroll: false,
-				canScrollLeft: false,
-				canScrollRight: false,
-				thumbWidth: 100,
-				thumbLeft: 0,
-			});
-			return;
+	// Check whether items fit on a single row
+	useEffect(() => {
+		const checkLayout = () => {
+			if (!subScrollRef.current) return;
+			const containerWidth = subScrollRef.current.clientWidth;
+			if (!containerWidth) return;
+
+			const isMobile = window.innerWidth <= 768;
+			const itemWidth = isMobile ? 78 : 88;
+			const gap = isMobile ? 8 : 12;
+			const totalItems = displayCategories.length;
+			const neededWidth = totalItems * itemWidth + Math.max(0, totalItems - 1) * gap + (isMobile ? 12 : 16);
+
+			setIsSingleRow(neededWidth <= containerWidth);
+		};
+
+		checkLayout();
+
+		const el = subScrollRef.current;
+		const resizeObserver = new ResizeObserver(() => {
+			checkLayout();
+			handleSubScroll();
+		});
+
+		if (el) {
+			resizeObserver.observe(el);
 		}
 
-		const thumbWidth = Math.max(18, Math.min(80, (clientWidth / scrollWidth) * 100));
-		const progress = Math.min(1, Math.max(0, scrollLeft / maxScroll));
-		const thumbLeft = progress * (100 - thumbWidth);
+		window.addEventListener('resize', checkLayout);
 
-		setScrollState({
-			canScroll: true,
-			canScrollLeft: scrollLeft > 4,
-			canScrollRight: scrollLeft < maxScroll - 4,
-			thumbWidth,
-			thumbLeft,
-		});
-	}, []);
+		return () => {
+			resizeObserver.disconnect();
+			window.removeEventListener('resize', checkLayout);
+		};
+	}, [displayCategories]);
 
 	useEffect(() => {
-		const rafId = requestAnimationFrame(updateScrollState);
-		return () => cancelAnimationFrame(rafId);
-	}, [displayCategories, visibleCols, updateScrollState]);
+		const el = subScrollRef.current;
+		if (!el) return;
+
+		handleSubScroll();
+
+		el.addEventListener('scroll', handleSubScroll, {passive: true});
+
+		return () => {
+			el.removeEventListener('scroll', handleSubScroll);
+		};
+	}, [displayCategories, isSingleRow]);
 
 	const handleSelectParent = (parentId: string) => {
 		setActiveParentId(parentId);
-		if (gridRef.current) {
-			gridRef.current.scrollTo({left: 0});
+		if (subScrollRef.current) {
+			subScrollRef.current.scrollTo({left: 0, behavior: 'smooth'});
 		}
 	};
 
 	const handleScrollBy = (direction: 'left' | 'right') => {
-		const el = gridRef.current;
-		if (!el) return;
-		const delta = el.clientWidth * 0.75 * (direction === 'left' ? -1 : 1);
-		el.scrollBy({left: delta, behavior: 'smooth'});
+		if (!subScrollRef.current) return;
+		const delta = subScrollRef.current.clientWidth * 0.75 * (direction === 'left' ? -1 : 1);
+		subScrollRef.current.scrollBy({left: delta, behavior: 'smooth'});
 	};
 
 	if (!isLoading && nodes.length === 0) {
@@ -165,7 +180,7 @@ function CategoryHome({}: PropsCategoryHome) {
 	return (
 		<LayoutGrid>
 			<section className={styles.category_section}>
-				{/* Section Header */}
+				{/* 1. Danh mục cấp 1: Giữ nguyên như cũ với title và parent_tabs */}
 				<div className={styles.head}>
 					<div className={styles.title_wrap}>
 						<div className={styles.title_icon}>
@@ -199,83 +214,83 @@ function CategoryHome({}: PropsCategoryHome) {
 					</div>
 				</div>
 
-				{/* Category Items 2-Row Horizontal Scroll Container */}
-				<div className={styles.category_container}>
-					{scrollState.canScrollLeft && (
-						<button
-							type='button'
-							className={clsx(styles.nav_btn, styles.nav_prev)}
-							onClick={() => handleScrollBy('left')}
-							aria-label='Xem danh mục trước'
-						>
-							<ArrowLeft2 size={16} color='#334155' />
-						</button>
-					)}
+				{/* 2. Danh mục cấp 2: Đồng bộ item theo chuẩn /product (lưới 2 hàng CellphoneS, không border/background/box-shadow quanh ảnh) */}
+				{displayCategories.length > 0 && (
+					<div className={styles.subcategory_container}>
+						{canScrollLeft && (
+							<button
+								type='button'
+								className={clsx(styles.nav_btn, styles.nav_prev)}
+								onClick={() => handleScrollBy('left')}
+								aria-label='Xem danh mục trước'
+							>
+								<ArrowLeft2 size={16} color='#334155' />
+							</button>
+						)}
 
-					{scrollState.canScrollRight && (
-						<button
-							type='button'
-							className={clsx(styles.nav_btn, styles.nav_next)}
-							onClick={() => handleScrollBy('right')}
-							aria-label='Xem thêm danh mục'
-						>
-							<ArrowRight2 size={16} color='#334155' />
-						</button>
-					)}
+						{canScrollRight && (
+							<button
+								type='button'
+								className={clsx(styles.nav_btn, styles.nav_next)}
+								onClick={() => handleScrollBy('right')}
+								aria-label='Xem thêm danh mục'
+							>
+								<ArrowRight2 size={16} color='#334155' />
+							</button>
+						)}
 
-					{isLoading ? (
-						<div className={styles.category_grid}>
-							{Array.from({length: visibleCols * 2}).map((_, idx) => (
-								<div key={idx} className={styles.skeleton_card}>
-									<div className={styles.skeleton_icon} />
-									<div className={styles.skeleton_text} />
-								</div>
-							))}
-						</div>
-					) : (
 						<div
-							ref={gridRef}
-							onScroll={updateScrollState}
-							className={clsx(styles.category_grid, {
+							ref={subScrollRef}
+							className={clsx(styles.subcategory_scroll, {
 								[styles.single_row]: isSingleRow,
 							})}
 						>
-							{displayCategories.map((item) => (
-								<Link
-									key={item._id}
-									href={`${PATH.Product}?_categoryId=${item._id}`}
-									className={styles.category_card}
-								>
-									<div className={styles.icon_box}>
-										<CategoryIcon
-											name={item.name}
-											image={item.image}
-											size={52}
-											className={styles.cat_icon}
-										/>
-									</div>
-									<span className={styles.category_name} title={item.name}>
-										{item.name}
-									</span>
-								</Link>
-							))}
-						</div>
-					)}
+							{displayCategories.map((item) => {
+								const hasValidImage = Boolean(item.image) && !imageErrors[item._id];
+								const imageUrl = hasValidImage ? getImageUrl(item.image) : null;
 
-					{scrollState.canScroll && (
-						<div className={styles.scroll_indicator_wrap} aria-hidden='true'>
-							<div className={styles.scroll_track}>
-								<div
-									className={styles.scroll_thumb}
-									style={{
-										width: `${scrollState.thumbWidth}%`,
-										left: `${scrollState.thumbLeft}%`,
-									}}
-								/>
-							</div>
+								return (
+									<Link
+										key={item._id}
+										href={`${PATH.Product}?_categoryId=${item._id}`}
+										className={styles.sub_item}
+										title={item.name}
+									>
+										<div className={styles.sub_thumb_wrap}>
+											{imageUrl ? (
+												<Image
+													src={imageUrl}
+													alt={item.name}
+													fill
+													sizes='56px'
+													className={styles.sub_thumb_img}
+													onError={() => handleImageError(item._id)}
+												/>
+											) : (
+												<CategoryIcon name={item.name} size={52} />
+											)}
+										</div>
+										<span className={styles.sub_name}>{item.name}</span>
+									</Link>
+								);
+							})}
 						</div>
-					)}
-				</div>
+
+						{/* Scroll Progress Indicator Bar (CellphoneS style) */}
+						{canSubScroll && (
+							<div className={styles.scroll_indicator_wrap}>
+								<div className={styles.scroll_indicator_track}>
+									<div
+										className={styles.scroll_indicator_thumb}
+										style={{
+											transform: `translateX(${subScrollRatio * 18}px)`,
+										}}
+									/>
+								</div>
+							</div>
+						)}
+					</div>
+				)}
 			</section>
 		</LayoutGrid>
 	);

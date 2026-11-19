@@ -10,13 +10,19 @@
 .main {
 	position: relative;
 	min-height: 90vh;
-	margin-top: var(--height-header);
+	padding-top: var(--height-header);
 	padding-bottom: 32px;
 }
 
 @media (max-width: 1024px) {
 	.main {
-		margin-top: 56px;
+		padding-top: 56px;
 		padding-bottom: 20px;
+	}
+}
+
+@media (max-width: 768px) {
+	.main {
+		padding-bottom: calc(var(--height-bottom-nav, 58px) + env(safe-area-inset-bottom, 0px));
 	}
 }

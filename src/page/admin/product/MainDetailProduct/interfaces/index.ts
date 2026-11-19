@@ -1,4 +1,8 @@
-export interface PropsMainDetailProduct {}
+export interface PropsMainDetailProduct {
+	_idProduct?: string;
+	onClose?: () => void;
+	onEdit?: () => void;
+}
 
 export interface IDetailProduct {
 	_id: string;
@@ -11,6 +15,10 @@ export interface IDetailProduct {
 		_id: string;
 		name: string;
 	};
+	classifies?: {
+		_id: string;
+		name: string;
+	}[];
 	colors?: {
 		_id: string;
 		name: string;

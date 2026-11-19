@@ -36,7 +36,7 @@
 .main {
 	display: flex;
 	flex-direction: column;
-	gap: 0px;
+	gap: 20px;
 }
 
 .filter_top {
@@ -54,6 +54,10 @@
 		padding-bottom: 30px;
 	}
 
+	.main {
+		gap: 16px;
+	}
+
 	.head {
 		margin-bottom: 12px;
 		gap: 12px;
@@ -68,6 +72,10 @@
 	.main_product {
 		padding-top: 8px;
 		padding-bottom: 24px;
+	}
+
+	.main {
+		gap: 14px;
 	}
 
 	.head {

@@ -18,8 +18,7 @@ import {LIMIT} from '~/components/common/PaginationQuery/PaginationQuery';
 function ListProduct({}: PropsListProduct) {
 	const searchParams = useSearchParams();
 
-	const {_page, _categoryId, _sizeId, _trademarkId, _priceId, _colorId, _keyword, _sort} =
-		getQueryParams(searchParams);
+	const {_page, _categoryId, _sizeId, _keyword, _sort} = getQueryParams(searchParams);
 
 	const {
 		data = {
@@ -43,9 +42,6 @@ function ListProduct({}: PropsListProduct) {
 			_page,
 			_categoryId,
 			_sizeId,
-			_trademarkId,
-			_priceId,
-			_colorId,
 			_keyword,
 			_sort,
 		],
@@ -56,10 +52,7 @@ function ListProduct({}: PropsListProduct) {
 					pageSize: LIMIT,
 					keyword: _keyword as string,
 					category_id: _categoryId as string,
-					color_id: _colorId as string,
 					size_id: _sizeId as string,
-					trademark_id: _trademarkId as string,
-					setup_price_id: _priceId as string,
 					sort: _sort as string,
 				}),
 			}),
@@ -95,7 +88,7 @@ function ListProduct({}: PropsListProduct) {
 						total={data?.pagination?.totalCount || 0}
 						currentPage={Number(_page) || 1}
 						pageSize={LIMIT}
-						dependencies={[_categoryId, _sizeId, _trademarkId, _priceId, _colorId, _keyword, _sort]}
+						dependencies={[_categoryId, _sizeId, _keyword, _sort]}
 					/>
 				</div>
 			)}

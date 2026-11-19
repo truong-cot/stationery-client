@@ -5,7 +5,7 @@ const categoryServices = {
 		name: string;
 		description: string;
 		parent_id?: string;
-		image?: string | null;
+		image: string;
 	}) => {
 		return axiosClient.post(`/category/create`, payload);
 	},
@@ -14,7 +14,7 @@ const categoryServices = {
 		name: string;
 		description: string;
 		parent_id?: string;
-		image?: string | null;
+		image: string;
 	}) => {
 		return axiosClient.post(`/category/update`, payload);
 	},
