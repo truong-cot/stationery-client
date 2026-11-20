@@ -1,7 +1,7 @@
 'use client';
 
 import {useMutation} from '@tanstack/react-query';
-import {ArrowLeft, TickCircle} from 'iconsax-react';
+import {ArrowLeft, InfoCircle, ShoppingBag, TickCircle} from 'iconsax-react';
 import {Fragment, useEffect, useMemo, useState} from 'react';
 import {BsCartXFill} from 'react-icons/bs';
 import {useDispatch, useSelector} from 'react-redux';
@@ -14,6 +14,7 @@ import GridColumn from '~/components/layout/GridColumn';
 import LayoutGrid from '~/components/layout/LayoutGrid';
 import Breadcrumb from '~/components/utils/Breadcrumb';
 import {PATH} from '~/constants/config';
+import {MIN_ORDER_AMOUNT, MIN_ORDER_NOTE} from '~/constants/config/order';
 import {convertCoin} from '~/funcs/convertCoin';
 import {httpRequest} from '~/funcs/httpRequest';
 import {formatPhoneVN} from '~/funcs/optionConvert';
@@ -94,9 +95,17 @@ function MainOrder({}: PropsMainOrder) {
 		},
 	});
 
+	const isBelowMinOrder = totalPrice < MIN_ORDER_AMOUNT;
+
 	const handleSubmit = () => {
 		if (carts.length === 0) {
 			return toastWarn({msg: 'Giỏ hàng đang trống, vui lòng chọn sản phẩm trước khi đặt hàng!'});
+		}
+
+		if (isBelowMinOrder) {
+			return toastWarn({
+				msg: MIN_ORDER_NOTE,
+			});
 		}
 
 		return funcOrder.mutate();
@@ -210,11 +219,28 @@ function MainOrder({}: PropsMainOrder) {
 										<h5>{convertCoin(totalPrice)}₫</h5>
 									</div>
 
+									{isBelowMinOrder && (
+										<div className={styles.min_order_box}>
+											<div className={styles.min_order_icon}>
+												<InfoCircle size='20' color='#d97706' variant='Bold' />
+											</div>
+											<div className={styles.min_order_content}>
+												<p className={styles.min_order_msg}>{MIN_ORDER_NOTE}</p>
+												<p className={styles.min_order_sub}>
+													Còn thiếu:{' '}
+													<strong className={styles.missing_amount}>
+														{convertCoin(MIN_ORDER_AMOUNT - totalPrice)}₫
+													</strong>
+												</p>
+											</div>
+										</div>
+									)}
+
 									<div className={styles.submit_wrap}>
 										<ContextForm.Consumer>
 											{({isDone}) => (
 												<Button
-													disable={!isDone || carts.length === 0}
+													disable={!isDone || carts.length === 0 || isBelowMinOrder}
 													icon={<TickCircle size='20' color='#fff' variant='Bold' />}
 													bright-cyan
 													bold
@@ -226,6 +252,22 @@ function MainOrder({}: PropsMainOrder) {
 											)}
 										</ContextForm.Consumer>
 									</div>
+
+									{isBelowMinOrder && (
+										<div className={styles.continue_shopping_wrap}>
+											<Button
+												href={PATH.Product}
+												bright-cyan
+												bold
+												rounded_8
+												p_12_24
+												d_block
+												icon={<ShoppingBag size='18' color='#fff' />}
+											>
+												Tiếp tục mua hàng
+											</Button>
+										</div>
+									)}
 
 									<p className={styles.hotline_note}>
 										Cần hỗ trợ nhanh? Hotline: <a href={`tel:${phoneNumber}`}>{formattedPhone}</a>

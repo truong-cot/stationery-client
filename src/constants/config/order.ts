@@ -5,6 +5,9 @@ export enum ORDER_STATUS {
 	CANCELLED = 'CANCELLED',
 }
 
+export const MIN_ORDER_AMOUNT = 1000000;
+export const MIN_ORDER_NOTE = 'Đơn hàng của bạn chưa đạt giá trị tối thiểu 1.000.000đ. Vui lòng chọn mua thêm sản phẩm.';
+
 export const listStateOrder = [
 	{
 		state: ORDER_STATUS.PENDING,

@@ -1,7 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
-import {ArrowRight, ShoppingCart, Trash} from 'iconsax-react';
+import {ArrowRight, InfoCircle, ShoppingBag, ShoppingCart, Trash} from 'iconsax-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
@@ -12,8 +12,10 @@ import {useDispatch, useSelector} from 'react-redux';
 import Button from '~/components/common/Button';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
 import {PATH} from '~/constants/config';
+import {MIN_ORDER_AMOUNT, MIN_ORDER_NOTE} from '~/constants/config/order';
 import {convertCoin} from '~/funcs/convertCoin';
 import {formatPhoneVN} from '~/funcs/optionConvert';
+import {toastWarn} from '~/funcs/toast';
 import {RootState} from '~/store';
 import {decreaseQuantity, increaseQuantity, removeFromCart, updateQuantity} from '~/store/cart.slice';
 import styles from './CartDrawer.module.scss';
@@ -208,14 +210,48 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 								<span>Tổng cộng</span>
 								<span className={styles.total_price}>{convertCoin(totalPrice)}₫</span>
 							</div>
-							<div className={styles.buy_btn_wrap}>
+
+							{totalPrice < MIN_ORDER_AMOUNT && (
+								<div className={styles.min_order_drawer_box}>
+									<div className={styles.icon}>
+										<InfoCircle size='16' color='#d97706' variant='Bold' />
+									</div>
+									<div className={styles.content}>
+										Đơn hàng của bạn chưa đạt giá trị tối thiểu 1.000.000đ. Vui lòng chọn mua thêm sản phẩm.
+									</div>
+								</div>
+							)}
+
+							<div className={styles.cart_actions_wrap}>
+								{totalPrice < MIN_ORDER_AMOUNT && (
+									<Button
+										p_10_24
+										rounded_8
+										bright-cyan
+										bold
+										icon={<ShoppingBag size='18' color='#fff' />}
+										onClick={() => {
+											onClose();
+											router.push(PATH.Product);
+										}}
+									>
+										Tiếp tục mua hàng
+									</Button>
+								)}
+
 								<Button
 									p_10_24
 									rounded_8
 									bright-cyan
 									bold
+									disable={totalPrice < MIN_ORDER_AMOUNT}
 									icon={<ArrowRight size='18' color='#fff' />}
 									onClick={() => {
+										if (totalPrice < MIN_ORDER_AMOUNT) {
+											return toastWarn({
+												msg: MIN_ORDER_NOTE,
+											});
+										}
 										onClose();
 										router.push(PATH.Order);
 									}}
