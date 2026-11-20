@@ -7,6 +7,7 @@ import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect, useMemo, useState} from 'react';
 import {BsCartXFill} from 'react-icons/bs';
+import {IoClose} from 'react-icons/io5';
 import {useDispatch, useSelector} from 'react-redux';
 import Button from '~/components/common/Button';
 import WrapperFormPostion from '~/components/utils/WrapperFormPostion';
@@ -30,19 +31,19 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 	useEffect(() => {
 		const map: Record<string, string> = {};
 		carts.forEach((item) => {
-			map[item.product._id] = String(item.quantity);
+			map[item.cartItemId] = String(item.quantity);
 		});
 		setQuantities(map);
 	}, [carts]);
 
-	const getQuantity = (productId: string) => quantities[productId] ?? '0';
+	const getQuantity = (cartItemId: string) => quantities[cartItemId] ?? '0';
 
 	const totalQuantity = useMemo(() => {
 		return carts.reduce((sum, item) => sum + item.quantity, 0);
 	}, [carts]);
 
 	const totalPrice = useMemo(() => {
-		return carts.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+		return carts.reduce((sum, item) => sum + item.price * item.quantity, 0);
 	}, [carts]);
 
 	const phoneNumber = contact?.phone || '0384728493';
@@ -56,20 +57,23 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 
 	return (
 		<WrapperFormPostion
-			width={420}
+			width={400}
 			title={
 				<div className={styles.drawer_title}>
 					<ShoppingCart size='22' color='#00b7c4' variant='Bold' />
 					<span>Giỏ hàng của bạn</span>
-					{carts.length > 0 && <span className={styles.title_badge}>{carts.length}</span>}
 				</div>
 			}
 			actions={
-				<div>
-					<Button p_8_16 rounded_8 white bold div onClick={onClose}>
-						Đóng
-					</Button>
-				</div>
+				<button
+					type='button'
+					className={styles.btn_close_drawer}
+					onClick={onClose}
+					title='Đóng giỏ hàng'
+					aria-label='Đóng giỏ hàng'
+				>
+					<IoClose size={20} />
+				</button>
 			}
 		>
 			<div className={styles.cart_drawer}>
@@ -77,15 +81,14 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 					<>
 						<div className={styles.list_items}>
 							{carts.map((item) => {
-								const product = item.product;
-								const currentQty = getQuantity(product._id);
+								const currentQty = getQuantity(item.cartItemId);
 
 								return (
-									<div key={product._id} className={styles.cart_item}>
-										<Link href={`${PATH.Product}/${product._id}`} className={styles.item_image} onClick={onClose}>
+									<div key={item.cartItemId} className={styles.cart_item}>
+										<Link href={`${PATH.Product}/${item.product_id}`} className={styles.item_image} onClick={onClose}>
 											<Image
-												src={getImageUrl(product.image)}
-												alt={product.name}
+												src={getImageUrl(item.product_image)}
+												alt={item.product_name}
 												fill
 												sizes='76px'
 												className={styles.img}
@@ -95,16 +98,16 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 										<div className={styles.item_info}>
 											<div className={styles.item_head}>
 												<Link
-													href={`${PATH.Product}/${product._id}`}
+													href={`${PATH.Product}/${item.product_id}`}
 													className={styles.item_name}
 													onClick={onClose}
 												>
-													{product.name}
+													{item.product_name}
 												</Link>
 												<button
 													type='button'
 													className={styles.btn_delete}
-													onClick={() => dispatch(removeFromCart(product._id))}
+													onClick={() => dispatch(removeFromCart(item.cartItemId))}
 													title='Xóa khỏi giỏ hàng'
 													aria-label='Xóa khỏi giỏ hàng'
 												>
@@ -112,13 +115,18 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 												</button>
 											</div>
 
-											{product.pack_size && <span className={styles.pack_size}>{product.pack_size}</span>}
+											<div className={styles.tags_row}>
+												{item.classify_name && (
+													<span className={styles.classify_badge}>Phân loại: {item.classify_name}</span>
+												)}
+												{item.pack_size && <span className={styles.pack_size}>{item.pack_size}</span>}
+											</div>
 
 											<div className={styles.item_bottom}>
 												<div className={styles.price_group}>
-													<span className={styles.unit_price}>{convertCoin(product.price)}₫</span>
+													<span className={styles.unit_price}>{convertCoin(item.price)}₫</span>
 													<span className={styles.line_total}>
-														Thành tiền: <strong>{convertCoin(product.price * item.quantity)}₫</strong>
+														Thành tiền: <strong>{convertCoin(item.price * item.quantity)}₫</strong>
 													</span>
 												</div>
 
@@ -126,9 +134,9 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 													<button
 														type='button'
 														className={clsx(styles.action, {
-															[styles.disable]: Number(currentQty) === 0,
+															[styles.disable]: Number(currentQty) <= 1,
 														})}
-														onClick={() => dispatch(decreaseQuantity(product._id))}
+														onClick={() => dispatch(decreaseQuantity(item.cartItemId))}
 														aria-label='Giảm số lượng'
 													>
 														-
@@ -142,23 +150,23 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 															if (value === '' || /^\d+$/.test(value)) {
 																setQuantities((prev) => ({
 																	...prev,
-																	[product._id]: value,
+																	[item.cartItemId]: value,
 																}));
 															}
 														}}
 														onBlur={() => {
-															const raw = quantities[product._id];
+															const raw = quantities[item.cartItemId];
 															let value = Number(raw);
-															if (!raw || isNaN(value) || value < 0) value = 0;
+															if (!raw || isNaN(value) || value < 1) value = 1;
 
 															setQuantities((prev) => ({
 																...prev,
-																[product._id]: String(value),
+																[item.cartItemId]: String(value),
 															}));
 
 															dispatch(
 																updateQuantity({
-																	productId: product._id,
+																	cartItemId: item.cartItemId,
 																	quantity: value,
 																})
 															);
@@ -173,7 +181,7 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 													<button
 														type='button'
 														className={styles.action}
-														onClick={() => dispatch(increaseQuantity(product._id))}
+														onClick={() => dispatch(increaseQuantity(item.cartItemId))}
 														aria-label='Tăng số lượng'
 													>
 														+
@@ -188,8 +196,8 @@ function CartDrawer({onClose}: PropsCartDrawer) {
 
 						<div className={styles.summary}>
 							<div className={styles.summary_row}>
-								<span>Số loại sản phẩm</span>
-								<strong>{carts.length} sản phẩm</strong>
+								<span>Số loại mặt hàng</span>
+								<strong>{carts.length} mặt hàng</strong>
 							</div>
 							<div className={styles.summary_row}>
 								<span>Tổng số lượng</span>

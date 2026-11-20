@@ -63,7 +63,7 @@ function MainOrder({}: PropsMainOrder) {
 	}, [carts]);
 
 	const totalPrice = useMemo(() => {
-		return carts.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+		return carts.reduce((sum, item) => sum + item.price * item.quantity, 0);
 	}, [carts]);
 
 	const phoneNumber = contact?.phone || '0384728493';
@@ -80,7 +80,8 @@ function MainOrder({}: PropsMainOrder) {
 					shipping_address: form.shipping_address.trim(),
 					customer_note: form.customer_note.trim() || undefined,
 					items: carts.map((item) => ({
-						product_id: item.product._id,
+						product_id: item.product_id,
+						classify_id: item.classify_id || null,
 						quantity: item.quantity,
 					})),
 				}),
@@ -187,7 +188,7 @@ function MainOrder({}: PropsMainOrder) {
 
 									<div className={styles.order_list}>
 										{carts.map((order) => (
-											<ProductOrder key={order.product._id} order={order} />
+											<ProductOrder key={order.cartItemId} order={order} />
 										))}
 									</div>
 

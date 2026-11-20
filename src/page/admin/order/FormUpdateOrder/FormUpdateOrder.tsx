@@ -6,6 +6,7 @@ import {Trash, Warning2} from 'iconsax-reactjs';
 import Image from 'next/image';
 import {Fragment, useEffect, useMemo, useState} from 'react';
 import Button from '~/components/common/Button';
+import Dialog from '~/components/common/Dialog';
 import Form, {ContextForm, Input, Select, TextArea} from '~/components/common/Form';
 import Loading from '~/components/common/Loading';
 import FlexLayout from '~/components/layout/FlexLayout';
@@ -38,6 +39,18 @@ const initForm: IFormUpdateOrder = {
 	customer_note: '',
 };
 
+interface IProductOption {
+	_id: string;
+	name: string;
+	price: number;
+	pack_size: string;
+	images: string[];
+	classifies?: {
+		_id: string;
+		name: string;
+	}[];
+}
+
 function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 	const queryClient = useQueryClient();
 
@@ -45,6 +58,10 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 	const [selectedItems, setSelectedItems] = useState<ISelectedProductItem[]>([]);
 	const [selectedProductId, setSelectedProductId] = useState<string>('');
 	const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
+
+	// Quản lý modal chọn phân loại khi sản phẩm có phân loại
+	const [pendingProduct, setPendingProduct] = useState<IProductOption | null>(null);
+	const [selectedClassifyInModal, setSelectedClassifyInModal] = useState<{_id: string; name: string} | null>(null);
 
 	// Lấy chi tiết đơn hàng
 	const {data: order, isLoading: isOrderLoading} = useQuery<IOrderDetail>({
@@ -59,28 +76,19 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 		staleTime: 0,
 	});
 
-	// Danh sách sản phẩm cho component Select
-	const {data: productsData} = useQuery<{
-		items: {
-			_id: string;
-			name: string;
-			price: number;
-			pack_size: string;
-			images: string[];
-		}[];
-	}>({
-		queryKey: [QUERY_KEY.pageListProduct, 'order-update-drawer'],
+	// Danh sách sản phẩm cho component Select từ API catalog-product
+	const {data: productsData} = useQuery<IProductOption[] | {items: IProductOption[]}>({
+		queryKey: [QUERY_KEY.catalogProduct],
 		queryFn: () =>
 			httpRequest({
-				http: productServices.getPageList({
-					page: 1,
-					pageSize: 100,
-					keyword: '',
-				}),
+				http: productServices.catalogProduct(),
 			}),
+		staleTime: 5 * 60 * 1000,
 	});
 
-	const productList = productsData?.items || [];
+	const productList: IProductOption[] = Array.isArray(productsData)
+		? productsData
+		: (productsData as any)?.items || [];
 
 	useEffect(() => {
 		if (order && !isDataLoaded) {
@@ -94,7 +102,10 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 			if (order.items && order.items.length > 0) {
 				setSelectedItems(
 					order.items.map((i) => ({
+						cartItemId: `${i.product_id}_${i.classify_id || 'default'}`,
 						product_id: i.product_id,
+						classify_id: i.classify_id || null,
+						classify_name: i.classify_name || null,
 						name: i.product_name,
 						pack_size: i.pack_size,
 						price: i.price,
@@ -108,11 +119,11 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 		}
 	}, [order, isDataLoaded]);
 
-	const handleAddProduct = (product: {_id: string; name: string; price: number; pack_size: string; images: string[]}) => {
-		if (!product?._id) return;
+	const addProductToOrder = (product: IProductOption, classify: {_id: string; name: string} | null) => {
+		const cartItemId = `${product._id}_${classify ? classify._id : 'default'}`;
 
 		setSelectedItems((prev) => {
-			const existingIndex = prev.findIndex((item) => item.product_id === product._id);
+			const existingIndex = prev.findIndex((item) => item.cartItemId === cartItemId);
 			if (existingIndex > -1) {
 				const next = [...prev];
 				next[existingIndex] = {
@@ -125,7 +136,10 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 			return [
 				...prev,
 				{
+					cartItemId,
 					product_id: product._id,
+					classify_id: classify ? classify._id : null,
+					classify_name: classify ? classify.name : null,
 					name: product.name,
 					pack_size: product.pack_size,
 					price: product.price,
@@ -138,13 +152,32 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 		setSelectedProductId('');
 	};
 
-	const handleUpdateQuantity = (productId: string, quantity: number) => {
-		if (quantity < 1) return;
-		setSelectedItems((prev) => prev.map((item) => (item.product_id === productId ? {...item, quantity} : item)));
+	const handleSelectProduct = (product: IProductOption) => {
+		if (!product?._id) return;
+
+		if (product.classifies && product.classifies.length > 0) {
+			setPendingProduct(product);
+			setSelectedClassifyInModal(product.classifies[0]);
+		} else {
+			addProductToOrder(product, null);
+		}
 	};
 
-	const handleRemoveItem = (productId: string) => {
-		setSelectedItems((prev) => prev.filter((item) => item.product_id !== productId));
+	const handleConfirmClassify = () => {
+		if (pendingProduct && selectedClassifyInModal) {
+			addProductToOrder(pendingProduct, selectedClassifyInModal);
+			setPendingProduct(null);
+			setSelectedClassifyInModal(null);
+		}
+	};
+
+	const handleUpdateQuantity = (cartItemId: string, quantity: number) => {
+		if (quantity < 1) return;
+		setSelectedItems((prev) => prev.map((item) => (item.cartItemId === cartItemId ? {...item, quantity} : item)));
+	};
+
+	const handleRemoveItem = (cartItemId: string) => {
+		setSelectedItems((prev) => prev.filter((item) => item.cartItemId !== cartItemId));
 	};
 
 	const totalAmount = useMemo(() => {
@@ -155,6 +188,8 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 		return selectedItems.reduce((sum, item) => sum + item.quantity, 0);
 	}, [selectedItems]);
 
+	const isPending = order?.order_status === ORDER_STATUS.PENDING;
+
 	const funcUpdateOrder = useMutation({
 		mutationFn: () =>
 			httpRequest({
@@ -163,12 +198,13 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 				msgSuccess: 'Cập nhật đơn hàng thành công!',
 				http: orderServices.update({
 					_id: _idOrder,
-					customer_name: form.customer_name,
-					customer_phone: form.customer_phone,
-					shipping_address: form.shipping_address,
-					customer_note: form.customer_note || undefined,
+					customer_name: form.customer_name.trim(),
+					customer_phone: form.customer_phone.trim(),
+					shipping_address: form.shipping_address.trim(),
+					customer_note: form.customer_note.trim() || undefined,
 					items: selectedItems.map((item) => ({
 						product_id: item.product_id,
+						classify_id: item.classify_id || null,
 						quantity: item.quantity,
 					})),
 				}),
@@ -181,8 +217,13 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 	});
 
 	const handleSubmit = () => {
+		if (!isPending) {
+			toastWarn({msg: 'Chỉ được phép chỉnh sửa đơn hàng ở trạng thái PENDING!'});
+			return;
+		}
+
 		if (selectedItems.length === 0) {
-			toastWarn({msg: 'Đơn hàng phải có ít nhất 1 sản phẩm!'});
+			toastWarn({msg: 'Vui lòng chọn ít nhất 1 sản phẩm cho đơn hàng!'});
 			return;
 		}
 
@@ -195,51 +236,65 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 		return `${process.env.NEXT_PUBLIC_IMAGE}/${image}`;
 	};
 
-	const isNotPending = order && order.order_status !== ORDER_STATUS.PENDING;
-
 	return (
-		<Form form={form} setForm={setForm} onSubmit={handleSubmit}>
-			<Loading loading={isOrderLoading || funcUpdateOrder.isPending} />
-			<WrapperFormPostion
-				width={760}
-				title={`Chỉnh sửa đơn: ${order?.code || '---'}`}
-				actions={
-					<FlexLayout row items-center fit-height gap-8 wrap>
-						<div>
-							<Button p_8_24 rounded_8 white bold div onClick={onClose}>
-								Hủy bỏ
-							</Button>
-						</div>
-						{!isNotPending && (
+		<Fragment>
+			<Form form={form} setForm={setForm} onSubmit={handleSubmit}>
+				<Loading loading={isOrderLoading || funcUpdateOrder.isPending} />
+				<WrapperFormPostion
+					width={780}
+					title={`Chỉnh sửa đơn hàng - ${order?.code || '---'}`}
+					actions={
+						<FlexLayout row items-center fit-height gap-8 wrap>
+							<div>
+								<Button p_8_24 rounded_8 white bold div onClick={onClose}>
+									Hủy bỏ
+								</Button>
+							</div>
 							<ContextForm.Consumer>
 								{({isDone}) => (
 									<div>
-										<Button disable={!isDone || selectedItems.length === 0} p_8_24 rounded_8 bright-cyan bold d_block>
+										<Button
+											disable={!isDone || selectedItems.length === 0 || !isPending}
+											p_8_24
+											rounded_8
+											bright-cyan
+											bold
+											d_block
+										>
 											Lưu thay đổi
 										</Button>
 									</div>
 								)}
 							</ContextForm.Consumer>
-						)}
-					</FlexLayout>
-				}
-			>
-				{isNotPending ? (
-					<div className={styles.warningBox}>
-						<Warning2 size='40' color='#D97706' />
-						<h4>Không thể chỉnh sửa đơn hàng</h4>
-						<p>
-							Đơn hàng <strong>{order.code}</strong> đang ở trạng thái:{' '}
-							<StateActive stateActive={order.order_status} listState={listStateOrder} isBox={false} />
-							<br />
-							Chỉ các đơn hàng ở trạng thái <strong>Chờ xác nhận (PENDING)</strong> mới được phép chỉnh sửa.
-						</p>
-						<Button p_8_24 rounded_8 white bold onClick={onClose} style={{marginTop: 10}}>
-							Đóng
-						</Button>
-					</div>
-				) : (
+						</FlexLayout>
+					}
+				>
 					<FlexLayout column gap-16>
+						{!isPending && (
+							<div
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									gap: 8,
+									padding: '10px 14px',
+									background: '#fef2f2',
+									border: '1px solid #fecaca',
+									borderRadius: 8,
+									color: '#dc2626',
+									fontSize: 13,
+								}}
+							>
+								<Warning2 size={18} />
+								<span>
+									Đơn hàng hiện ở trạng thái{' '}
+									<strong>
+										<StateActive stateActive={order?.order_status || null} listState={listStateOrder} />
+									</strong>
+									. Theo quy định, chỉ đơn hàng <strong>PENDING</strong> mới có thể chỉnh sửa!
+								</span>
+							</div>
+						)}
+
 						{/* Thông tin khách hàng */}
 						<WrapperForm title='Thông tin khách hàng & Giao nhận'>
 							<FlexLayout column gap-16>
@@ -291,19 +346,17 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 
 						{/* Danh sách sản phẩm mua sử dụng component Select */}
 						<WrapperForm title='Danh sách sản phẩm mua'>
-							<Select<{
-								_id: string;
-								name: string;
-								price: number;
-								pack_size: string;
-								images: string[];
-							}>
-								label='Chọn thêm sản phẩm vào đơn hàng'
+							<Select<IProductOption>
+								label='Thêm sản phẩm vào đơn hàng'
 								placeholder='Tìm kiếm và chọn sản phẩm...'
 								value={selectedProductId}
 								options={productList}
-								onSelect={(product) => handleAddProduct(product)}
-								getOptionLabel={(p) => `${p.name}${p.pack_size ? ` (${p.pack_size})` : ''} - ${convertCoin(p.price)}đ`}
+								onSelect={(product) => handleSelectProduct(product)}
+								getOptionLabel={(p) =>
+									`${p.name}${p.pack_size ? ` (${p.pack_size})` : ''}${
+										p.classifies && p.classifies.length > 0 ? ` [${p.classifies.length} phân loại]` : ''
+									} - ${convertCoin(p.price)}đ`
+								}
 								getOptionValue={(p) => p._id}
 							/>
 
@@ -313,6 +366,7 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 										<tr>
 											<th style={{width: 40, textAlign: 'center'}}>STT</th>
 											<th>Sản phẩm</th>
+											<th style={{textAlign: 'center'}}>Phân loại</th>
 											<th style={{textAlign: 'right'}}>Đơn giá</th>
 											<th style={{width: 120, textAlign: 'center'}}>Số lượng</th>
 											<th style={{textAlign: 'right'}}>Thành tiền</th>
@@ -323,37 +377,36 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 										{selectedItems.map((item, index) => {
 											const imgUrl = getImageUrl(item.image);
 											return (
-												<tr key={item.product_id}>
+												<tr key={item.cartItemId}>
 													<td style={{textAlign: 'center'}}>{index + 1}</td>
 													<td>
 														<div className={styles.productCell}>
 															<div className={styles.imageWrapper}>
 																{imgUrl ? (
-																	<Image
-																		unoptimized
-																		src={imgUrl}
-																		alt={item.name}
-																		width={40}
-																		height={40}
-																	/>
+																	<Image unoptimized src={imgUrl} alt={item.name} width={40} height={40} />
 																) : (
 																	<span style={{fontSize: 9, color: '#94a3b8'}}>No img</span>
 																)}
 															</div>
 															<div className={styles.productInfo}>
 																<span className={styles.productName}>{item.name}</span>
-																{item.pack_size && (
-																	<span className={styles.packSize}>{item.pack_size}</span>
-																)}
+																{item.pack_size && <span className={styles.packSize}>{item.pack_size}</span>}
 															</div>
 														</div>
+													</td>
+													<td style={{textAlign: 'center'}}>
+														{item.classify_name ? (
+															<span className={styles.badgeClassify}>{item.classify_name}</span>
+														) : (
+															<span className={styles.badgeStandard}>Tiêu chuẩn</span>
+														)}
 													</td>
 													<td style={{textAlign: 'right', fontWeight: 600}}>{convertCoin(item.price)}đ</td>
 													<td style={{textAlign: 'center'}}>
 														<div className={styles.quantityControl} style={{margin: '0 auto'}}>
 															<button
 																type='button'
-																onClick={() => handleUpdateQuantity(item.product_id, item.quantity - 1)}
+																onClick={() => handleUpdateQuantity(item.cartItemId, item.quantity - 1)}
 																disabled={item.quantity <= 1}
 															>
 																-
@@ -364,12 +417,12 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 																value={item.quantity}
 																onChange={(e) => {
 																	const val = parseInt(e.target.value, 10);
-																	handleUpdateQuantity(item.product_id, isNaN(val) || val < 1 ? 1 : val);
+																	handleUpdateQuantity(item.cartItemId, isNaN(val) || val < 1 ? 1 : val);
 																}}
 															/>
 															<button
 																type='button'
-																onClick={() => handleUpdateQuantity(item.product_id, item.quantity + 1)}
+																onClick={() => handleUpdateQuantity(item.cartItemId, item.quantity + 1)}
 															>
 																+
 															</button>
@@ -381,7 +434,7 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 													<td style={{textAlign: 'center'}}>
 														<button
 															type='button'
-															onClick={() => handleRemoveItem(item.product_id)}
+															onClick={() => handleRemoveItem(item.cartItemId)}
 															style={{
 																background: 'none',
 																border: 'none',
@@ -401,7 +454,9 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 									</tbody>
 								</table>
 							) : (
-								<div className={styles.emptyItems}>Đơn hàng chưa có sản phẩm nào. Vui lòng chọn ít nhất 1 sản phẩm!</div>
+								<div className={styles.emptyItems}>
+									Chưa có sản phẩm nào được chọn. Hãy chọn sản phẩm ở ô tìm kiếm bên trên!
+								</div>
 							)}
 
 							<div className={styles.summaryCard}>
@@ -414,15 +469,45 @@ function FormUpdateOrder({_idOrder, onClose}: PropsFormUpdateOrder) {
 									<strong>{totalQuantity} chiếc/hộp</strong>
 								</div>
 								<div className={clsx(styles.summaryRow, styles.total)}>
-									<span>Tổng tiền sau khi tính lại:</span>
+									<span>Tổng tiền thanh toán (tạm tính):</span>
 									<span className={styles.totalPrice}>{convertCoin(totalAmount)}đ</span>
 								</div>
 							</div>
 						</WrapperForm>
 					</FlexLayout>
-				)}
-			</WrapperFormPostion>
-		</Form>
+				</WrapperFormPostion>
+			</Form>
+
+			{/* Dialog chọn phân loại cho sản phẩm */}
+			<Dialog
+				open={Boolean(pendingProduct)}
+				onClose={() => setPendingProduct(null)}
+				onSubmit={handleConfirmClassify}
+				title='Chọn phân loại hàng'
+				note={`Sản phẩm "${pendingProduct?.name}" có nhiều phân loại. Vui lòng chọn 1 phân loại để thêm vào đơn:`}
+				titleSubmit='Xác nhận thêm'
+				titleCancel='Hủy bỏ'
+				form={
+					<div className={styles.classifyDialogBody}>
+						<div className={styles.classifyOptionList}>
+							{pendingProduct?.classifies?.map((c) => {
+								const isSelected = selectedClassifyInModal?._id === c._id;
+								return (
+									<button
+										key={c._id}
+										type='button'
+										className={clsx(styles.classifyOptionBtn, {[styles.active]: isSelected})}
+										onClick={() => setSelectedClassifyInModal(c)}
+									>
+										{c.name}
+									</button>
+								);
+							})}
+						</div>
+					</div>
+				}
+			/>
+		</Fragment>
 	);
 }
 

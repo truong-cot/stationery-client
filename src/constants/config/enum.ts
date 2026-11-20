@@ -31,6 +31,7 @@ export const QUERY_KEY = {
 
 	pageListProduct: 'page-list-product',
 	detailProduct: 'detail-product',
+	catalogProduct: 'catalog-product',
 
 	pageListOrder: 'page-list-order',
 	detailOrder: 'detail-order',

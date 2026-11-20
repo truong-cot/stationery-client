@@ -50,6 +50,9 @@ const productServices = {
 	detail: (payload: {_id: string}) => {
 		return axiosClient.get(`/product/detail/${payload._id}`);
 	},
+	catalogProduct: () => {
+		return axiosClient.get(`/product/catalog-product`);
+	},
 };
 
 export default productServices;

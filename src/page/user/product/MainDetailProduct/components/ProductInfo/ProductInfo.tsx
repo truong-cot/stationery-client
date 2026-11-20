@@ -1,50 +1,67 @@
 'use client';
 
-import {useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
+import {useRouter} from 'next/navigation';
 import {useDispatch, useSelector} from 'react-redux';
-import {ShoppingCart, Call, ShieldSecurity, TruckFast, Receipt2, Flash, Shop} from 'iconsax-react';
+import {ShoppingCart, Call, ShieldSecurity, TruckFast, Receipt2, Flash, Shop, InfoCircle} from 'iconsax-react';
+import clsx from 'clsx';
 
 import {flyToCart} from '~/hooks/flyToCart';
-import {toastSuccess} from '~/funcs/toast';
+import {toastSuccess, toastWarn} from '~/funcs/toast';
 import {convertCoin} from '~/funcs/convertCoin';
 import {formatPhoneVN} from '~/funcs/optionConvert';
+import {PATH} from '~/constants/config';
 import {RootState} from '~/store';
 import {addToCart, setOpenCart} from '~/store/cart.slice';
 import styles from './ProductInfo.module.scss';
 import type {PropsProductInfo} from './interfaces';
 
 function ProductInfo({product}: PropsProductInfo) {
+	const router = useRouter();
 	const dispatch = useDispatch();
 	const {contact} = useSelector((state: RootState) => state.user);
-	const [quantity, setQuantity] = useState<number>(1);
 
 	const phoneNumber = contact?.phone || '0384728493';
 	const formattedPhone = formatPhoneVN(phoneNumber);
 
-	const handleDecrease = () => {
-		setQuantity((prev) => Math.max(1, prev - 1));
+	const classifyList = useMemo(
+		() => (product?.classifies && product.classifies.length > 0 ? product.classifies : []),
+		[product?.classifies]
+	);
+	const hasClassifies = classifyList.length > 0;
+
+	// Khi sản phẩm không có phân loại: dùng quantity đơn lẻ
+	const [singleQuantity, setSingleQuantity] = useState<number>(1);
+
+	// Khi sản phẩm CÓ phân loại: map lưu số lượng theo từng classify_id
+	const [classifyQuantities, setClassifyQuantities] = useState<Record<string, number>>({});
+
+	useEffect(() => {
+		if (hasClassifies) {
+			const initMap: Record<string, number> = {};
+			classifyList.forEach((c, idx) => {
+				initMap[c._id] = idx === 0 ? 1 : 0;
+			});
+			setClassifyQuantities(initMap);
+		}
+	}, [hasClassifies, classifyList]);
+
+	const totalClassifyQty = useMemo(() => {
+		return Object.values(classifyQuantities).reduce((sum, q) => sum + (Number(q) || 0), 0);
+	}, [classifyQuantities]);
+
+	const totalClassifyPrice = useMemo(() => {
+		return totalClassifyQty * (product?.price || 0);
+	}, [totalClassifyQty, product?.price]);
+
+	const handleUpdateClassifyQty = (classifyId: string, val: number) => {
+		setClassifyQuantities((prev) => ({
+			...prev,
+			[classifyId]: Math.max(0, val),
+		}));
 	};
 
-	const handleIncrease = () => {
-		setQuantity((prev) => prev + 1);
-	};
-
-	const dispatchAddToCart = () => {
-		dispatch(
-			addToCart({
-				product: {
-					_id: product._id,
-					name: product.name,
-					price: product.price,
-					pack_size: product.pack_size,
-					image: product.images?.[0] || '',
-				},
-				quantity,
-			})
-		);
-	};
-
-	const handleAddToCart = () => {
+	const triggerFlyToCart = () => {
 		const imgEl = document.querySelector('#product-detail-main-img') as HTMLImageElement | null;
 		const cartEl =
 			window.innerWidth <= 768
@@ -55,22 +72,127 @@ function ProductInfo({product}: PropsProductInfo) {
 		if (imgEl && cartEl) {
 			flyToCart(imgEl, cartEl);
 		}
-
-		dispatchAddToCart();
-		toastSuccess({
-			msg: `Đã thêm ${quantity} sản phẩm "${product.name}" vào giỏ hàng!`,
-		});
 	};
 
+	// Thêm vào giỏ hàng
+	const handleAddToCart = () => {
+		if (hasClassifies) {
+			const selectedItems = classifyList
+				.map((c) => ({
+					classify: c,
+					quantity: classifyQuantities[c._id] || 0,
+				}))
+				.filter((i) => i.quantity > 0);
+
+			if (selectedItems.length === 0) {
+				toastWarn({
+					msg: 'Vui lòng chọn số lượng lớn hơn 0 cho ít nhất 1 phân loại hàng!',
+				});
+				return;
+			}
+
+			selectedItems.forEach(({classify, quantity}) => {
+				const cartItemId = `${product._id}_${classify._id}`;
+				dispatch(
+					addToCart({
+						cartItemId,
+						product_id: product._id,
+						product_name: product.name,
+						product_image: product.images?.[0] || '',
+						pack_size: product.pack_size || '',
+						classify_id: classify._id,
+						classify_name: classify.name,
+						price: product.price,
+						quantity,
+					})
+				);
+			});
+
+			triggerFlyToCart();
+			toastSuccess({
+				msg: `Đã thêm ${totalClassifyQty} sản phẩm (${selectedItems.length} phân loại) vào giỏ hàng!`,
+			});
+		} else {
+			// Sản phẩm không phân loại
+			if (singleQuantity <= 0) return;
+
+			dispatch(
+				addToCart({
+					cartItemId: `${product._id}_default`,
+					product_id: product._id,
+					product_name: product.name,
+					product_image: product.images?.[0] || '',
+					pack_size: product.pack_size || '',
+					classify_id: null,
+					classify_name: null,
+					price: product.price,
+					quantity: singleQuantity,
+				})
+			);
+
+			triggerFlyToCart();
+			toastSuccess({
+				msg: `Đã thêm ${singleQuantity} sản phẩm "${product.name}" vào giỏ hàng!`,
+			});
+		}
+	};
+
+	// Mua ngay
 	const handleBuyNow = () => {
-		dispatchAddToCart();
-		dispatch(setOpenCart(true));
-	};
+		if (hasClassifies) {
+			const selectedItems = classifyList
+				.map((c) => ({
+					classify: c,
+					quantity: classifyQuantities[c._id] || 0,
+				}))
+				.filter((i) => i.quantity > 0);
 
-	const classifyList =
-		product?.classifies && product.classifies.length > 0
-			? product.classifies
-			: [];
+			if (selectedItems.length === 0) {
+				toastWarn({
+					msg: 'Vui lòng chọn số lượng lớn hơn 0 cho ít nhất 1 phân loại hàng!',
+				});
+				return;
+			}
+
+			selectedItems.forEach(({classify, quantity}) => {
+				const cartItemId = `${product._id}_${classify._id}`;
+				dispatch(
+					addToCart({
+						cartItemId,
+						product_id: product._id,
+						product_name: product.name,
+						product_image: product.images?.[0] || '',
+						pack_size: product.pack_size || '',
+						classify_id: classify._id,
+						classify_name: classify.name,
+						price: product.price,
+						quantity,
+					})
+				);
+			});
+
+			dispatch(setOpenCart(true));
+		} else {
+			// Sản phẩm không phân loại
+			if (singleQuantity <= 0) return;
+
+			dispatch(
+				addToCart({
+					cartItemId: `${product._id}_default`,
+					product_id: product._id,
+					product_name: product.name,
+					product_image: product.images?.[0] || '',
+					pack_size: product.pack_size || '',
+					classify_id: null,
+					classify_name: null,
+					price: product.price,
+					quantity: singleQuantity,
+				})
+			);
+
+			dispatch(setOpenCart(true));
+		}
+	};
 
 	return (
 		<div className={styles.main}>
@@ -109,46 +231,124 @@ function ProductInfo({product}: PropsProductInfo) {
 				</div>
 			</div>
 
-			{/* Classifies / Color List */}
-			{classifyList.length > 0 && (
-				<div className={styles.attr_section}>
-					<span className={styles.attr_label}>Phân loại:</span>
-					<div className={styles.color_pills}>
-						{classifyList.map((c) => (
-							<span key={c._id} className={styles.color_tag}>
-								{c.name}
-							</span>
-						))}
+			{/* Danh sách phân loại & Bộ chọn số lượng */}
+			{hasClassifies ? (
+				<div className={styles.classify_bulk_container}>
+					<div className={styles.classify_bulk_header}>
+						<span>Chọn số lượng theo từng phân loại:</span>
+						<span style={{fontSize: 12, fontWeight: 500, color: '#64748b'}}>
+							(Đơn giá: {convertCoin(product?.price || 0)}₫)
+						</span>
+					</div>
+
+					<div className={styles.classify_list_rows}>
+						{classifyList.map((c) => {
+							const currentQty = classifyQuantities[c._id] || 0;
+							const rowSubtotal = currentQty * (product?.price || 0);
+
+							return (
+								<div key={c._id} className={clsx(styles.classify_item_row, {[styles.active_row]: currentQty > 0})}>
+									<span className={styles.classify_name_text}>{c.name}</span>
+
+									<div className={styles.classify_item_right}>
+										<div className={styles.stepper}>
+											<button
+												type='button'
+												className={styles.stepper_btn}
+												onClick={() => handleUpdateClassifyQty(c._id, currentQty - 1)}
+												disabled={currentQty <= 0}
+												aria-label='Giảm số lượng'
+											>
+												-
+											</button>
+											<input
+												type='number'
+												min={0}
+												style={{width: 44, textAlign: 'center', border: 'none', fontWeight: 700, fontSize: 13}}
+												value={currentQty}
+												onChange={(e) => {
+													const val = parseInt(e.target.value, 10);
+													handleUpdateClassifyQty(c._id, isNaN(val) || val < 0 ? 0 : val);
+												}}
+											/>
+											<button
+												type='button'
+												className={styles.stepper_btn}
+												onClick={() => handleUpdateClassifyQty(c._id, currentQty + 1)}
+												aria-label='Tăng số lượng'
+											>
+												+
+											</button>
+										</div>
+
+										<span className={clsx(styles.classify_subtotal, {[styles.active]: currentQty > 0})}>
+											{currentQty > 0 ? `${convertCoin(rowSubtotal)}₫` : '0₫'}
+										</span>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+
+					<div className={styles.classify_summary_box}>
+						<span className={styles.summary_count_badge}>
+							Tổng số lượng: <strong>{totalClassifyQty}</strong> sản phẩm
+						</span>
+						<div className={styles.summary_total_text}>
+							<span>Tổng tạm tính:</span>
+							<strong>{convertCoin(totalClassifyPrice)}₫</strong>
+						</div>
+					</div>
+				</div>
+			) : (
+				/* Khi sản phẩm không có phân loại: stepper số lượng đơn giản */
+				<div className={styles.purchase_area}>
+					<div className={styles.quantity_wrapper}>
+						<span className={styles.attr_label}>Số lượng:</span>
+						<div className={styles.stepper}>
+							<button
+								type='button'
+								className={styles.stepper_btn}
+								onClick={() => setSingleQuantity((prev) => Math.max(1, prev - 1))}
+								aria-label='Giảm số lượng'
+							>
+								-
+							</button>
+							<span className={styles.stepper_val}>{singleQuantity}</span>
+							<button
+								type='button'
+								className={styles.stepper_btn}
+								onClick={() => setSingleQuantity((prev) => prev + 1)}
+								aria-label='Tăng số lượng'
+							>
+								+
+							</button>
+						</div>
 					</div>
 				</div>
 			)}
 
-			{/* Quantity Stepper & Add to cart button */}
-			<div className={styles.purchase_area}>
-				<div className={styles.quantity_wrapper}>
-					<span className={styles.attr_label}>Số lượng:</span>
-					<div className={styles.stepper}>
-						<button type='button' className={styles.stepper_btn} onClick={handleDecrease} aria-label='Giảm số lượng'>
-							-
-						</button>
-						<span className={styles.stepper_val}>{quantity}</span>
-						<button type='button' className={styles.stepper_btn} onClick={handleIncrease} aria-label='Tăng số lượng'>
-							+
-						</button>
-					</div>
-				</div>
+			{/* Action Buttons: Thêm vào giỏ & Mua ngay */}
+			<div className={styles.action_buttons}>
+				<button
+					type='button'
+					className={styles.btn_add_cart}
+					onClick={handleAddToCart}
+					disabled={hasClassifies && totalClassifyQty <= 0}
+				>
+					<ShoppingCart size='18' color='#00b7c4' variant='Bold' />
+					<span>Thêm vào giỏ</span>
+				</button>
 
-				<div className={styles.action_buttons}>
-					<button type='button' className={styles.btn_add_cart} onClick={handleAddToCart}>
-						<ShoppingCart size='18' color='#00b7c4' variant='Bold' />
-						<span>Thêm vào giỏ</span>
-					</button>
-
-					<button type='button' className={styles.btn_buy_now} onClick={handleBuyNow}>
-						<Flash size='18' color='#fff' variant='Bold' />
-						<span>Mua ngay</span>
-					</button>
-				</div>
+				<button
+					type='button'
+					className={styles.btn_buy_now}
+					onClick={handleBuyNow}
+					disabled={hasClassifies && totalClassifyQty <= 0}
+				>
+					<Flash size='18' color='#fff' variant='Bold' />
+					<span>Mua ngay</span>
+				</button>
 			</div>
 
 			{/* Fast Hotline Contact for Wholesale */}

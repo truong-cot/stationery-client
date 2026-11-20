@@ -246,6 +246,11 @@ function OrderTrackingCard({order, defaultExpanded = false}: PropsOrderTrackingC
 											{item.product_name}
 										</Link>
 										<div className={styles.item_meta}>
+											{item.classify_name && (
+												<span className={styles.classify_badge}>
+													Phân loại: {item.classify_name}
+												</span>
+											)}
 											{item.pack_size && <span className={styles.pack_size}>{item.pack_size}</span>}
 											<span className={styles.qty_price}>
 												{item.quantity} x {convertCoin(item.price)}₫

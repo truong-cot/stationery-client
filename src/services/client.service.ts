@@ -11,6 +11,7 @@ export interface IClientCreateOrderPayload {
 	customer_note?: string;
 	items: {
 		product_id: string;
+		classify_id?: string | null;
 		quantity: number;
 	}[];
 }
@@ -20,6 +21,8 @@ export interface IClientOrderItemResponse {
 	product_name: string;
 	product_image: string;
 	pack_size?: string;
+	classify_id?: string | null;
+	classify_name?: string | null;
 	price: number;
 	quantity: number;
 	subtotal: number;

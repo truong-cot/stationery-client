@@ -9,18 +9,22 @@ import LightGallery from 'lightgallery/react';
 import lgZoom from 'lightgallery/plugins/zoom';
 import lgShare from 'lightgallery/plugins/share';
 import {useDispatch} from 'react-redux';
+import {useRouter} from 'next/navigation';
 
 import {flyToCart} from '~/hooks/flyToCart';
 import {addToCart} from '~/store/cart.slice';
-import {toastSuccess} from '~/funcs/toast';
+import {toastSuccess, toastWarn} from '~/funcs/toast';
 import {convertCoin} from '~/funcs/convertCoin';
 import {PATH} from '~/constants/config';
+import ModalSelectClassify from '~/components/common/ModalSelectClassify';
 import styles from './CardProduct.module.scss';
 import type {PropsCardProduct} from './interfaces';
 
 function CardProduct({product}: PropsCardProduct) {
+	const router = useRouter();
 	const dispatch = useDispatch();
 	const [quantity, setQuantity] = useState<number>(1);
+	const [openModalClassify, setOpenModalClassify] = useState<boolean>(false);
 	const refLightGallery = useRef<any>(null);
 	const imgRef = useRef<HTMLImageElement | null>(null);
 
@@ -65,6 +69,12 @@ function CardProduct({product}: PropsCardProduct) {
 		e.preventDefault();
 		e.stopPropagation();
 
+		// Nếu sản phẩm có phân loại, mở popup chọn phân loại ngay tại card
+		if (classifyList.length > 0) {
+			setOpenModalClassify(true);
+			return;
+		}
+
 		const cartEl =
 			window.innerWidth <= 768
 				? document.querySelector('#cart-bottom-icon') || document.querySelector('#cart-icon')
@@ -75,13 +85,14 @@ function CardProduct({product}: PropsCardProduct) {
 
 		dispatch(
 			addToCart({
-				product: {
-					_id: product._id,
-					name: product.name,
-					price: product.price,
-					pack_size: product.pack_size,
-					image: product.images?.[0] || '',
-				},
+				cartItemId: `${product._id}_default`,
+				product_id: product._id,
+				product_name: product.name,
+				product_image: product.images?.[0] || '',
+				pack_size: product.pack_size || '',
+				classify_id: null,
+				classify_name: null,
+				price: product.price,
 				quantity,
 			})
 		);
@@ -185,20 +196,32 @@ function CardProduct({product}: PropsCardProduct) {
 				<div className={styles.action_row}>
 					<button type='button' className={styles.btn_order} onClick={handleAddToCart}>
 						<ShoppingCart size='15' color='#fff' variant='Bold' />
-						<span>Đặt hàng</span>
+						<span>{classifyList.length > 0 ? 'Chọn phân loại' : 'Đặt hàng'}</span>
 					</button>
 
-					<div className={styles.quantity_stepper}>
-						<button type='button' className={styles.stepper_btn} onClick={handleDecrease} aria-label='Giảm số lượng'>
-							-
-						</button>
-						<span className={styles.stepper_value}>{quantity}</span>
-						<button type='button' className={styles.stepper_btn} onClick={handleIncrease} aria-label='Tăng số lượng'>
-							+
-						</button>
-					</div>
+					{classifyList.length === 0 && (
+						<div className={styles.quantity_stepper}>
+							<button type='button' className={styles.stepper_btn} onClick={handleDecrease} aria-label='Giảm số lượng'>
+								-
+							</button>
+							<span className={styles.stepper_value}>{quantity}</span>
+							<button type='button' className={styles.stepper_btn} onClick={handleIncrease} aria-label='Tăng số lượng'>
+								+
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
+
+			{/* Popup chọn số lượng theo từng phân loại */}
+			{classifyList.length > 0 && (
+				<ModalSelectClassify
+					open={openModalClassify}
+					onClose={() => setOpenModalClassify(false)}
+					product={product}
+					anchorImgEl={imgRef.current}
+				/>
+			)}
 		</div>
 	);
 }

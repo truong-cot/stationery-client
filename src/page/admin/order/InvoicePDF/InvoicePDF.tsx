@@ -421,6 +421,11 @@ function InvoicePDF({order, orders, storeInfo}: PropsInvoicePDF) {
 										</View>
 										<View style={styles.colName}>
 											<Text style={styles.cellText}>{item.product_name}</Text>
+											{item.classify_name ? (
+												<Text style={[styles.cellText, {fontSize: 8.5, fontStyle: 'italic', color: '#475569', marginTop: 1}]}>
+													(Phân loại: {item.classify_name})
+												</Text>
+											) : null}
 										</View>
 										<View style={styles.colUnit}>
 											<Text style={styles.cellText}>{item.pack_size || ''}</Text>

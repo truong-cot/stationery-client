@@ -282,6 +282,7 @@ function DetailOrder({_idOrder, onClose, onEdit}: PropsDetailOrder) {
 								<tr>
 									<th style={{width: 40, textAlign: 'center'}}>STT</th>
 									<th>Sản phẩm</th>
+									<th style={{textAlign: 'center'}}>Phân loại hàng</th>
 									<th>Quy cách</th>
 									<th style={{textAlign: 'right'}}>Đơn giá</th>
 									<th style={{width: 80, textAlign: 'center'}}>SL</th>
@@ -311,6 +312,15 @@ function DetailOrder({_idOrder, onClose, onEdit}: PropsDetailOrder) {
 													</div>
 													<span className={styles.productName}>{item.product_name}</span>
 												</div>
+											</td>
+											<td style={{textAlign: 'center'}}>
+												{item.classify_name ? (
+													<span className={styles.badgeClassify}>
+														{item.classify_name}
+													</span>
+												) : (
+													<span className={styles.badgeStandard}>Tiêu chuẩn</span>
+												)}
 											</td>
 											<td>{item.pack_size || '---'}</td>
 											<td style={{textAlign: 'right', fontWeight: 600}}>{convertCoin(item.price)}đ</td>

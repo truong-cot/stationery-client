@@ -64,6 +64,25 @@
 	border-radius: 999px;
 }
 
+.tags_row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+
+.classify_badge {
+	display: inline-flex;
+	align-items: center;
+	font-size: 11px;
+	font-weight: 600;
+	color: #0369a1;
+	background: #e0f2fe;
+	padding: 2px 8px;
+	border-radius: 999px;
+	border: 1px solid rgba(3, 105, 161, 0.18);
+}
+
 .meta {
 	display: flex;
 	align-items: center;

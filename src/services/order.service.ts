@@ -2,6 +2,7 @@ import {axiosClient} from '~/libs/axios';
 
 export interface IOrderItemPayload {
 	product_id: string;
+	classify_id?: string | null;
 	quantity: number;
 }
 
