@@ -343,7 +343,7 @@ function MainUpdateProduct({_idProduct, onClose}: PropsMainUpdateProduct) {
 										}
 									/>
 								</div>
-								<Select
+								{/* <Select
 									placeholder='Lựa chọn'
 									label='Kích cỡ'
 									value={form.size_id}
@@ -384,9 +384,9 @@ function MainUpdateProduct({_idProduct, onClose}: PropsMainUpdateProduct) {
 										getOptionLabel={(opt) => opt.name}
 										getOptionValue={(opt) => opt._id}
 									/>
-								</div>
+								</div> */}
 							</GridColumn>
-							<TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' />
+							{/* <TextArea label='Mô tả ngắn' placeholder='Nhập ghi chú' name='short_description' /> */}
 							<div>
 								<UploadMultipleFile
 									label={

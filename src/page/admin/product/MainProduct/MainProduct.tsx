@@ -200,7 +200,7 @@ function MainProduct({}: PropsMainProduct) {
 											name: item.name,
 										}))}
 									/>
-									<FilterCustom
+									{/* <FilterCustom
 										name='Kích cỡ'
 										value={sizeId}
 										setValue={setSizeId}
@@ -217,7 +217,7 @@ function MainProduct({}: PropsMainProduct) {
 											uuid: item._id,
 											name: item.name,
 										}))}
-									/>
+									/> */}
 									<FilterCustom
 										name='Danh mục'
 										value={categoryId}
@@ -287,14 +287,14 @@ function MainProduct({}: PropsMainProduct) {
 											);
 										},
 									},
-									{
-										title: 'Kích cỡ',
-										render: (row, _) => <>{row?.size?.name || '---'}</>,
-									},
-									{
-										title: 'Thương hiệu',
-										render: (row, _) => <>{row?.trademark?.name || '---'}</>,
-									},
+									// {
+									// 	title: 'Kích cỡ',
+									// 	render: (row, _) => <>{row?.size?.name || '---'}</>,
+									// },
+									// {
+									// 	title: 'Thương hiệu',
+									// 	render: (row, _) => <>{row?.trademark?.name || '---'}</>,
+									// },
 									{
 										title: 'SP nổi bật',
 										render: (row, _) => <>{row?.is_featured ? 'Có' : 'Không'}</>,

@@ -3,6 +3,7 @@
 import PaginationQuery from '~/components/common/PaginationQuery';
 import styles from './ListProduct.module.scss';
 import type {IProductClient, PropsListProduct} from './interfaces';
+import type {INodeCategory} from '../FilterProduct/interfaces';
 import {useSearchParams} from 'next/navigation';
 import {getQueryParams} from '~/funcs/queryParams';
 import GridColumn from '~/components/layout/GridColumn';
@@ -19,6 +20,17 @@ function ListProduct({}: PropsListProduct) {
 	const searchParams = useSearchParams();
 
 	const {_page, _categoryId, _sizeId, _keyword, _sort} = getQueryParams(searchParams);
+
+	const {data: nodes = []} = useQuery<INodeCategory[]>({
+		queryKey: [QUERY_KEY.clientTreeCategory],
+		queryFn: () =>
+			httpRequest({
+				http: clientServices.treeCategory(),
+			}),
+	});
+
+	const effectiveCategoryId = (_categoryId as string) || (nodes.length > 0 ? nodes[0]._id : undefined);
+	const isReady = !!_categoryId || !!_keyword || nodes.length > 0;
 
 	const {
 		data = {
@@ -40,7 +52,7 @@ function ListProduct({}: PropsListProduct) {
 		queryKey: [
 			QUERY_KEY.clientPageListProduct,
 			_page,
-			_categoryId,
+			effectiveCategoryId,
 			_sizeId,
 			_keyword,
 			_sort,
@@ -51,15 +63,16 @@ function ListProduct({}: PropsListProduct) {
 					page: Number(_page) || 1,
 					pageSize: LIMIT,
 					keyword: _keyword as string,
-					category_id: _categoryId as string,
+					category_id: effectiveCategoryId as string,
 					size_id: _sizeId as string,
 					sort: _sort as string,
 				}),
 			}),
+		enabled: isReady,
 		placeholderData: keepPreviousData,
 	});
 
-	const showSkeleton = isLoading || isFetching;
+	const showSkeleton = isLoading || isFetching || !isReady;
 
 	return (
 		<div className={styles.list_product}>
@@ -88,7 +101,7 @@ function ListProduct({}: PropsListProduct) {
 						total={data?.pagination?.totalCount || 0}
 						currentPage={Number(_page) || 1}
 						pageSize={LIMIT}
-						dependencies={[_categoryId, _sizeId, _keyword, _sort]}
+						dependencies={[effectiveCategoryId, _sizeId, _keyword, _sort]}
 					/>
 				</div>
 			)}

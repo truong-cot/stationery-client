@@ -61,11 +61,6 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 	// Optimistic category id for 0ms instant UI feedback
 	const [currentCategoryId, setCurrentCategoryId] = useState<string | null>((_categoryId as string) || null);
 
-	// Sync with URL search params when changed outside (e.g. Back/Forward or tag clear)
-	useEffect(() => {
-		setCurrentCategoryId((_categoryId as string) || null);
-	}, [_categoryId]);
-
 	const rootScrollRef = useRef<HTMLDivElement>(null);
 	const subScrollRef = useRef<HTMLDivElement>(null);
 	const rootItemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -90,16 +85,37 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 			}),
 	});
 
+	// Sync with URL search params when changed outside (e.g. Back/Forward) or set default to first root category
+	useEffect(() => {
+		if (_categoryId) {
+			setCurrentCategoryId(_categoryId as string);
+		} else if (nodes.length > 0) {
+			const firstId = nodes[0]._id;
+			setCurrentCategoryId(firstId);
+			updateQueryParams(router, pathname, searchParams, {
+				set: {
+					_categoryId: firstId,
+					_categoryParentId: firstId,
+				},
+				delete: ['_page'],
+				options: {
+					scroll: false,
+				},
+			});
+		}
+	}, [_categoryId, nodes, router, pathname, searchParams]);
+
 	// Find the hierarchy path of selected category using instant optimistic state
 	const activePath = useMemo(() => {
-		if (!currentCategoryId) return [];
-		return findPath(nodes, currentCategoryId) || [];
-	}, [nodes, currentCategoryId]);
+		const effectiveCategoryId = currentCategoryId || (_categoryId as string) || (nodes.length > 0 ? nodes[0]._id : null);
+		if (!effectiveCategoryId) return [];
+		return findPath(nodes, effectiveCategoryId) || [];
+	}, [nodes, currentCategoryId, _categoryId]);
 
 	// Find active root category if any
 	const activeRootNode = useMemo(() => {
-		if (!activePath.length) return null;
-		return nodes.find((n) => n._id === activePath[0]) || null;
+		if (!activePath.length) return nodes[0] || null;
+		return nodes.find((n) => n._id === activePath[0]) || nodes[0] || null;
 	}, [nodes, activePath]);
 
 	// Subcategories of active root category
@@ -230,15 +246,7 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 				return;
 			}
 
-			// Unselect root category -> return to "All products"
-			setCurrentCategoryId(null);
-			onClose && onClose();
-			updateQueryParams(router, pathname, searchParams, {
-				delete: ['_categoryId', '_categoryParentId', '_page'],
-				options: {
-					scroll: false,
-				},
-			});
+			// If root category is clicked again, do not reset to "All products" since "All products" option is removed
 			return;
 		}
 
@@ -251,18 +259,6 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 				...(isRoot ? {_categoryParentId: nodeId} : {}),
 			},
 			delete: isRoot ? ['_page'] : ['_categoryParentId', '_page'],
-			options: {
-				scroll: false,
-			},
-		});
-	};
-
-	// Reset all categories to "All"
-	const handleSelectAll = () => {
-		setCurrentCategoryId(null);
-		onClose && onClose();
-		updateQueryParams(router, pathname, searchParams, {
-			delete: ['_categoryId', '_categoryParentId', '_page'],
 			options: {
 				scroll: false,
 			},
@@ -290,20 +286,6 @@ function FilterProduct({onClose}: PropsFilterProduct) {
 				{/* Primary Root Categories with Horizontal Scroll on Mobile */}
 				<div className={styles.category_scroll_container}>
 					<div ref={rootScrollRef} className={styles.category_scroll}>
-						{/* "All" category pill */}
-						<button
-							type='button'
-							className={clsx(styles.category_pill, {
-								[styles.active]: !currentCategoryId,
-							})}
-							onClick={handleSelectAll}
-						>
-							<div className={styles.pill_thumb}>
-								<CategoryIcon name='Tất cả sản phẩm' size={24} />
-							</div>
-							<span className={styles.pill_name}>Tất cả sản phẩm</span>
-						</button>
-
 						{/* Root category pills */}
 						{nodes?.map((node) => {
 							const isRootActive = activePath[0] === node._id;
