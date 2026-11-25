@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import {Category2, SearchNormal1, TickCircle} from 'iconsax-react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useEffect, useState} from 'react';
+import {useSelector} from 'react-redux';
 import {IoClose} from 'react-icons/io5';
 import Button from '~/components/common/Button';
 import CategoryIcon from '~/components/common/CategoryIcon';
@@ -15,6 +16,7 @@ import {ICatalog} from '~/contexts/ContextProduct';
 import {httpRequest} from '~/funcs/httpRequest';
 import {getQueryParams} from '~/funcs/queryParams';
 import clientServices from '~/services/client.service';
+import {RootState} from '~/store';
 import styles from './QuickFilterCategory.module.scss';
 import type {PropsQuickFilterCategory} from './interfaces';
 
@@ -23,6 +25,7 @@ function QuickFilterCategory({}: PropsQuickFilterCategory) {
 	const searchParams = useSearchParams();
 
 	const pathname = usePathname();
+	const {isSplashDone} = useSelector((state: RootState) => state.auth);
 
 	const {_categoryParentId} = getQueryParams(searchParams);
 
@@ -34,10 +37,10 @@ function QuickFilterCategory({}: PropsQuickFilterCategory) {
 	const [categoryId, setCategoryId] = useState<string>('');
 
 	useEffect(() => {
-		if (isShowRoute) {
+		if (isShowRoute && isSplashDone) {
 			setOpen(true);
 		}
-	}, [isShowRoute]);
+	}, [isShowRoute, isSplashDone]);
 
 	useEffect(() => {
 		if (!!_categoryParentId) {

@@ -539,7 +539,7 @@ function MainProduct({}: PropsMainProduct) {
 
 			<Dialog
 				open={!!confirmStatus}
-				type={confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? 'primary' : 'warning'}
+				type={confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? 'primary' : 'error'}
 				backgroundIconColor={confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? '#E0F2FE' : '#FEF3C7'}
 				borderIconColor={confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? '#BAE6FD' : '#FDE68A'}
 				title='Đổi trạng thái sản phẩm'

@@ -9,6 +9,7 @@ interface AuthState {
 	access_token: string;
 	isLogin: boolean;
 	isLoading: boolean;
+	isSplashDone: boolean;
 	dataLoginStorage: IDataLoginStorage | null;
 }
 
@@ -17,6 +18,7 @@ const initialState: AuthState = {
 	access_token: '',
 	isLogin: false,
 	isLoading: true,
+	isSplashDone: false,
 	dataLoginStorage: null,
 };
 
@@ -36,6 +38,9 @@ const authSlice = createSlice({
 		setIsLoading: (state, action: PayloadAction<boolean>) => {
 			state.isLoading = action?.payload;
 		},
+		setIsSplashDone: (state, action: PayloadAction<boolean>) => {
+			state.isSplashDone = action?.payload;
+		},
 		logout: (state) => {
 			state.access_token = '';
 			state.isLogin = false;
@@ -46,5 +51,5 @@ const authSlice = createSlice({
 	},
 });
 
-export const {setRememberPassword, setAccessToken, setStateLogin, setIsLoading, logout, setDataLoginStorage} = authSlice.actions;
+export const {setRememberPassword, setAccessToken, setStateLogin, setIsLoading, setIsSplashDone, logout, setDataLoginStorage} = authSlice.actions;
 export default authSlice.reducer;

@@ -49,7 +49,7 @@ function Dialog({
 						p_8_24
 						green={type == 'primary'}
 						red={type == 'error'}
-						orange={type == 'warning'}
+						warning={type == 'warning'}
 						onClick={onSubmit}
 						disable={isDisabledBtnSubmit}
 					>

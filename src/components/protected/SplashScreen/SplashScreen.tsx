@@ -12,7 +12,7 @@ import {httpRequest} from '~/funcs/httpRequest';
 import {storage} from '~/funcs/storage';
 import authServices from '~/services/auth.service';
 import {RootState} from '~/store';
-import {IDataLoginStorage, setAccessToken, setDataLoginStorage, setIsLoading, setRememberPassword, setStateLogin} from '~/store/auth.slice';
+import {IDataLoginStorage, setAccessToken, setDataLoginStorage, setIsLoading, setIsSplashDone, setRememberPassword, setStateLogin} from '~/store/auth.slice';
 import {ICartItem, setCarts} from '~/store/cart.slice';
 import {setInfoUser, setContact} from '~/store/user.slice';
 import loadingAnim from '../../../../public/anim/loading_screen.json';
@@ -98,8 +98,25 @@ function SplashScreen() {
 		if (isSuccessContact && !!contact) dispatch(setContact(contact));
 	}, [isSuccessContact, contact]);
 
+	useEffect(() => {
+		if (!isLoading) {
+			const timer = setTimeout(() => {
+				dispatch(setIsSplashDone(true));
+			}, 2200);
+
+			return () => clearTimeout(timer);
+		}
+	}, [isLoading, dispatch]);
+
 	return (
-		<div className={clsx(styles.container, {[styles.close]: !isLoading})}>
+		<div
+			className={clsx(styles.container, {[styles.close]: !isLoading})}
+			onAnimationEnd={() => {
+				if (!isLoading) {
+					dispatch(setIsSplashDone(true));
+				}
+			}}
+		>
 			<div className={styles.logo}>
 				<Lottie
 					options={{
