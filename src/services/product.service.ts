@@ -13,6 +13,7 @@ const productServices = {
 		size_id?: string;
 		trademark_id?: string;
 		is_featured: boolean;
+		status?: number;
 	}) => {
 		return axiosClient.post(`/product/create`, payload);
 	},
@@ -29,6 +30,7 @@ const productServices = {
 		size_id?: string;
 		trademark_id?: string;
 		is_featured: boolean;
+		status?: number;
 	}) => {
 		return axiosClient.post(`/product/update`, payload);
 	},
@@ -41,8 +43,15 @@ const productServices = {
 		color_id?: string;
 		size_id?: string;
 		trademark_id?: string;
+		status?: number | null;
 	}) => {
 		return axiosClient.post(`/product/page-list-product`, payload);
+	},
+	updateStatus: (payload: {
+		_id: string;
+		status: number;
+	}) => {
+		return axiosClient.post(`/product/update-status`, payload);
 	},
 	delete: (payload: {_id: string}) => {
 		return axiosClient.delete(`/product/delete/${payload._id}`);

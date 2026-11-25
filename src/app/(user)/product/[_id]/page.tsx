@@ -13,6 +13,20 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
 	const {_id} = await params;
 
 	const product = await getProductDetail(_id);
+	if (!product) {
+		return {
+			title: 'Sản phẩm không tìm thấy - Văn phòng phẩm Huyền Anh',
+			description: 'Sản phẩm này hiện đang tạm ẩn hoặc ngừng kinh doanh.',
+			alternates: {
+				canonical: `${SITE_URL}/product/${_id}`,
+			},
+			robots: {
+				index: false,
+				follow: true,
+			},
+		};
+	}
+
 	const seo = await buildProductDetailSEO(product);
 
 	return {
@@ -64,7 +78,7 @@ export default async function Page({params}: PageProps) {
 
 	return (
 		<Suspense>
-			<ProductJsonLd product={product} />
+			{product && <ProductJsonLd product={product} />}
 			<MainDetailProduct product={product} />
 		</Suspense>
 	);

@@ -32,4 +32,5 @@ export interface IDetailProduct {
 		name: string;
 	} | null;
 	is_featured: boolean;
+	status?: number;
 }

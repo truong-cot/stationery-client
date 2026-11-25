@@ -36,6 +36,7 @@ interface IFormUpdateProduct {
 	size_id: string;
 	trademark_id: string;
 	is_featured: string;
+	status: string;
 }
 
 const initForm: IFormUpdateProduct = {
@@ -48,6 +49,7 @@ const initForm: IFormUpdateProduct = {
 	size_id: '',
 	trademark_id: '',
 	is_featured: '0',
+	status: '1',
 };
 
 function MainUpdateProduct({_idProduct, onClose}: PropsMainUpdateProduct) {
@@ -92,6 +94,7 @@ function MainUpdateProduct({_idProduct, onClose}: PropsMainUpdateProduct) {
 				size_id: product?.size?._id || '',
 				trademark_id: product?.trademark?._id || '',
 				is_featured: product?.is_featured ? '1' : '0',
+				status: product?.status !== undefined ? String(product.status) : '1',
 			});
 			setImages(
 				product?.images?.map((v) => ({
@@ -172,6 +175,7 @@ function MainUpdateProduct({_idProduct, onClose}: PropsMainUpdateProduct) {
 					size_id: form.size_id || undefined,
 					trademark_id: form.trademark_id || undefined,
 					is_featured: form.is_featured == '1' ? true : false,
+					status: Number(form.status),
 					images: body.images,
 				}),
 			}),
@@ -294,6 +298,29 @@ function MainUpdateProduct({_idProduct, onClose}: PropsMainUpdateProduct) {
 											setForm((prev) => ({
 												...prev,
 												is_featured: data._id,
+											}))
+										}
+										getOptionLabel={(opt) => opt.name}
+										getOptionValue={(opt) => opt._id}
+									/>
+								</div>
+								<div>
+									<Select
+										placeholder='Lựa chọn'
+										label={
+											<span>
+												Trạng thái <span style={{color: 'red'}}>* </span>
+											</span>
+										}
+										value={form.status}
+										options={[
+											{_id: '1', name: 'Hiển thị'},
+											{_id: '0', name: 'Ẩn'},
+										]}
+										onSelect={(data) =>
+											setForm((prev) => ({
+												...prev,
+												status: data._id,
 											}))
 										}
 										getOptionLabel={(opt) => opt.name}

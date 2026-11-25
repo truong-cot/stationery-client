@@ -1,13 +1,14 @@
 'use client';
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {AddCircle, Edit, Trash, Warning2} from 'iconsax-reactjs';
+import {AddCircle, Edit, Trash, Warning2, EyeSlash} from 'iconsax-reactjs';
 import {Fragment, useState} from 'react';
 import Button from '~/components/common/Button';
 import Dialog from '~/components/common/Dialog';
 import FilterCustom from '~/components/common/FilterCustom';
 import Loading from '~/components/common/Loading';
 import Pagination from '~/components/common/Pagination';
+import Switch from '~/components/common/Switch';
 import Table from '~/components/common/Table';
 import FlexLayout from '~/components/layout/FlexLayout';
 import FlexItem from '~/components/layout/FlexLayout/FlexItem';
@@ -16,7 +17,7 @@ import HeaderActions from '~/components/utils/HeaderActions';
 import IconActionTable from '~/components/utils/IconActionTable';
 import MainTable from '~/components/utils/MainTable';
 import SearchBlock from '~/components/utils/SearchBlock';
-import {QUERY_KEY} from '~/constants/config/enum';
+import {PRODUCT_STATUS, QUERY_KEY} from '~/constants/config/enum';
 import {convertCoin} from '~/funcs/convertCoin';
 import {httpRequest} from '~/funcs/httpRequest';
 import categoryServices from '~/services/category.service';
@@ -49,8 +50,15 @@ function MainProduct({}: PropsMainProduct) {
 	const [sizeId, setSizeId] = useState<string>('');
 	const [trademarkId, setTrademarkId] = useState<string>('');
 	const [categoryId, setCategoryId] = useState<string>('');
+	const [status, setStatus] = useState<string>('');
 
 	const [idDelete, setIdDelete] = useState<string>('');
+	const [confirmStatus, setConfirmStatus] = useState<{
+		_id: string;
+		name: string;
+		currentStatus: number;
+		newStatus: number;
+	} | null>(null);
 
 	const {data: classifies = []} = useQuery<
 		{
@@ -120,7 +128,17 @@ function MainProduct({}: PropsMainProduct) {
 			totalCount: number;
 		};
 	}>({
-		queryKey: [QUERY_KEY.pageListProduct, page, pageSize, keyword, classifyId, sizeId, trademarkId, categoryId],
+		queryKey: [
+			QUERY_KEY.pageListProduct,
+			page,
+			pageSize,
+			keyword,
+			classifyId,
+			sizeId,
+			trademarkId,
+			categoryId,
+			status,
+		],
 		queryFn: () =>
 			httpRequest({
 				http: productServices.getPageList({
@@ -131,9 +149,27 @@ function MainProduct({}: PropsMainProduct) {
 					size_id: sizeId,
 					category_id: categoryId,
 					trademark_id: trademarkId,
+					status: status === '' ? null : Number(status),
 				}),
 			}),
 		staleTime: 0,
+	});
+
+	const funcUpdateStatus = useMutation({
+		mutationFn: () =>
+			httpRequest({
+				showMessageFailed: true,
+				showMessageSuccess: true,
+				msgSuccess: 'Cập nhật trạng thái thành công!',
+				http: productServices.updateStatus({
+					_id: confirmStatus!._id,
+					status: confirmStatus!.newStatus,
+				}),
+			}),
+		onSuccess: () => {
+			setConfirmStatus(null);
+			queryClient.invalidateQueries({queryKey: [QUERY_KEY.pageListProduct]});
+		},
 	});
 
 	const funcDeleteProduct = useMutation({
@@ -154,7 +190,7 @@ function MainProduct({}: PropsMainProduct) {
 
 	return (
 		<Fragment>
-			<Loading loading={funcDeleteProduct.isPending} />
+			<Loading loading={funcDeleteProduct.isPending || funcUpdateStatus.isPending} />
 			<FlexLayout column gap-12>
 				<HeaderActions
 					title='Danh sách sản phẩm'
@@ -226,6 +262,15 @@ function MainProduct({}: PropsMainProduct) {
 											uuid: item._id,
 											name: item.name,
 										}))}
+									/>
+									<FilterCustom
+										name='Trạng thái'
+										value={status}
+										setValue={setStatus}
+										listOption={[
+											{uuid: '1', name: 'Hiển thị'},
+											{uuid: '0', name: 'Ẩn'},
+										]}
 									/>
 								</FlexLayout>
 							</FlexItem>
@@ -300,6 +345,45 @@ function MainProduct({}: PropsMainProduct) {
 										render: (row, _) => <>{row?.is_featured ? 'Có' : 'Không'}</>,
 									},
 									{
+										title: 'Trạng thái',
+										render: (row, _) => {
+											const isVisible = (row?.status ?? PRODUCT_STATUS.VISIBLE) === PRODUCT_STATUS.VISIBLE;
+											return (
+												<div
+													style={{
+														display: 'inline-flex',
+														alignItems: 'center',
+														gap: '8px',
+														cursor: 'pointer',
+													}}
+													onClick={() =>
+														setConfirmStatus({
+															_id: row._id,
+															name: row.name,
+															currentStatus: row.status ?? PRODUCT_STATUS.VISIBLE,
+															newStatus: isVisible ? PRODUCT_STATUS.HIDDEN : PRODUCT_STATUS.VISIBLE,
+														})
+													}
+												>
+													<Switch
+														checked={isVisible}
+														size='small'
+														onChange={() => {}}
+													/>
+													<span
+														style={{
+															fontSize: '13px',
+															fontWeight: 500,
+															color: isVisible ? '#16A34A' : '#94A3B8',
+														}}
+													>
+														{isVisible ? 'Hiển thị' : 'Ẩn'}
+													</span>
+												</div>
+											);
+										},
+									},
+									{
 										title: 'Hành động',
 										fixedRight: true,
 										render: (row, _) => (
@@ -350,7 +434,7 @@ function MainProduct({}: PropsMainProduct) {
 							pageSize={pageSize}
 							onSetPageSize={setPageSize}
 							total={data?.pagination?.totalCount || 0}
-							dependencies={[pageSize, keyword, classifyId, sizeId, trademarkId, categoryId]}
+							dependencies={[pageSize, keyword, classifyId, sizeId, trademarkId, categoryId, status]}
 						/>
 					</MainTable>
 				</FlexItem>
@@ -451,6 +535,30 @@ function MainProduct({}: PropsMainProduct) {
 				icon={<Warning2 size='28' color='#EE0033' />}
 				onClose={() => setIdDelete('')}
 				onSubmit={funcDeleteProduct.mutate}
+			/>
+
+			<Dialog
+				open={!!confirmStatus}
+				type={confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? 'primary' : 'warning'}
+				backgroundIconColor={confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? '#E0F2FE' : '#FEF3C7'}
+				borderIconColor={confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? '#BAE6FD' : '#FDE68A'}
+				title='Đổi trạng thái sản phẩm'
+				note={
+					<span>
+						Bạn có chắc chắn muốn đổi trạng thái sản phẩm <strong>&quot;{confirmStatus?.name}&quot;</strong> sang{' '}
+						<strong>{confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? 'Hiển thị' : 'Ẩn'}</strong> không?
+					</span>
+				}
+				titleSubmit='Đồng ý'
+				icon={
+					confirmStatus?.newStatus === PRODUCT_STATUS.VISIBLE ? (
+						<Eye size='28' color='#0284C7' />
+					) : (
+						<EyeSlash size='28' color='#D97706' />
+					)
+				}
+				onClose={() => setConfirmStatus(null)}
+				onSubmit={funcUpdateStatus.mutate}
 			/>
 		</Fragment>
 	);

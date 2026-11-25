@@ -28,4 +28,5 @@ export interface IProduct {
 		name: string;
 	} | null;
 	is_featured: boolean;
+	status: number;
 }

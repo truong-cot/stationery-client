@@ -1,5 +1,5 @@
 export interface PropsMainDetailProduct {
-	product: IProductDetail;
+	product: IProductDetail | null;
 }
 
 export interface IProductDetail {
@@ -21,5 +21,6 @@ export interface IProductDetail {
 		_id: string;
 		name: string;
 	};
+	status?: number;
 	tree_category: {_id: string; name: string}[];
 }

@@ -132,6 +132,7 @@ function MainCreateProduct({onClose}: PropsMainCreateProduct) {
 					size_id: form.size_id || undefined,
 					trademark_id: form.trademark_id || undefined,
 					is_featured: form.is_featured == '1' ? true : false,
+					status: 1,
 					images: body.images,
 				}),
 			}),

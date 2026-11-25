@@ -107,24 +107,28 @@ const clientServices = {
 
 export default clientServices;
 
-export const getProductDetail = cache(async (_id: string): Promise<IProductDetail> => {
-	const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/client/detail-product/${_id}`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		cache: 'no-store',
-	});
+export const getProductDetail = cache(async (_id: string): Promise<IProductDetail | null> => {
+	try {
+		const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/client/detail-product/${_id}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			cache: 'no-store',
+		});
 
-	if (!res.ok) {
-		throw new Error('Gọi api thất bại!');
+		if (!res.ok) {
+			return null;
+		}
+
+		const data: ApiResponse<IProductDetail> = await res.json();
+
+		if (data.code != RESPONSE_CODE.SUCCESS || !data.data) {
+			return null;
+		}
+
+		return data.data;
+	} catch (error) {
+		return null;
 	}
-
-	const data: ApiResponse<IProductDetail> = await res.json();
-
-	if (data.code != RESPONSE_CODE.SUCCESS) {
-		throw new Error(data.message || 'Gọi api thất bại!');
-	}
-
-	return data.data;
 });

@@ -1,9 +1,10 @@
 'use client';
 
 import {useState} from 'react';
-import {useParams} from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import {useQuery} from '@tanstack/react-query';
 import clsx from 'clsx';
+import Button from '~/components/common/Button';
 import {
 	BagHappy,
 	DocumentText1,
@@ -34,6 +35,7 @@ import type {PropsMainDetailProduct} from './interfaces';
 type TabType = 'specs' | 'desc' | 'policy';
 
 function MainDetailProduct({product}: PropsMainDetailProduct) {
+	const router = useRouter();
 	const params = useParams();
 	const {_id} = params;
 	const [activeTab, setActiveTab] = useState<TabType>('specs');
@@ -44,8 +46,49 @@ function MainDetailProduct({product}: PropsMainDetailProduct) {
 			httpRequest({
 				http: clientServices.productSimilar({product_id: _id as string}),
 			}),
-		enabled: !!_id,
+		enabled: !!_id && !!product,
 	});
+
+	if (!product) {
+		return (
+			<LayoutGrid>
+				<nav aria-label='Đường dẫn phân cấp' className={styles.head}>
+					<div className={styles.breadcrumb_wrapper}>
+						<Breadcrumb
+							isPadding={false}
+							listUrls={[
+								{path: PATH.Home, title: 'Trang chủ'},
+								{path: PATH.Product, title: 'Sản phẩm'},
+								{path: '', title: 'Chi tiết sản phẩm'},
+							]}
+						/>
+					</div>
+				</nav>
+
+				<div className={styles.empty_container}>
+					<div className={styles.empty_card}>
+						<div className={styles.empty_icon_box}>
+							<Box size='36' color='#d97706' variant='Bold' />
+						</div>
+						<h2 className={styles.empty_title}>Sản phẩm không khả dụng</h2>
+						<p className={styles.empty_desc}>
+							Sản phẩm này hiện đang tạm ẩn hoặc ngừng kinh doanh. Quý khách vui lòng chọn mua các sản phẩm khác.
+						</p>
+						<Button
+							p_10_24
+							rounded_8
+							bright-cyan
+							bold
+							icon={<BagHappy size='18' color='#fff' />}
+							onClick={() => router.push(PATH.Product)}
+						>
+							Tiếp tục mua sắm
+						</Button>
+					</div>
+				</div>
+			</LayoutGrid>
+		);
+	}
 
 	return (
 		<LayoutGrid>

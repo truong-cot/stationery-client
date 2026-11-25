@@ -22,6 +22,8 @@ function SortProduct({}: PropsSortProduct) {
 	const {_categoryId, _sizeId, _sort} = getQueryParams(searchParams);
 	const {sizes, categorys} = useContext<IContextProduct>(ContextProduct);
 
+	const currentSort = (_sort as string) || '1';
+
 	return (
 		<div className={styles.main_sort_product}>
 			<div className={styles.sort_product}>
@@ -60,7 +62,7 @@ function SortProduct({}: PropsSortProduct) {
 							/>
 						)}
 
-						{!!_sort && (
+						{!!_sort && _sort !== '1' && (
 							<TagRefItem
 								name={optionSorts?.find((v) => v.value === (_sort as string))?.name || 'Sắp xếp'}
 								onClean={() =>
@@ -91,7 +93,7 @@ function SortProduct({}: PropsSortProduct) {
 									<div
 										key={v?.value}
 										className={clsx(styles.option, {
-											[styles.option_active]: (_sort as string) === v.value,
+											[styles.option_active]: currentSort === v.value,
 										})}
 										onClick={() => {
 											setOpenSort(false);
@@ -105,7 +107,7 @@ function SortProduct({}: PropsSortProduct) {
 										}}
 									>
 										<p>{v?.name}</p>
-										{(_sort as string) === v.value && (
+										{currentSort === v.value && (
 											<div className={styles.icon_check}>
 												<BiCheck fontSize={18} color='#00b7c4' fontWeight={600} />
 											</div>
@@ -116,7 +118,7 @@ function SortProduct({}: PropsSortProduct) {
 						)}
 					>
 						<div className={clsx(styles.sort, {[styles.active]: openSort})} onClick={() => setOpenSort(!openSort)}>
-							<p>{optionSorts?.find((s) => s.value === (_sort as string))?.name || 'Mặc định'}</p>
+							<p>{optionSorts?.find((s) => s.value === currentSort)?.name || 'Nổi bật'}</p>
 							<div className={styles.arrow}>
 								<ArrowDown2 size='16' color='#697586' variant='Bold' />
 							</div>

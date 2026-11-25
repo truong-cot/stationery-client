@@ -105,7 +105,7 @@ export const optionSorts: {
 }[] = [
 	{
 		value: '1',
-		name: 'Mới nhất',
+		name: 'Nổi bật',
 	},
 	{
 		value: '2',

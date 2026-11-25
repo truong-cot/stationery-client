@@ -50,6 +50,11 @@ export const QUERY_KEY = {
 	clientDirectSubCategory: 'client-direct-sub-category',
 };
 
+export enum PRODUCT_STATUS {
+	HIDDEN = 0, // Ẩn (Ngừng kinh doanh / Tạm ẩn trên web)
+	VISIBLE = 1, // Hiển thị (Mặc định khi tạo mới)
+}
+
 export enum TYPE_DATE {
 	ALL = -1,
 	TODAY = 1,

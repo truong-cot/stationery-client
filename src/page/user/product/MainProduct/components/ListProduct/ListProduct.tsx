@@ -30,6 +30,7 @@ function ListProduct({}: PropsListProduct) {
 	});
 
 	const effectiveCategoryId = (_categoryId as string) || (nodes.length > 0 ? nodes[0]._id : undefined);
+	const effectiveSort = (_sort as string) || '1';
 	const isReady = !!_categoryId || !!_keyword || nodes.length > 0;
 
 	const {
@@ -55,7 +56,7 @@ function ListProduct({}: PropsListProduct) {
 			effectiveCategoryId,
 			_sizeId,
 			_keyword,
-			_sort,
+			effectiveSort,
 		],
 		queryFn: () =>
 			httpRequest({
@@ -65,7 +66,7 @@ function ListProduct({}: PropsListProduct) {
 					keyword: _keyword as string,
 					category_id: effectiveCategoryId as string,
 					size_id: _sizeId as string,
-					sort: _sort as string,
+					sort: effectiveSort,
 				}),
 			}),
 		enabled: isReady,
@@ -101,7 +102,7 @@ function ListProduct({}: PropsListProduct) {
 						total={data?.pagination?.totalCount || 0}
 						currentPage={Number(_page) || 1}
 						pageSize={LIMIT}
-						dependencies={[effectiveCategoryId, _sizeId, _keyword, _sort]}
+						dependencies={[effectiveCategoryId, _sizeId, _keyword, effectiveSort]}
 					/>
 				</div>
 			)}

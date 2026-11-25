@@ -128,6 +128,7 @@ function MainDetailProduct({_idProduct, onClose, onEdit}: PropsMainDetailProduct
 							{/* <InfoDetail name='Kích cỡ' value={product?.size?.name} />
 							<InfoDetail name='Thương hiệu' value={product?.trademark?.name} /> */}
 							<InfoDetail name='Sản phẩm nổi bật' value={product?.is_featured ? 'Có' : 'Không'} />
+							<InfoDetail name='Trạng thái' value={product?.status === 0 ? 'Ẩn' : 'Hiển thị'} />
 						</GridColumn>
 						{/* <InfoDetail name='Mô tả ngắn' value={product?.short_description} /> */}
 						<InfoDetail name='Ảnh sản phẩm' value='' images={product?.images} />

@@ -93,6 +93,15 @@ function MainOrder({}: PropsMainOrder) {
 			setOpenOrderSuccess(true);
 			dispatch(clearCart());
 		},
+		onError: (err: any) => {
+			const errorMsg =
+				err?.data?.message || (typeof err === 'string' ? err : err?.message);
+			if (errorMsg && typeof errorMsg === 'string' && errorMsg.includes('không khả dụng')) {
+				toastWarn({
+					msg: 'Vui lòng xóa sản phẩm không khả dụng khỏi giỏ hàng trước khi thanh toán!',
+				});
+			}
+		},
 	});
 
 	const isBelowMinOrder = totalPrice < MIN_ORDER_AMOUNT;
